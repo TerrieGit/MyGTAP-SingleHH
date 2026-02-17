@@ -5,7 +5,7 @@ a MyGTAP application.
 
 Documentation:
 Walmsley, T. L. and P. Minor, (2016). "The MyGTAP Single Household program", ImpactECON Program 
-and data Doctumentation, No.005, ImpactECON: Boulder, CO
+and data Doctumentation, No.005, ImpactECON: Boulder, CO 
 
 Walmsley, T. L. and P. Minor, (2013). "MyGTAP Model", ImpactECON Working Paper No. 02, 
 ImpactECON: Boulder [file:///C:/Projects/TerrieGit.github.io/papers_files/Working-Paper-002-MyGTAP-Model.pdf](https://terriegit.github.io/papers_files/Working-Paper-002-MyGTAP-Model.pdf)
@@ -16,3 +16,8 @@ update this data, you can use the python program available at https://github.com
 excel file containing the data needed.  The excel data can then be copied and pasted into extradata0.har and saved to update 
 the year and version.
 - this is based on the GTAP 6 Model. 
+
+To run:
+- you will need to supply a GTAP database that is consistent with the GTAP 6 Model.  This can be obtained from GTAPAgg.
+- you will also need to ensure you havbe a correct version of extradat0.har.  This can be created using data obtained from
+The MyGTAP-Extra (https://github.com/TerrieGit/MyGTAP-Extradat) python program.
