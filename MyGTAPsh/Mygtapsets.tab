@@ -1,0 +1,199 @@
+![[!
+    ==========================================
+    ImpactECON MyGTAP Model auxillary programs
+    May 2016
+
+    This version incorporates additional sets for MyGTAP model
+
+    ImpactECON LLC, Boulder, Colorado 
+    https://impactecon.com/ 
+
+    ==========================================
+
+Purpose of program:
+1. Sets for MyGTAP
+
+Author: Peter Minor and Terrie L walmsley
+Date: June 2 2015
+
+!]]!
+
+File 
+       GTAPSETS # Original GTAP sets file #;      !input\sets.har!
+       BASEDATA # Base Data #;                    !input\basedata.har! 
+       INPAR    # Parameters file #;          !input\default.prm  !
+       EXTDAT # File with other extra datasets #;
+ (new) NEWSETS # updated sets writtent to ouput directory #; !output\sets.har!
+ (new) OUTPAR   # New parameters file #;          !output\default.prm !
+                  
+
+![[!
+     ----
+     Sets
+     ----
+!]]!
+
+Set ! standard GTAP sets !
+ REG        # Regions #         read elements from file GTAPSETS header  "H1";
+ TRAD_COMM # Traded comms #    read elements from file GTAPSETS header  "H2";
+ MARG_COMM  # Margin comms #    read elements from file GTAPSETS header  "MARG";
+ CGDS_COMM  # Investment good # read elements from file GTAPSETS header  "H9";
+ ENDW_COMM0  # Primary factors # read elements from file GTAPSETS header "H6";
+
+Subset MARG_COMM is subset of TRAD_COMM ;
+
+Set  ! consequential GTAP sets !
+ PROD_COMM # Produced commodities  # = TRAD_COMM + CGDS_COMM;
+
+Set !Special Sets for deviding up the GTAP data - Households!
+ HHLD # Main household # (MainHH);
+ ALLHH #All Households New splits and old # = HHLD;
+
+Set !Special Sets for deviding up the GTAP data - factors!
+! This is not done in this version, but sets kept for model to run !
+ BASICFAC # Basic factors for splitting #
+read elements from file GTAPSETS header "H6"; 
+ FAC0   #Original factors in GTAP database# = ENDW_COMM0 union BASICFAC;
+ ENDS   # New Factors for split region #
+        read elements from file GTAPSETS header "H6";
+ ALLFAC #Final factors# = ENDW_COMM0 union ENDS;
+
+!Mapping new factors for REGS to original factors!
+Mapping MAPENDS_BFAC from ENDS to BASICFAC ;
+Read (by_elements) MAPENDS_BFAC from file GTAPSETS header "H6";
+
+Mapping MAPENDW_BFAC from ENDW_COMM0 to BASICFAC ;
+Read (by_elements) MAPENDW_BFAC from file GTAPSETS header 
+"H6"; 
+
+Mapping MAPAFAC from ALLFAC to FAC0 ;
+Formula (all, f, ENDS) MAPAFAC(f) = $pos(MAPENDS_BFAC(f),FAC0);
+Formula (all, f, ENDW_COMM0) MAPAFAC(f) = $pos(f);
+
+Set
+ENDW_GTAP # Original GTAP endowments # (Land, tech_aspros, clerks, service_shop, 
+ off_mgr_pros, ag_othlowsk, Capital, NatlRes);
+
+Mapping MAPGTAP_ENDW from ENDW_GTAP to ENDW_COMM0 ;
+Read (by_elements) MAPGTAP_ENDW from file GTAPSETS header "MEND";
+
+Set
+    ENDWC_GTAP # Original GTAP capital endowment commodity # (Capital);
+Subset ENDWC_GTAP is subset of ENDW_GTAP;
+
+Set
+    ENDWL_GTAP # Original GTAP Labor endowment commodity # 
+    (tech_aspros, clerks, service_shop, off_mgr_pros, ag_othlowsk);
+Subset ENDWL_GTAP is subset of ENDW_GTAP;
+
+Coefficient (all,i, ENDW_COMM0)
+    CINDICG(i) # Indicator for Capital endowments #;
+Formula (all,i, ENDW_COMM0)
+    CINDICG(i) = sum(j, ENDWC_GTAP: MAPGTAP_ENDW(j)=i,1) ;
+Coefficient (all,i,BASICFAC)
+    CINDICB(i) # Indicator for Capital endowments #;
+Formula (all,i,BASICFAC)
+    CINDICB(i) = sum(j, ENDW_COMM0: MAPENDW_BFAC(j)=i, CINDICG(j)) ;
+Coefficient (all,i, FAC0)
+    CINDICF(i) # Indicator for Capital endowments #;
+Formula (all,i, ENDW_COMM0)
+    CINDICF(i) = CINDICG(i);
+Formula (all,i, BASICFAC)
+    CINDICF(i) = CINDICB(i);
+Coefficient (all,i, ALLFAC)
+    CINDIC(i) # Indicator for Capital endowments #;
+Formula (all,i, ALLFAC)
+    CINDIC(i) = sum(j, FAC0: MAPAFAC(i)=j, CINDICF(j)) ;
+
+Coefficient (all,i, ENDW_COMM0)
+    LINDICG(i) # Indicator for Capital endowments #;
+Formula (all,i, ENDW_COMM0)
+    LINDICG(i) = sum(j, ENDWL_GTAP: MAPGTAP_ENDW(j)=i,1) ;
+Coefficient (all,i,BASICFAC)
+    LINDICB(i) # Indicator for Capital endowments #;
+Formula (all,i,BASICFAC)
+    LINDICB(i) = sum(j, ENDW_COMM0: MAPENDW_BFAC(j)=i, LINDICG(j)) ;
+Coefficient (all,i, FAC0)
+    LINDICF(i) # Indicator for Capital endowments #;
+Formula (all,i, ENDW_COMM0)
+    LINDICF(i) = LINDICG(i);
+Formula (all,i, BASICFAC)
+    LINDICF(i) = LINDICB(i);
+Coefficient (all,i, ALLFAC)
+    LINDIC(i) # Indicator for Capital endowments #;
+Formula (all,i, ALLFAC)
+    LINDIC(i) = sum(j, FAC0: MAPAFAC(i)=j, LINDICF(j)) ;
+
+Set
+    ENDWC_COMM # capital endowment commodities # =
+                     (all,i,ALLFAC: CINDIC(i)>0);
+Set
+    ENDWL_COMM # capital endowment commodities # =
+                     (all,i,ALLFAC: LINDIC(i)>0);
+
+!Write some sets to final sets file !
+write 
+(Set) REG      to file NEWSETS header "H1";
+(Set) TRAD_COMM      to file NEWSETS header "H2";
+(Set) MARG_COMM      to file NEWSETS header   "MARG";
+(Set) CGDS_COMM to file NEWSETS header "H9";
+(set) ALLFAC to file NEWSETS header  "H6";
+(Set) ALLHH  to file NEWSETS header "HOU";
+(Set) ENDWC_COMM to file NEWSETS header"ENDC";
+(Set) ENDWL_COMM to file NEWSETS header"ENDL";
+(set) BASICFAC to file NEWSETS header "BFAC";
+(Set) FAC0     to file NEWSETS header "FAC0";
+(Set) ENDW_COMM0 to file NEWSETS header"ENDW";
+(by_elements) MAPENDS_BFAC to file NEWSETS header "MS2B";
+(by_elements) MAPENDW_BFAC to file NEWSETS header "ME2B";
+(by_elements) MAPAFAC   to file NEWSETS header "MFAC";
+
+Transfer unread from file GTAPSETS to file NEWSETS; !copy unchanged sets !
+Transfer (ifheaderexists) "MREL" from file EXTDAT to file NEWSETS ;
+
+![[!
+    -------------------------
+    Write new parameters file
+    -------------------------
+!]]!
+
+Coefficient ! original parameters !
+(integer)(all,p,ENDW_COMM0) 
+        SLUG0(p)# CES between composite intermediate inputs #;
+(all,p,ENDW_COMM0) 
+        ETRAE0(p)  # CES between composite intermediate inputs #;
+
+Read
+ ETRAE0  from file INPAR header "ETRE";
+ SLUG0  from file INPAR header "SLUG";
+
+Coefficient ! expanded parameters !
+(all,f,BASICFAC) ETRAEB(f) # CES between composite intermediate inputs #;
+(all,f,ALLFAC) ETRAE(f) # CES between composite intermediate inputs #;
+(integer)(all,f,BASICFAC) SLUGB(f) # CES between composite intermediate inputs#;
+(integer)(all,f,ALLFAC) SLUG(f) # CES between composite intermediate inputs #;
+
+Formula
+(all,p,BASICFAC) ETRAEB(p)  = sum{f, ENDW_COMM0: MAPENDW_BFAC(f)=p, ETRAE0(f)}/
+sum{f, ENDW_COMM0: MAPENDW_BFAC(f)=p, 1} ;
+(all,p,ENDW_COMM0) ETRAE(p)  = ETRAE0(p) ;
+(all,p,ENDS) ETRAE(p)  = ETRAEB(MAPENDS_BFAC(p));
+
+(all,p,BASICFAC) SLUGB(p) = maxs{f,ENDW_COMM0: MAPENDW_BFAC(f)=p, SLUG0(f)} ;
+(all,p,ENDW_COMM0) SLUG(p) = SLUG0(p) ;
+(all,p,ENDS) SLUG(p)  = SLUGB(MAPENDS_BFAC(p));
+
+Write
+ SLUG  to file OUTPAR header "SLUG"
+       longname "Binary parameter for factor mobility: 1=sluggish 0=mobile";
+ ETRAE  to file OUTPAR header "ETRE"
+       longname "CET between sectors for sluggish primary factors";
+
+Transfer unwritten from file INPAR to file OUTPAR; !copy unchanged params !
+Transfer (ifheaderexists) "MREL" from file EXTDAT to file OUTPAR ;
+
+![[!
+    -----------
+    End of File
+    ----------- 
+!]]!

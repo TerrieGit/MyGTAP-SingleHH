@@ -1,0 +1,780 @@
+#FILES
+Logical Name         In/Out Ud  Type Actual Name
+GTAPDATA              In     n  HAR
+ File containing all base data
+GTAPSETS              In     n  HAR
+ File with set specification
+GTAPPARM              In     n  HAR
+ File containing behavioral prameters
+GTAPVIEW              Out    n  HAR
+ File with headers for viewing
+TAXRATES              Out    n  HAR
+ File with headers for viewing initial tax rates
+(Display)             Out    n  DIS
+(Solution)            Out    n  SL4
+(Equations)           Out    n  EQ4
+#TABFILE
+gtpvewmy.tab
+#TMDATE
+at 17:36:04 on 23-FEB-2020
+#STIFILE
+%none
+#SETS
+   23
+    1 HOU             -1  u New Household
+    2 REG             -1  u Regions in the model
+    3 TRAD_COMM       -1  u Traded commodities
+    4 MARG_COMM       -1  u Margin commodities
+    5 NMRG_COMM       -1  u Non-margin commodities
+    6 CGDS_COMM       -1  u Capital goods commodities
+    7 ENDW_COMM       -1  u Endowment commodities
+    8 PROD_COMM       -1  u PRODUCED COMMODITIES
+    9 DEMD_COMM       -1  u DEMANDED COMMODITIES
+   10 NSAV_COMM       -1  u NON-SAVINGS COMMODITIES
+   11 GDPEXPEND        5  k
+cons        
+inv         
+gov         
+export      
+imp         
+   12 GDPSOURCE        3  k
+fact        
+tax         
+depr        
+   13 CAPACCT          2  k
+save        
+inv         
+   14 CURACCT          2  k
+export      
+imp         
+   15 MKTVALUE         2  k
+fob         
+trans       
+   16 OUT              3  k
+dom         
+trans       
+export      
+   17 SALES            3  k
+production  
+cons        
+gov         
+   18 PURCHVALUE       2  k
+mktexp      
+comtax      
+   19 DIR              2  k
+domestic    
+imported    
+   20 OUTVALUE         2  k
+prodrev     
+outtax      
+   21 EXPVALUE         2  k
+exprev      
+xtax        
+   22 IMPVALUE         2  k
+impcost     
+mtax        
+   23 TAB_INC          5  k
+Income      
+ForIncome   
+Transfers   
+Expenditure 
+Saving      
+#VARIABLES
+         0
+#SUBSETS
+     9
+     1     4     3
+     2     5     3
+     3     3     8
+     4     6     8
+     5     7     9
+     6     3     9
+     7     9    10
+     8     6    10
+     9     8    10
+#COEFFICIENTS
+  105
+    1 SAV_HHLD        2 r y n  income, net of depreciation, by Household
+    1    2
+    2 SAV_GOV         1 r y n  income, net of depreciation, by Household
+    2
+    3 EVOA            3 r y n  Value of output at agents prices
+    7    1    2
+    4 EVOM            3 r y n  Value of output at agents prices
+    7    1    2
+    5 EVFA            3 r y n  Producer expenditure on i by industry j
+    7    8    2
+    6 VIFA            3 r y n  Purchases of imported i r for use in j in region r
+    3    8    2
+    7 VDFA            3 r y n  Purchases of domestic i r for use in j in region r
+    3    8    2
+    8 VIPA            3 r y n  Private household h expenditure on imported i in r
+    3    1    2
+    9 VDPA            3 r y n  Private household expenditure on domestic i in r
+    3    1    2
+   10 VIGA            2 r y n  Government household expenditure on imported i
+    3    2
+   11 VDGA            2 r y n  Government household expenditure on domestic i in r
+    3    2
+   12 VKB             2 r y n  Value of beginning-of-period capital stock, in region r
+    1    2
+   13 VDEP            2 r y n  Value of capital depreciation in r (exogenous)
+    1    2
+   14 VXMD            3 r y n  Exports of i from r to s at market prices (tradeables only)
+    3    2    2
+   15 VST             2 r y n  Exports of m from r for intl transport at mkt prices (tradeables only)
+    4    2
+   16 VFM             3 r y n  Producer expenditure on i by j in r at market prices
+    7    8    2
+   17 VIFM            3 r y n  Purchases of imports i for use in j in region r
+    3    8    2
+   18 VDFM            3 r y n  Purchases of domestic i r for use in j in region r
+    3    8    2
+   19 VIPM            3 r y n  Private household expenditure on i in r
+    3    1    2
+   20 VDPM            3 r y n  Private household expenditure on domestic i in r
+    3    1    2
+   21 VIGM            2 r y n  Govt household expenditure on i in r
+    3    2
+   22 VDGM            2 r y n  Government household expenditure on domestic i in r
+    3    2
+   23 VIMS            3 r y n  Imports of i from r to s valued at domestic mkt prices
+    3    2    2
+   24 VXWD            3 r y n  Exports of i from r to s valued fob (tradeables only)
+    3    2    2
+   25 VIWS            3 r y n  Imports of i from r to s valued cif (tradeables only)
+    3    2    2
+   26 VTWR            4 r y n  Value of transport services at world prices, by destination
+    4    3    2    2
+   27 GRANTSIN        1 r y n  foreign aid in
+    2
+   28 GRANTSOUT       1 r y n  foreign aid out
+    2
+   29 FYI_HHLD        2 r y n  foreign income in
+    1    2
+   30 FYO_HHLD        2 r y n  foregin income out
+    1    2
+   31 REMIN_HHLD      2 r y n  Remittances in
+    1    2
+   32 REMOUT_HHLD     2 r y n  Remittances out
+    1    2
+   33 TRANS_HHLD      3 r y n  transfers between households - transfers to/from
+    1    1    2
+   34 TRANS_GOV       2 r y n  transfers to household h from government
+    1    2
+   35 VPA             3 r n n  Private household expenditure on i in r at agents prices
+    3    2    1
+   36 PRIVEXP         1 r n n  Private consumption expenditure in region r
+    2
+   37 VFA             3 r n n  Firms expenditure on i by industry j
+    9    8    2
+   38 VOA             2 r n n  Value of commodity i output in region r
+   10    2
+   39 REGINV          1 r n n  Regional gross investment in region r
+    2
+   40 VGA             2 r n n  Government household expenditure on i in r at agents prices
+    3    2
+   41 GOVEXP          1 r n n  Government expenditure in region r
+    2
+   42 VEXPORTS        1 r n n  Value of merchandise and services sales to the world market from r
+    2
+   43 VIMPORTS        1 r n n  Value of merchandise and services purchases from world market by s
+    2
+   44 GDPEXP          2 r n n  Composition of GDP from the expenditure side
+    2   11
+   45 NETFACTINC      1 r n n  Factor income, net of depreciation
+    2
+   46 VDM             2 r n n  Domestic sales of i in r at market prices (tradeables only)
+    3    2
+   47 VOM             2 r n n  Value of commodity i output in region r at market prices
+   10    2
+   48 NETAXES         1 r n n  Net tax revenues in r
+    2
+   49 GDPSRC          2 r n n  Composition of GDP from the sources side
+    2   12
+   50 SAVE            1 r n n  Total Regional savings
+    2
+   51 NETINV          1 r n n  Regional net investment in region r
+    2
+   52 CAPITALACCT     2 r n n  S - I = X - M
+    2   13
+   53 CURRENTACCT     3 r n n  X - M = S - I
+    2   14    3
+   54 VALEXPORTS      4 r n n  Value of exports at world prices
+    3    2    2   21
+   55 VALIMPORTS      4 r n n  Value of imports at domestic prices
+    3    2    2   22
+   56 CIFDECOMP       4 r n n  Value of tradables from r to s
+    3    2    2   15
+   57 OUTDISP         3 r n n  Value of sales of tradables to different markets at dom market price
+    3   16    2
+   58 DOMSALESDISP    3 r n n  Value of domestic sales of tradables at dom market price
+    3   17    2
+   59 IMPSALESDISP    3 r n n  Value of sales of tradables to different markets at dom market price
+    3   17    2
+   60 VALOUTPUT       3 r n n  Value of output at agents prices
+    3    2   20
+   61 SUFFICIENCY     2 r n n  Regions r rate of self-sufficiency for good i
+    3    2
+   62 NVFA            5 r n n  Firms expenditure on i by industry j
+    9    8    2   19   18
+   63 NVPA            5 r n n  Consumption expenditure on i by industry j
+    3    1    2   19   18
+   64 NVGA            4 r n n  Government expenditure on i by industry j
+    3    2   19   18
+   65 VALOWNEXPORT    3 r n n  Value of exports to self at world prices
+    3    2   21
+   66 VALOWNIMPORT    3 r n n  Value of imports to self at domestic prices
+    3    2   22
+   67 CIFOWNDECOMP    3 r n n  Value of tradables from q to q
+    3    2   15
+   68 rTO             2 r n n
+   10    2
+   69 rTF             3 r n n
+    7    8    2
+   70 rTPD            3 r n n
+    3    1    2
+   71 rTPI            3 r n n
+    3    1    2
+   72 rTGD            2 r n n
+    3    2
+   73 rTGI            2 r n n
+    3    2
+   74 rTFD            3 r n n
+    3    8    2
+   75 rTFI            3 r n n
+    3    8    2
+   76 rTXS            3 r n n
+    3    2    2
+   77 rTMS            3 r n n
+    3    2    2
+   78 CHKMKTCLIMP     2 r n n  Checking the accounting on traded commodities supply and demand
+    3    2
+   79 SURPLUS         1 r n n  Economic surplus in region s.  This should be close to zero.
+    2
+   80 VTWR_M          3 r n n  Value of transport services associated w/ the shipment of i from r to s
+    3    2    2
+   81 CHKTRANS_D      3 r n n  Difference between global demand and margins, should be close to zero
+    3    2    2
+   82 VSTT            2 r n n For check on tranport services and margines
+    3    2
+   83 CHKTRANS_S      0 r n n Diff btwn ttl supply of trnsprt srvcs & ttl margins, should be close to zero
+   84 CHKVOM          2 r n n  Check on VOM = VFM
+    7    2
+   85 SUMTRANS_S      0 r n n  Summary measure for transport services, should be close to zero
+   86 SUMTRANS_D      0 r n n  Summary measure for transport services, should be close to zero
+   87 SUMSURPLUS      0 r n n  Summary measure for economic surplus, should be close to zero
+   88 SUMMKTCLIMP     0 r n n  Summary measure for excess importation, should be close to zero
+   89 SUMIMBALS       0 r n n  Summary measure of imbalances, should be close to zero
+   90 SIGNEPR         3 r n n
+    7    8    2
+   91 SIGNER          3 r n n
+    7    1    2
+   92 SIGNMR          2 r n n
+    4    2
+   93 SIGNMTRR        4 r n n
+    4    3    2    2
+   94 SIGNR           2 r n n
+    1    2
+   95 SIGNTPR         3 r n n
+    3    8    2
+   96 SIGNTHR         3 r n n
+    3    1    2
+   97 SIGNTR          2 r n n
+    3    2
+   98 SIGNTRR         3 r n n
+    3    2    2
+   99 INCOME_HHLD     2 r n n  income, net of depreciation, by Household
+    1    2
+  100 INCOME_GOV      1 r n n  Factor income, net of depreciation, by Household
+    2
+  101 PRIVEXP_HHLD    2 r n n  income, net of depreciation, by Household
+    1    2
+  102 TABLE_HHLD      3 r n n  table of incomes, expenditure and saving by household
+   23    1    2
+  103 TABLE_GOV       2 r n n  table of incomes, expenditure and saving by household
+   23    2
+  104 CHKSAV_HHLD     2 r n n  check on savings
+    1    2
+  105 CHKSAV_GOV      1 r n n  check on savings
+    2
+#EQUATIONS
+    0
+#READS
+   34
+    1     1 SAV_HHLD          1 GTAPDATA             SHLD a h     2
+     1     2
+    2     2 SAV_GOV           1 GTAPDATA             SGOV a h     1
+     2
+    3     3 EVOA              1 GTAPDATA             EVOA a h     3
+     7     1     2
+    4     4 EVOM              1 GTAPDATA             EVOM a h     3
+     7     1     2
+    5     5 EVFA              1 GTAPDATA             EVFA a h     3
+     7     8     2
+    6     6 VIFA              1 GTAPDATA             VIFA a h     3
+     3     8     2
+    7     7 VDFA              1 GTAPDATA             VDFA a h     3
+     3     8     2
+    8     8 VIPA              1 GTAPDATA             VIPA a h     3
+     3     1     2
+    9     9 VDPA              1 GTAPDATA             VDPA a h     3
+     3     1     2
+   10    10 VIGA              1 GTAPDATA             VIGA a h     2
+     3     2
+   11    11 VDGA              1 GTAPDATA             VDGA a h     2
+     3     2
+   12    12 VKB               1 GTAPDATA             VKB  a h     2
+     1     2
+   13    13 VDEP              1 GTAPDATA             VDEP a h     2
+     1     2
+   14    14 VXMD              1 GTAPDATA             VXMD a h     3
+     3     2     2
+   15    15 VST               1 GTAPDATA             VST  a h     2
+     4     2
+   16    16 VFM               1 GTAPDATA             VFM  a h     3
+     7     8     2
+   17    17 VIFM              1 GTAPDATA             VIFM a h     3
+     3     8     2
+   18    18 VDFM              1 GTAPDATA             VDFM a h     3
+     3     8     2
+   19    19 VIPM              1 GTAPDATA             VIPM a h     3
+     3     1     2
+   20    20 VDPM              1 GTAPDATA             VDPM a h     3
+     3     1     2
+   21    21 VIGM              1 GTAPDATA             VIGM a h     2
+     3     2
+   22    22 VDGM              1 GTAPDATA             VDGM a h     2
+     3     2
+   23    23 VIMS              1 GTAPDATA             VIMS a h     3
+     3     2     2
+   24    24 VXWD              1 GTAPDATA             VXWD a h     3
+     3     2     2
+   25    25 VIWS              1 GTAPDATA             VIWS a h     3
+     3     2     2
+   26    26 VTWR              1 GTAPDATA             VTWR a h     4
+     4     3     2     2
+   27    27 GRANTSIN          1 GTAPDATA             AIDI a h     1
+     2
+   28    28 GRANTSOUT         1 GTAPDATA             AIDO a h     1
+     2
+   29    29 FYI_HHLD          1 GTAPDATA             FYI  a h     2
+     1     2
+   30    30 FYO_HHLD          1 GTAPDATA             FYO  a h     2
+     1     2
+   31    31 REMIN_HHLD        1 GTAPDATA             REMI a h     2
+     1     2
+   32    32 REMOUT_HHLD       1 GTAPDATA             REMO a h     2
+     1     2
+   33    33 TRANS_HHLD        1 GTAPDATA             TRNH a h     3
+     1     1     2
+   34    34 TRANS_GOV         1 GTAPDATA             TRNG a h     2
+     1     2
+#READ(EXTRA)
+    6
+    1 el
+ HOU          GTAPSETS             HOU 
+    2 el
+ REG          GTAPSETS             H1  
+    3 el
+ TRAD_COMM    GTAPSETS             H2  
+    4 el
+ MARG_COMM    GTAPSETS             MARG
+    5 el
+ CGDS_COMM    GTAPSETS             H9  
+    6 el
+ ENDW_COMM    GTAPSETS             H6  
+#NCVARIABLES
+    0
+#STATEMENTS
+      59   1 fl                                                 60  47    0 n
+      61   1 fl                                                 62  45    0 n
+      63   1 fl                                                 64  54    0 n
+      66   1 fl                                                 67  47    0 n
+      68   1 fl                                                 69  65    0 n
+      76   1 st HOU                                             77  50    0 n
+      78   1 st REG                                             80  65    0 n
+      81   1 st TRAD_COMM                                       83  65    0 n
+      84   1 st MARG_COMM                                       86  67    0 n
+      87   1 ss                                                 88  37    0 n
+      89   1 st NMRG_COMM                                       90  65    0 n
+      89   1 ss                                                 90  65    0 n
+      91   1 st CGDS_COMM                                       93  65    0 n
+      94   1 st ENDW_COMM                                       96  65    0 n
+      99   1 st PROD_COMM                                      100  68    0 n
+      99   1 ss                                                100  68    0 n
+      99   1 ss                                                100  68    0 n
+     101   1 st DEMD_COMM                                      102  67    0 n
+     101   1 ss                                                102  67    0 n
+     101   1 ss                                                102  67    0 n
+     103   1 st NSAV_COMM                                      104  70    0 n
+     103   1 ss                                                104  70    0 n
+     103   1 ss                                                104  70    0 n
+     105   1 ss                                                106  37    0 n
+     115   1 st GDPEXPEND                                      115  39    0 n
+     116   1 st GDPSOURCE                                      116  29    0 n
+     117   1 st CAPACCT                                        117  22    0 n
+     118   1 st CURACCT                                        118  24    0 n
+     119   1 st MKTVALUE                                       119  24    0 n
+     120   1 st OUT                                            120  26    0 n
+     121   1 st SALES                                          121  31    0 n
+     122   1 st PURCHVALUE                                     122  30    0 n
+     123   1 st DIR                                            123  27    0 n
+     124   1 st OUTVALUE                                       124  29    0 n
+     125   1 st EXPVALUE                                       125  26    0 n
+     126   1 st IMPVALUE                                       126  27    0 n
+     136   1 cs SAV_HHLD                                       137  64    0 n
+     138   1 rd SAV_HHLD             a                         139  46    0 n
+     141   1 cs SAV_GOV                                        142  61    0 n
+     143   1 rd SAV_GOV              a                         144  45    0 n
+     145   1 cs EVOA                                           146  54    0 n
+     147   1 rd EVOA                 a                         148  42    0 n
+     150   1 cs EVOM                                           151  54    0 n
+     152   1 rd EVOM                 a                         153  42    0 n
+     155   1 cs EVFA                                           156  60    0 n
+     157   1 rd EVFA                 a                         158  42    0 n
+     160   1 cs VIFA                                           161  71    0 n
+     162   1 rd VIFA                 a                         163  42    0 n
+     165   1 cs VDFA                                           166  71    0 n
+     167   1 rd VDFA                 a                         168  42    0 n
+     170   1 cs VIPA                                           171  71    0 n
+     172   1 rd VIPA                 a                         173  42    0 n
+     175   1 cs VDPA                                           176  69    0 n
+     177   1 rd VDPA                 a                         178  42    0 n
+     180   1 cs VIGA                                           181  65    0 n
+     182   1 rd VIGA                 a                         183  42    0 n
+     185   1 cs VDGA                                           186  70    0 n
+     187   1 rd VDGA                 a                         188  42    0 n
+     190   1 cs VKB                                            191  73    0 n
+     192   1 rd VKB                  a                         193  40    0 n
+     195   1 cs VDEP                                           196  65    0 n
+     197   1 rd VDEP                 a                         198  42    0 n
+     205   1 cs VXMD                                           206  80    0 n
+     207   1 rd VXMD                 a                         208  42    0 n
+     210   1 cs VST                                            212  80    0 n
+     213   1 rd VST                  a                         214  40    0 n
+     216   1 cs VFM                                            217  72    0 n
+     218   1 rd VFM                  a                         219  40    0 n
+     221   1 cs VIFM                                           222  68    0 n
+     223   1 rd VIFM                 a                         224  42    0 n
+     226   1 cs VDFM                                           227  71    0 n
+     228   1 rd VDFM                 a                         229  42    0 n
+     231   1 cs VIPM                                           232  60    0 n
+     233   1 rd VIPM                 a                         234  42    0 n
+     236   1 cs VDPM                                           237  69    0 n
+     238   1 rd VDPM                 a                         239  42    0 n
+     241   1 cs VIGM                                           242  56    0 n
+     243   1 rd VIGM                 a                         244  42    0 n
+     246   1 cs VDGM                                           247  70    0 n
+     248   1 rd VDGM                 a                         249  42    0 n
+     251   1 cs VIMS                                           252  75    0 n
+     253   1 rd VIMS                 a                         254  42    0 n
+     261   1 cs VXWD                                           262  74    0 n
+     263   1 rd VXWD                 a                         264  42    0 n
+     266   1 cs VIWS                                           267  74    0 n
+     268   1 rd VIWS                 a                         269  42    0 n
+     271   1 cs VTWR                                           273  68    0 n
+     274   1 rd VTWR                 a                         275  42    0 n
+     283   1 cs GRANTSIN                                       284  43    0 n
+     285   1 cs GRANTSOUT                                      285  45    0 n
+     286   1 cs FYI_HHLD                                       286  60    0 n
+     287   1 cs FYO_HHLD                                       287  61    0 n
+     288   1 cs REMIN_HHLD                                     288  59    0 n
+     289   1 cs REMOUT_HHLD                                    289  61    0 n
+     290   1 cs TRANS_HHLD                                     291  53    0 n
+     292   1 cs TRANS_GOV                                      293  45    0 n
+     295   1 rd GRANTSIN             a                         296  46    0 n
+     297   5 rd GRANTSOUT            a                         297  47    0 n
+     298   5 rd FYI_HHLD             a                         298  45    0 n
+     299   5 rd FYO_HHLD             a                         299  45    0 n
+     300   5 rd REMIN_HHLD           a                         300  48    0 n
+     301   5 rd REMOUT_HHLD          a                         301  49    0 n
+     302   5 rd TRANS_HHLD           a                         302  48    0 n
+     303   5 rd TRANS_GOV            a                         303  47    0 n
+     319   1 cs VPA                                            320  77    0 n
+     321   1 fm                                                322  43    0 n
+     323   1 cs PRIVEXP                                        324  63    0 n
+     325   1 fm                                                326  59    0 n
+     328   1 cs VFA                                            329  57    0 n
+     330   1 fm                                                331  29    0 n
+     332   1 fm                                                333  43    0 n
+     334   1 cs VOA                                            335  57    0 n
+     336   1 fm                                                337  40    0 n
+     338   1 fm                                                339  44    0 n
+     340   1 cs REGINV                                         341  56    0 n
+     342   1 fm                                                343  43    0 n
+     345   1 cs VGA                                            346  78    0 n
+     347   1 fm                                                348  37    0 n
+     349   1 cs GOVEXP                                         350  53    0 n
+     351   1 fm                                                352  43    0 n
+     354   1 cs VEXPORTS                                       356  75    0 n
+     357   1 fm                                                361   1    0 n
+     363   1 cs VIMPORTS                                       365  75    0 n
+     366   1 fm                                                367  60    0 n
+     369   1 cs GDPEXP                                         370  65    0 n
+     371   1 fm                                                372  34    0 n
+     373   1 fm                                                374  32    0 n
+     375   1 fm                                                376  32    0 n
+     377   1 fm                                                378  37    0 n
+     379   1 fm                                                380  36    0 n
+     382   1 cs NETFACTINC                                     383  57    0 n
+     384   1 fm                                                385  72    0 n
+     387   1 cs VDM                                            388  77    0 n
+     389   1 fm                                                390  80    0 n
+     392   1 cs VOM                                            393  74    0 n
+     394   1 fm                                                395  44    0 n
+     396   1 fm                                                397  61    0 n
+     398   1 fm                                                399  50    0 n
+     400   1 fm                                                401  24    0 n
+     403   1 cs NETAXES                                        404  41    0 n
+     405   1 fm                                                417   1    0 n
+     419   1 cs GDPSRC                                         420  61    0 n
+     421   1 fm                                                422  37    0 n
+     423   1 fm                                                424  33    0 n
+     425   1 fm                                                426  46    0 n
+     427   1 cs SAVE                                           428  39    0 n
+     429   1 fm                                                430  52    0 n
+     432   1 cs NETINV                                         433  54    0 n
+     434   1 fm                                                435  51    0 n
+     437   1 cs CAPITALACCT                                    438  39    0 n
+     439   1 fm                                                440  36    0 n
+     441   1 fm                                                442  39    0 n
+     444   1 cs CURRENTACCT                                    445  41    0 n
+     446   1 fm                                                447  67    0 n
+     448   1 fm                                                449  56    0 n
+     450   1 fm                                                451  55    0 n
+     462   1 cs VALEXPORTS                                     463  61    0 n
+     464   1 fm                                                465  45    0 n
+     466   1 fm                                                467  57    0 n
+     469   1 cs VALIMPORTS                                     470  64    0 n
+     471   1 fm                                                472  46    0 n
+     473   1 fm                                                474  57    0 n
+     476   1 cs CIFDECOMP                                      477  58    0 n
+     478   1 fm                                                479  41    0 n
+     480   1 fm                                                481  57    0 n
+     494   1 cs OUTDISP                                        496  77    0 n
+     497   1 fm                                                498  25    0 n
+     499   1 fm                                                500  34    0 n
+     501   1 fm                                                502  36    0 n
+     503   1 fm                                                504  52    0 n
+     506   1 cs DOMSALESDISP                                   508  65    0 n
+     509   1 fm                                                510  67    0 n
+     511   1 fm                                                512  56    0 n
+     513   1 fm                                                514  40    0 n
+     516   1 cs IMPSALESDISP                                   518  77    0 n
+     519   1 fm                                                520  67    0 n
+     521   1 fm                                                522  55    0 n
+     523   1 fm                                                524  40    0 n
+     531   1 cs VALOUTPUT                                      532  59    0 n
+     533   1 fm                                                534  40    0 n
+     535   1 fm                                                536  50    0 n
+     538   1 zd                                                538  36    0 n
+     539   1 zd                                                539  39    0 n
+     541   1 cs SUFFICIENCY                                    542  72    0 n
+     543   1 fm                                                544  71    0 n
+     546   1 zd                                                546  30    0 n
+     547   1 zd                                                547  33    0 n
+     558   1 cs NVFA                                           560  62    0 n
+     561   1 fm                                                562  49    0 n
+     563   1 fm                                                564  40    0 n
+     565   1 fm                                                566  50    0 n
+     567   1 fm                                                568  50    0 n
+     570   1 fm                                                571  63    0 n
+     572   1 fm                                                573  40    0 n
+     574   1 fm                                                575  64    0 n
+     576   1 fm                                                577  64    0 n
+     579   1 cs NVPA                                           580  67    0 n
+     581   1 fm                                                582  50    0 n
+     583   1 fm                                                584  51    0 n
+     586   1 fm                                                588  30    0 n
+     589   1 fm                                                590  64    0 n
+     592   1 cs NVGA                                           593  64    0 n
+     594   1 fm                                                595  46    0 n
+     596   1 fm                                                597  46    0 n
+     599   1 fm                                                600  58    0 n
+     601   1 fm                                                602  58    0 n
+     612   1 wr GDPEXP               a                         613  64    0 n
+     614   1 wr GDPSRC               a                         615  70    0 n
+     616   1 wr EVFA                 a                         617  73    0 n
+     618   1 wr CAPITALACCT          a                         619  33    0 n
+     620   1 wr CURRENTACCT          a                         621  33    0 n
+     622   1 wr VKB                  a                         623  36    0 n
+     629   1 wr VALEXPORTS           a                         630  63    0 n
+     631   1 wr VALIMPORTS           a                         632  64    0 n
+     633   1 wr CIFDECOMP            a                         634  46    0 n
+     637   1 cs VALOWNEXPORT                                   638  69    0 n
+     639   1 fm                                                640  46    0 n
+     642   1 cs VALOWNIMPORT                                   643  72    0 n
+     644   1 fm                                                645  46    0 n
+     647   1 cs CIFOWNDECOMP                                   648  59    0 n
+     649   1 fm                                                650  44    0 n
+     652   1 wr VALOWNEXPORT         a                         653  77    0 n
+     654   1 wr VALOWNIMPORT         a                         655  74    0 n
+     656   1 wr CIFOWNDECOMP         a                         657  60    0 n
+     666   1 wr OUTDISP              a                         667  38    0 n
+     668   1 wr DOMSALESDISP         a                         669  51    0 n
+     670   1 wr IMPSALESDISP         a                         671  51    0 n
+     672   1 wr VALOUTPUT            a                         673  61    0 n
+     674   1 wr SUFFICIENCY          a                         675  68    0 n
+     682   1 wr NVFA                 a                         683  36    0 n
+     684   1 wr NVPA                 a                         685  42    0 n
+     686   1 wr NVGA                 a                         687  41    0 n
+     697   1 cs rTO                                            698  60    0 n
+     699   5 cs rTF                                            699  62    0 n
+     700   5 cs rTPD                                           700  62    0 n
+     701   5 cs rTPI                                           701  62    0 n
+     702   5 cs rTGD                                           702  60    0 n
+     703   5 cs rTGI                                           703  60    0 n
+     704   5 cs rTFD                                           704  62    0 n
+     705   5 cs rTFI                                           705  62    0 n
+     706   5 cs rTXS                                           706  62    0 n
+     707   5 cs rTMS                                           707  62    0 n
+     709   1 zd                                                709  21    0 n
+     710   1 fm                                                712  46    0 n
+     714   5 fm                                                715  50    0 n
+     717   5 fm                                                718  55    0 n
+     720   5 fm                                                721  54    0 n
+     723   5 fm                                                724  48    0 n
+     726   5 fm                                                727  48    0 n
+     729   5 fm                                                730  52    0 n
+     732   5 fm                                                733  52    0 n
+     735   5 fm                                                736  52    0 n
+     738   5 fm                                                739  52    0 n
+     741   1 zd                                                741  15    0 n
+     743   1 wr rTO                  a                         745  66    0 n
+     746   5 wr rTF                  a                         747  50    0 n
+     748   5 wr rTPD                 a                         749  60    0 n
+     750   5 wr rTPI                 a                         751  58    0 n
+     752   5 wr rTGD                 a                         753  61    0 n
+     754   5 wr rTGI                 a                         755  59    0 n
+     756   5 wr rTFD                 a                         757  60    0 n
+     758   5 wr rTFI                 a                         759  59    0 n
+     760   5 wr rTXS                 a                         761  58    0 n
+     762   5 wr rTMS                 a                         763  49    0 n
+     771   1 cs CHKMKTCLIMP                                    773  72    0 n
+     774   1 fm                                                778  45    0 n
+     780   1 cs SURPLUS                                        782  69    0 n
+     783   1 fm                                                800  73    0 n
+     802   1 cs VTWR_M                                         804  80    0 n
+     805   1 fm                                                806  46    0 n
+     808   1 cs CHKTRANS_D                                     810  78    0 n
+     811   1 fm                                                812  73    0 n
+     814   1 cs VSTT                                           815  61    0 n
+     816   1 fm                                                817  18    0 n
+     818   1 fm                                                819  25    0 n
+     821   1 cs CHKTRANS_S                                     823  79    0 n
+     824   1 fm                                                827  49    0 n
+     829   1 cs CHKVOM                                         830  39    0 n
+     831   1 fm                                                832  57    0 n
+     845   1 cs SUMTRANS_S                                     847  72    0 n
+     848   1 fm                                                849  33    0 n
+     851   1 cs SUMTRANS_D                                     853  72    0 n
+     854   1 fm                                                856  78    0 n
+     858   1 cs SUMSURPLUS                                     860  70    0 n
+     861   1 fm                                                862  46    0 n
+     864   1 cs SUMMKTCLIMP                                    866  72    0 n
+     867   1 fm                                                868  70    0 n
+     870   1 cs SUMIMBALS                                      871  73    0 n
+     872   1 fm                                                874  62    0 n
+     882   1 wr SUMIMBALS            a                         882  49    0 n
+     883   1 wr SUMTRANS_S           a                         883  49    0 n
+     884   1 wr SUMTRANS_D           a                         884  49    0 n
+     885   1 wr SUMSURPLUS           a                         885  49    0 n
+     886   1 wr SUMMKTCLIMP          a                         886  49    0 n
+     887   1 wr CHKTRANS_S           a                         887  49    0 n
+     888   1 wr CHKTRANS_D           a                         888  49    0 n
+     889   1 wr SURPLUS              a                         889  49    0 n
+     890   1 wr CHKMKTCLIMP          a                         890  49    0 n
+     891   1 wr CHKVOM               a                         891  44    0 n
+     899   1 cs SIGNEPR                                        900  61    0 n
+     901   1 cs SIGNER                                         901  54    0 n
+     902   1 cs SIGNMR                                         902  41    0 n
+     903   1 cs SIGNMTRR                                       903  75    0 n
+     904   1 cs SIGNR                                          904  34    0 n
+     905   1 cs SIGNTPR                                        905  61    0 n
+     906   1 cs SIGNTHR                                        906  56    0 n
+     907   1 cs SIGNTR                                         907  41    0 n
+     908   1 cs SIGNTRR                                        908  55    0 n
+     910   1 fm                                                911  43    0 n
+     912   1 wr SIGNER               a                         913  54    0 n
+     915   1 fm                                                916  44    0 n
+     917   1 wr SIGNEPR              a                         918  54    0 n
+     920   1 fm                                                921  44    0 n
+     922   1 wr SIGNTPR              a                         923  54    0 n
+     925   1 fm                                                926  44    0 n
+     927   1 wr SIGNTPR              a                         928  54    0 n
+     930   1 fm                                                931  44    0 n
+     932   1 wr SIGNTHR              a                         933  54    0 n
+     935   1 fm                                                936  44    0 n
+     937   1 wr SIGNTHR              a                         938  54    0 n
+     940   1 fm                                                941  39    0 n
+     942   1 wr SIGNTR               a                         943  54    0 n
+     945   1 fm                                                946  39    0 n
+     947   1 wr SIGNTR               a                         948  54    0 n
+     950   1 fm                                                951  37    0 n
+     952   1 wr SIGNR                a                         953  53    0 n
+     955   1 fm                                                956  38    0 n
+     957   1 wr SIGNR                a                         958  54    0 n
+     960   1 fm                                                961  44    0 n
+     962   1 wr SIGNTRR              a                         963  54    0 n
+     965   1 fm                                                966  38    0 n
+     967   1 wr SIGNMR               a                         968  53    0 n
+     970   1 fm                                                971  49    0 n
+     972   1 wr SIGNMTRR             a                         973  54    0 n
+     975   1 fm                                                976  43    0 n
+     977   1 wr SIGNEPR              a                         978  53    0 n
+     980   1 fm                                                981  44    0 n
+     982   1 wr SIGNTPR              a                         983  54    0 n
+     985   1 fm                                                986  44    0 n
+     987   1 wr SIGNTPR              a                         988  54    0 n
+     990   1 fm                                                991  44    0 n
+     992   1 wr SIGNTHR              a                         993  54    0 n
+     995   1 fm                                                996  44    0 n
+     997   1 wr SIGNTHR              a                         998  54    0 n
+    1000   1 fm                                               1001  39    0 n
+    1002   1 wr SIGNTR               a                        1003  54    0 n
+    1005   1 fm                                               1006  39    0 n
+    1007   1 wr SIGNTR               a                        1008  54    0 n
+    1010   1 fm                                               1011  44    0 n
+    1012   1 wr SIGNTRR              a                        1013  54    0 n
+    1015   1 fm                                               1016  44    0 n
+    1017   1 wr SIGNTRR              a                        1018  54    0 n
+    1020   1 fm                                               1021  44    0 n
+    1022   1 wr SIGNTRR              a                        1023  54    0 n
+    1027   1 cs INCOME_HHLD                                   1028  67    0 n
+    1029   1 fm                                               1033  65    0 n
+    1035   1 cs INCOME_GOV                                    1036  71    0 n
+    1037   1 fm                                               1039  41    0 n
+    1041   1 cs PRIVEXP_HHLD                                  1042  68    0 n
+    1043   1 fm                                               1044  70    0 n
+    1046   1 st TAB_INC                                       1046  65    0 n
+    1048   1 cs TABLE_HHLD                                    1049  80    0 n
+    1050   1 fm                                               1051  76    0 n
+    1052   1 fm                                               1054  51    0 n
+    1055   1 fm                                               1057  67    0 n
+    1058   1 fm                                               1059  58    0 n
+    1060   1 fm                                               1061  49    0 n
+    1063   1 cs TABLE_GOV                                     1064  77    0 n
+    1065   1 fm                                               1066  41    0 n
+    1067   1 fm                                               1068  59    0 n
+    1069   1 fm                                               1070  61    0 n
+    1071   1 fm                                               1072  47    0 n
+    1073   1 fm                                               1074  43    0 n
+    1076   1 cs CHKSAV_HHLD                                   1077  42    0 n
+    1078   1 fm                                               1080  33    0 n
+    1082   1 cs CHKSAV_GOV                                    1083  39    0 n
+    1084   1 fm                                               1086  30    0 n
+    1088   1 wr TABLE_HHLD           a                        1090  50    0 n
+    1091   5 wr TABLE_GOV            a                        1092  51    0 n
+    1093   5 wr CHKSAV_HHLD          a                        1094  30    0 n
+    1095   5 wr CHKSAV_GOV           a                        1096  31    0 n
+    1095   5 en CHKSAV_GOV           a                        1096  31    0 n
+#GPVER
+  113001
+#PRVER
+    6400
+#FINAL_LEVEL
+#CSPSIM
+nnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnn
+nnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnn
+nnnnnnnnnnnnnnnnnnnnnnnnn

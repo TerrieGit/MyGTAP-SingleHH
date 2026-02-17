@@ -1,0 +1,852 @@
+
+    TTTTTTTTTT  AAAAAAAAAA   BBBBBBB      LLLL        OOOOOOOOOO
+    TTTTTTTTTT  AAA    AAA   BBBBBBBBB    LLLL        OOOOOOOOOO
+       TTT      AAA    AAA   BBB    BBB   LLLL        OOO    OOO
+       TTT      AAA    AAA   BBB  BBB     LLLL        OOO    OOO
+       TTT      AAAAAAAAAA   BBBBBBB      LLLL        OOO    OOO
+       TTT      AAAAAAAAAA   BBB  BBB     LLLL        OOO    OOO
+       TTT      AAA    AAA   BBB    BBB   LLLL        OOO    OOO
+       TTT      AAA    AAA   BBBBBBBBB    LLLLLLLLL   OOOOOOOOOO
+       TTT      AAA    AAA   BBBBBBB      LLLLLLLLL   OOOOOOOOOO
+
+ <TABLO  Version 6.4   April 2012>                                     
+
+
+
+
+
+                     GEMPACK SOFTWARE
+     << COPYRIGHT 1987-2010:  The Impact Project and KPSOFT >>
+   
+   
+
+    +++  INFORMATION ABOUT THIS PRINT FILE  +++
+   
+ 
+ ! This file was created at 17:36:42 on 23-FEB-2020 by the program
+ !  <TABLO  Version 6.4   April 2012>
+ ! which accesses some of the routines in the GEMPACK software release
+ !  <GEMPACK Release 11.3.001   May 2014>
+ 
+ !     -------------------------------------------------------                
+ !    !            GEMPACK Software System Licence            !               
+ !    !  Source Code Licence for the GEMPACK Software System  !               
+ !    !                 Licence No.  GFM-1140                 !               
+ !    !          Licence for Release 11.0 of GEMPACK          !               
+ !    !                     Peter J Minor                     !               
+ !    !                      Boulder CO                       !               
+ !    !                          USA                          !               
+ !     -------------------------------------------------------                
+    
+
+    +++  END OF INFORMATION ABOUT THIS PRINT FILE  +++
+
+ ======================================================
+           TABLO PORTABLE   
+ ++> TABLO OPTIONS   ( --> indicates those in effect )
+ ======================================================
+
+
+
+      -----------                   ----------
+  --> F1 CHECK                      L1 CHECK
+      F2 CONDENSATION               L2 CONDENSATION
+      F3 CODE GENERATION        --> L3 CODE GENERATION
+      Mode
+      ----
+      INTERACTIVE
+      BATCH
+  --> UNSPECIFIED
+ 
+
+ ==================================================
+ ++> TABLO Input file is 'shocksmy.tab'
+ ++> This Information file is 'shocksmy'
+ ==================================================
+
+
+
+ ******************************************************************************
+ -1-
+ -->                     Starting CHECK stage
+
+ ******************************************************************************
+
+
+      1   !_______________________________SHOCKS.TAB FILE ______________________________!
+      2   !                                                                             !
+      3   !                        Global Trade Analysis Project                        !
+      4   !                         The GTAP Modeling Framework                         !
+      5   !                              version 1997                                   !
+      6   !_____________________________________________________________________________!
+      7   !-----------------------------------------------------------------------------!
+      8   ! HISTORY of SHOCKS.TAB                                                       !
+      9   !-----------------------------------------------------------------------------!
+     10   ! Version 1    July 1994   (Used in GTAP Short Course, July-August 1994)
+     11     Version 2    Nov. 1995   (Augments endowments to accommodate v.4 data.
+     12   			    Display file is also eliminated, since this
+     13                               information can be accessed via GTAPVIEW)
+     14                  Feb, 2006    removed "max size" keywords,
+     15                               turned comments into # ... # text  !
+     16    
+     17   !-----------------------------------------------------------------------------!
+     18   ! This file reads in any of the GTAP data sets and associated set
+     19     specifications and computes the shocks needed to remove existing policies.
+     20     These shocks are written to text files which may then be edited in order to
+     21     achieve partial liberalization. Or, make your own version of this
+     22     program to compute your special shocks !
+     23   !-----------------------------------------------------------------------------!
+     24    
+     25   File GTAPSETS # File with set specification #;
+     26    
+     27   Set
+     28    REG # Regions # read elements from file GTAPSETS header "H1";
+     29    HHLD # Households # read elements from file GTAPSETS header "HOU";
+     30    TRAD_COMM # Traded commodities # read elements from file GTAPSETS header "H2";
+     31    ENDW_COMM # Endowment commodities #
+     32      read elements from file GTAPSETS header "H6";
+     33    CGDS_COMM # Capital goods commodities #
+     34      read elements from file GTAPSETS header "H9";
+     35    ENDWC_COMM # Capital Endowment Commodity # (capital);
+     36    PROD_COMM # Produced commodities # = TRAD_COMM union CGDS_COMM;
+     37    DEMD_COMM # Demanded commodities # = ENDW_COMM union TRAD_COMM;
+     38    NSAV_COMM # Non-savings commodities # = DEMD_COMM union CGDS_COMM;
+     39    MARG_COMM # Margin commodities #
+     40      read elements from file GTAPSETS header "MARG";
+     41   Subset
+     42    MARG_COMM is subset of TRAD_COMM;
+     43    PROD_COMM is subset of NSAV_COMM;
+     44    ENDWC_COMM is subset of NSAV_COMM;
+     45   Set
+     46    NMRG_COMM # Non-margin commodities # = TRAD_COMM - MARG_COMM;
+     47    
+     48   !-----------------------------------------------------------------------------!
+     49   ! FILES                                                                       !
+     50   !-----------------------------------------------------------------------------!
+     51    
+     52   File GTAPDATA # The file containing all base data. #;
+     53    
+     54   !-----------------------------------------------------------------------------!
+     55   !              base revenues and expenditures at agent's prices               !
+     56   !-----------------------------------------------------------------------------!
+     57    
+     58   Coefficient
+     59    (all,i,ENDW_COMM)(all,h,HHLD)(all,r,REG)                    EVOA(i,h,r)
+     60        # Value of commodity i output in region r. #;
+     61    
+     62    (all,i,ENDW_COMM)(all,j,PROD_COMM)(all,r,REG)   EVFA(i,j,r)
+     63        # Producer expenditure on i by ind j in r, valued at agent's prices #;
+     64    
+     65    (all,i,TRAD_COMM)(all,j,PROD_COMM)(all,r,REG)   VIFA(i,j,r)
+     66        # Purchases of imported i r for use in j in region r #;
+     67    
+     68    (all,i,TRAD_COMM)(all,j,PROD_COMM)(all,r,REG)   VDFA(i,j,r)
+     69        # Purchases of domestic i r for use in j in region r #;
+     70    
+     71    (all,i,TRAD_COMM)(all,h,HHLD)(all,r,REG)                    VIPA(i,h,r)
+     72        # Private household expenditure on imported i #;
+     73    
+     74    (all,i,TRAD_COMM)(all,h,HHLD)(all,r,REG)                    VDPA(i,h,r)
+     75        # Private household expenditure on domestic i in r #;
+     76    
+     77    (all,i,TRAD_COMM)(all,r,REG)                    VIGA(i,r)
+     78        # Government household expenditure on imported i #;
+     79    
+     80    (all,i,TRAD_COMM)(all,r,REG)                    VDGA(i,r)
+     81        # Government household expenditure on domestic i in r #;
+     82    
+     83   !-----------------------------------------------------------------------------!
+     84   !               base revenues and expenditures at market prices               !
+     85   !-----------------------------------------------------------------------------!
+     86    
+     87   Coefficient
+     88    (all,i,TRAD_COMM)(all,r,REG)(all,s,REG)            VXMD(i,r,s)
+     89        # Exports of i from r to s valued at market prices (tradeables only)  #;
+     90    
+     91    (all,i,MARG_COMM)(all,r,REG)                       VST(i,r)
+     92        # Margin good i from r used for international transport (market prices) #;
+     93    
+     94    (all,i,ENDW_COMM)(all,j,PROD_COMM)(all,r,REG)      VFM(i,j,r)
+     95        # Producer expenditure on i by industry j in r, valued at market prices #;
+     96    
+     97    (all,i,TRAD_COMM)(all,j,PROD_COMM)(all,r,REG)      VIFM(i,j,r)
+     98        #  Purchases of imports i for use in j in region r #;
+     99    
+    100    (all,i,TRAD_COMM)(all,j,PROD_COMM)(all,r,REG)      VDFM(i,j,r)
+    101        # Purchases of domestic i r for use in j in region r #;
+    102    
+    103    (all,i,TRAD_COMM)(all,h,HHLD)(all,r,REG)                       VIPM(i,h,r)
+    104        # Private household expenditure on i in r #;
+    105    
+    106    (all,i,TRAD_COMM)(all,h,HHLD)(all,r,REG)                       VDPM(i,h,r)
+    107        # Private household expenditure on domestic i in r #;
+    108    
+    109    (all,i,TRAD_COMM)(all,r,REG)                       VIGM(i,r)
+    110        # Gov't household expenditure on i in r #;
+    111    
+    112    (all,i,TRAD_COMM)(all,r,REG)                       VDGM(i,r)
+    113        # Government household expenditure on domestic i in r #;
+    114    
+    115    (all,i,TRAD_COMM)(all,r,REG)(all,s,REG)             VIMS(i,r,s)
+    116        # Imports of commodity i from r to s, valued at domestic market prices #;
+    117    
+    118   !-----------------------------------------------------------------------------!
+    119   !              base revenues and expenditures at world prices                 !
+    120   !-----------------------------------------------------------------------------!
+    121    
+    122   Coefficient
+    123    (all,i,TRAD_COMM)(all,r,REG)(all,s,REG)             VXWD(i,r,s)
+    124        # Exports of i from r to s valued fob (tradeables only) #;
+    125    
+    126    (all,i,TRAD_COMM)(all,r,REG)(all,s,REG)             VIWS(i,r,s)
+    127        # Imports of commodity i from r to s, valued cif (tradeables only)  #;
+    128    
+    129   !-----------------------------------------------------------------------------!
+    130   !                   Reading basedata.                                         !
+    131   !-----------------------------------------------------------------------------!
+    132    
+    133   Read
+    134    EVOA from file GTAPDATA header "EVOA";
+    135    EVFA from file GTAPDATA header "EVFA";
+    136    VIFA from file GTAPDATA header "VIFA";
+    137    VDFA from file GTAPDATA header "VDFA";
+    138    VIPA from file GTAPDATA header "VIPA";
+    139    VDPA from file GTAPDATA header "VDPA";
+    140    VIGA from file GTAPDATA header "VIGA";
+    141    VDGA from file GTAPDATA header "VDGA";
+    142    VXMD from file GTAPDATA header "VXMD";
+    143    VST  from file GTAPDATA header "VST";
+    144    VFM  from file GTAPDATA header "VFM";
+    145    VIFM from file GTAPDATA header "VIFM";
+    146    VDFM from file GTAPDATA header "VDFM";
+    147    VIPM from file GTAPDATA header "VIPM";
+    148    VDPM from file GTAPDATA header "VDPM";
+    149    VIGM from file GTAPDATA header "VIGM";
+    150    VDGM from file GTAPDATA header "VDGM";
+    151    VIMS from file GTAPDATA header "VIMS";
+    152    VXWD from file GTAPDATA header "VXWD";
+    153    VIWS from file GTAPDATA header "VIWS";
+    154    
+    155   !-----------------------------------------------------------------------------!
+    156   !                   DERIVATIVES OF THE BASE DATA                              !
+    157   !-----------------------------------------------------------------------------!
+    158    
+    159   Zerodivide (zero_by_zero) default 0;
+    160   Zerodivide (NONZERO_BY_ZERO) default 0;
+    161    
+    162   Coefficient (all,i,DEMD_COMM)(all,j,PROD_COMM)(all,r,REG)        VFA(i,j,r)
+    163    # Producer expenditure on i by ind j in r, valued at agent's prices #;
+    164    
+    165   Formula (all,i,ENDW_COMM)(all,j,PROD_COMM)(all,r,REG)
+    166           VFA(i,j,r) = EVFA(i,j,r);
+    167    
+    168   Formula (all,i,TRAD_COMM)(all,j,PROD_COMM)(all,s,REG)
+    169           VFA(i,j,s) = VDFA(i,j,s) + VIFA(i,j,s);
+    170    
+    171   Coefficient (all,i,NSAV_COMM)(all,r,REG)                         VOA(i,r)
+    172    # Value of commodity i output in region r #;
+    173    
+    174   Formula (all,i,ENDW_COMM)(all,r,REG) VOA(i,r) = sum(h, HHLD, EVOA(i,h,r));
+    175    
+    176   Formula (all,i,PROD_COMM)(all,r,REG)
+    177           VOA(i,r) = sum{j,DEMD_COMM, VFA(j,i,r)};
+    178    
+    179   Coefficient (all,i,TRAD_COMM)(all,r,REG)                         VDM(i,r)
+    180    # Domestic sales of com i in r valued at market prices (tradeables only) #;
+    181    
+    182   Formula (all,i,TRAD_COMM)(all,r,REG)
+    183           VDM(i,r) = sum(h, HHLD, VDPM(i,h,r)) + VDGM(i,r)
+    184                    + sum{j,PROD_COMM, VDFM(i,j,r)};
+    185    
+    186   Coefficient (all,i,NSAV_COMM)(all,r,REG)
+    187       VOM(i,r) # Value of commodity i output in region r at market prices #;
+    188   Formula (all,i,ENDW_COMM)(all,r,REG)
+    189       VOM(i,r) = sum{j,PROD_COMM, VFM(i,j,r)};
+    190   Formula (all,i,MARG_COMM)(all,r,REG)
+    191       VOM(i,r) = VDM(i,r) + sum{s,REG, VXMD(i,r,s)} + VST(i,r);
+    192   Formula (all,i,NMRG_COMM)(all,r,REG)
+    193       VOM(i,r) = VDM(i,r) + sum{s,REG, VXMD(i,r,s)};
+    194   Formula (all,h,CGDS_COMM)(all,r,REG)
+    195       VOM(h,r) = VOA(h,r);
+    196    
+    197   Zerodivide default 1;
+    198    
+    199   ! GTAP's tax variables are defined as [% changes in] POWERS
+    200     (the power is the ratio of the taxed to untaxed flows).
+    201     Here we calculate:
+    202       the original value of the power:  "_L" coefficients
+    203       the % change in the power needed to eliminate the tax :  "_HAT" coefficients
+    204          ie, to make the power=1          !
+    205    
+    206   Coefficient  (all,i,NSAV_COMM)(all,r,REG)  TO_L(i,r)
+    207    # benchmark power: output (or income) tax in region r #;
+    208   Formula (all,i,NSAV_COMM)(all,r,REG)
+    209        TO_L(i,r) = VOA(i,r)/VOM(i,r);
+    210   Coefficient  (all,i,NSAV_COMM)(all,r,REG)  TO_HAT(i,r)
+    211    # shock to remove all output (or income) tax in region r #;
+    212   Formula  (all,i,NSAV_COMM)(all,r,REG)
+    213        TO_HAT(i,r) = 100*[1-TO_L(i,r)] / TO_L(i,r);
+    214   ! above formula is formula for % change:  100*[New-Old]/Old
+    215     In this case we want New=1. Suppose you wanted 20% tax, you might write:
+    216        TO_HAT(i,r) = {[1.2-TO_L(i,r)] / TO_L(i,r)} * 100;    !
+    217    
+    218   Coefficient  (all,i,ENDW_COMM)(all,j,PROD_COMM)(all,r,REG)  TF_L(i,j,r)
+    219    # benchmark power: tax on primary factor i used by j in region r #;
+    220   Formula (all,i,ENDW_COMM)(all,j,PROD_COMM)(all,r,REG)
+    221        TF_L(i,j,r) = VFA(i,j,r)/VFM(i,j,r);
+    222   Coefficient  (all,i,ENDW_COMM)(all,j,PROD_COMM)(all,r,REG)  TF_HAT(i,j,r)
+    223    # shock to remove all tax on primary factor i used by j in region r #;
+    224   Formula  (all,i,ENDW_COMM)(all,j,PROD_COMM)(all,r,REG)
+    225        TF_HAT(i,j,r) = 100*[1-TF_L(i,j,r)] / TF_L(i,j,r);
+    226    
+    227   Coefficient  (all,i,TRAD_COMM)(all,h,HHLD)(all,r,REG)  TPD_L(i,h,r)
+    228    # benchmark power: tax on private cons. of dom. #;
+    229   Formula (all,i,TRAD_COMM)(all,h,HHLD)(all,r,REG)
+    230        TPD_L(i,h,r) = VDPA(i,h,r)/VDPM(i,h,r);
+    231   Coefficient  (all,i,TRAD_COMM)(all,h,HHLD)(all,r,REG)  TPD_HAT(i,h,r)
+    232    # shock to remove all tax on private cons. of dom. #;
+    233   Formula  (all,i,TRAD_COMM)(all,h,HHLD)(all,r,REG)
+    234        TPD_HAT(i,h,r) = 100*[1-TPD_L(i,h,r)] / TPD_L(i,h,r);
+    235    
+    236   Coefficient  (all,i,TRAD_COMM)(all,h,HHLD)(all,r,REG) TPI_L(i,h,r)
+    237    # benchmark power: tax on private cons. of imp. [tpm] #;
+    238   Formula (all,i,TRAD_COMM)(all,h,HHLD)(all,r,REG)
+    239        TPI_L(i,h,r) = VIPA(i,h,r)/VIPM(i,h,r);
+    240   Coefficient  (all,i,TRAD_COMM)(all,h,HHLD)(all,r,REG) TPI_HAT(i,h,r)
+    241    # shock to remove all tax on private cons. of imp. [tpm] #;
+    242   Formula  (all,i,TRAD_COMM)(all,h,HHLD)(all,r,REG)
+    243        TPI_HAT(i,h,r) = 100*[1-TPI_L(i,h,r)] / TPI_L(i,h,r);
+    244    
+    245   Coefficient  (all,i,TRAD_COMM)(all,r,REG)  TGD_L(i,r)
+    246    # benchmark power: tax on gov cons. of dom. #;
+    247   Formula (all,i,TRAD_COMM)(all,r,REG)
+    248        TGD_L(i,r) = VDGA(i,r)/VDGM(i,r);
+    249   Coefficient  (all,i,TRAD_COMM)(all,r,REG)  TGD_HAT(i,r)
+    250    # shock to remove all tax on gov cons. of dom. #;
+    251   Formula  (all,i,TRAD_COMM)(all,r,REG)
+    252        TGD_HAT(i,r) = 100*[1-TGD_L(i,r)] / TGD_L(i,r);
+    253    
+    254   Coefficient  (all,i,TRAD_COMM)(all,r,REG) TGI_L(i,r)
+    255    # benchmark power: tax on gov cons. of dom. [tgm] #;
+    256   Formula (all,i,TRAD_COMM)(all,r,REG)
+    257        TGI_L(i,r) = VIGA(i,r)/VIGM(i,r);
+    258   Coefficient  (all,i,TRAD_COMM)(all,r,REG) TGI_HAT(i,r)
+    259    # shock to remove all tax on gov cons. of dom. [tgm] #;
+    260   Formula  (all,i,TRAD_COMM)(all,r,REG)
+    261        TGI_HAT(i,r) = 100*[1-TGI_L(i,r)] / TGI_L(i,r);
+    262    
+    263   Coefficient  (all,i,TRAD_COMM)(all,j,PROD_COMM)(all,r,REG)  TFD_L(i,j,r)
+    264    # benchmark power: tax on domestic i purchased by firm j in r #;
+    265   Formula (all,i,TRAD_COMM)(all,j,PROD_COMM)(all,r,REG)
+    266        TFD_L(i,j,r) = VDFA(i,j,r)/VDFM(i,j,r);
+    267   Coefficient  (all,i,TRAD_COMM)(all,j,PROD_COMM)(all,r,REG)  TFD_HAT(i,j,r)
+    268    # shock to remove all tax on domestic i purchased by firm j in r #;
+    269   Formula  (all,i,TRAD_COMM)(all,j,PROD_COMM)(all,r,REG)
+    270        TFD_HAT(i,j,r) = 100*[1-TFD_L(i,j,r)] / TFD_L(i,j,r);
+    271    
+    272   Coefficient  (all,i,TRAD_COMM)(all,j,PROD_COMM)(all,r,REG)  TFI_L(i,j,r)
+    273    # benchmark power: tax on imported i purchased by firm j in r [tfm] #;
+    274   Formula (all,i,TRAD_COMM)(all,j,PROD_COMM)(all,r,REG)
+    275        TFI_L(i,j,r) = VIFA(i,j,r)/VIFM(i,j,r);
+    276   Coefficient  (all,i,TRAD_COMM)(all,j,PROD_COMM)(all,r,REG)  TFI_HAT(i,j,r)
+    277    # shock to remove all tax on imported i purchased by firm j in r [tfm] #;
+    278   Formula  (all,i,TRAD_COMM)(all,j,PROD_COMM)(all,r,REG)
+    279        TFI_HAT(i,j,r) = 100*[1-TFI_L(i,j,r)] / TFI_L(i,j,r);
+    280    
+    281   Coefficient  (all,i,TRAD_COMM)(all,r,REG)(all,s,REG)  TXS_L(i,r,s)
+    282    # benchmark rate: subsidy on exports of i from r to s #;
+    283   Formula (all,i,TRAD_COMM)(all,r,REG)(all,s,REG)
+    284        TXS_L(i,r,s) = VXMD(i,r,s)/VXWD(i,r,s);
+    285   Coefficient  (all,i,TRAD_COMM)(all,r,REG)(all,s,REG)  TXS_HAT(i,r,s)
+    286    # shock to remove subsidy on exports of i from r to s  #;
+    287   Formula  (all,i,TRAD_COMM)(all,r,REG)(all,s,REG)
+    288        TXS_HAT(i,r,s) = 100*[1-TXS_L(i,r,s)] / TXS_L(i,r,s);
+    289    
+    290   Coefficient  (all,i,TRAD_COMM)(all,r,REG)(all,s,REG)  TMS_L(i,r,s)
+    291    # benchmark power: tax on imports of i from r into s #;
+    292   Formula (all,i,TRAD_COMM)(all,r,REG)(all,s,REG)
+    293        TMS_L(i,r,s) = VIMS(i,r,s)/VIWS(i,r,s);
+    294   Coefficient  (all,i,TRAD_COMM)(all,r,REG)(all,s,REG)  TMS_HAT(i,r,s)
+    295    # shock to remove tax on imports of i from r into s #;
+    296   Formula  (all,i,TRAD_COMM)(all,r,REG)(all,s,REG)
+    297        TMS_HAT(i,r,s) = 100*[1-TMS_L(i,r,s)] / TMS_L(i,r,s);
+    298    
+    299   File (new,text) TOHAT  # The file with shocks to obtain TO = 1  #;
+    300   File (new,text) TFHAT  # The file with shocks to obtain TF = 1  #;
+    301   File (new,text) TPIHAT # The file with shocks to obtain TPI = 1 #;
+    302   File (new,text) TPDHAT # The file with shocks to obtain TPD = 1 #;
+    303   File (new,text) TGIHAT # The file with shocks to obtain TGI = 1 #;
+    304   File (new,text) TGDHAT # The file with shocks to obtain TGD = 1 #;
+    305   File (new,text) TFIHAT # The file with shocks to obtain TFI = 1 #;
+    306   File (new,text) TFDHAT # The file with shocks to obtain TFD = 1 #;
+    307   File (new,text) TXSHAT # The file with shocks to obtain TXS = 1 #;
+    308   File (new,text) TMSHAT # The file with shocks to obtain TMS = 1 #;
+    309   ! nb, RunGTAP requires the logical file names above !
+    310    
+    311   Write TO_HAT to file TOHAT;
+    312   Write TF_HAT to file TFHAT;
+    313   Write TPD_HAT to file TPDHAT;
+    314   Write TPI_HAT to file TPIHAT;
+    315   Write TGD_HAT to file TGDHAT;
+    316   Write TGI_HAT to file TGIHAT;
+    317   Write TFD_HAT to file TFDHAT;
+    318   Write TFI_HAT to file TFIHAT;
+    319   Write TXS_HAT to file TXSHAT;
+    320   Write TMS_HAT to file TMSHAT;
+    321    
+    322   ! Example to write shocks to a HAR file
+    323   File (new) HARSHK # file with various shocks #;
+    324   Write TO_HAT  to file HARSHK header "TO" longname "shocks to make TO = 1";
+    325   Write TMS_HAT to file HARSHK header "TMS" longname "shocks to make TMS = 1";
+    326   ... and so on
+    327   !
+    328    
+    329   !_____________________________________________________________________________!
+    330   !                                                                             !
+    331   !_______________________End of TABLO File SHOCKS.TAB__________________________!
+
+
+
+
+ ========================
+ ++ INPUT STATEMENT TABLE
+ ========================
+
+          Starts   Syntax  Semantic
+  Number  at line  Error?   Error?            Description
+  ------------------------------------------------------------
+     1        25     no       no      FILE 'GTAPSETS            '             
+     2        27     no       no      SET 'REG         '                      
+     3        29     no       no      SET 'HHLD        '                      
+     4        30     no       no      SET 'TRAD_COMM   '                      
+     5        31     no       no      SET 'ENDW_COMM   '                      
+     6        33     no       no      SET 'CGDS_COMM   '                      
+     7        35     no       no      SET 'ENDWC_COMM  '                      
+     8        36     no       no      SET 'PROD_COMM   '                      
+     9        36     no       no      SUBSET 'TRAD_COMM   ' of 'PROD_COMM   ' 
+    10        36     no       no      SUBSET 'CGDS_COMM   ' of 'PROD_COMM   ' 
+    11        37     no       no      SET 'DEMD_COMM   '                      
+    12        37     no       no      SUBSET 'ENDW_COMM   ' of 'DEMD_COMM   ' 
+    13        37     no       no      SUBSET 'TRAD_COMM   ' of 'DEMD_COMM   ' 
+    14        38     no       no      SET 'NSAV_COMM   '                      
+    15        38     no       no      SUBSET 'DEMD_COMM   ' of 'NSAV_COMM   ' 
+    16        38     no       no      SUBSET 'CGDS_COMM   ' of 'NSAV_COMM   ' 
+    17        39     no       no      SET 'MARG_COMM   '                      
+    18        41     no       no      SUBSET 'MARG_COMM   ' of 'TRAD_COMM   ' 
+    19        43     no       no      SUBSET 'PROD_COMM   ' of 'NSAV_COMM   ' 
+    20        44     no       no      SUBSET 'ENDWC_COMM  ' of 'NSAV_COMM   ' 
+    21        45     no       no      SET 'NMRG_COMM   '                      
+    22        45     no       no      SUBSET 'NMRG_COMM   ' of 'TRAD_COMM   ' 
+    23        52     no       no      FILE 'GTAPDATA            '             
+    24        58     no       no      COEFFICIENT 'EVOA        '              
+    25        62     no       no      COEFFICIENT 'EVFA        '              
+    26        65     no       no      COEFFICIENT 'VIFA        '              
+    27        68     no       no      COEFFICIENT 'VDFA        '              
+    28        71     no       no      COEFFICIENT 'VIPA        '              
+    29        74     no       no      COEFFICIENT 'VDPA        '              
+    30        77     no       no      COEFFICIENT 'VIGA        '              
+    31        80     no       no      COEFFICIENT 'VDGA        '              
+    32        87     no       no      COEFFICIENT 'VXMD        '              
+    33        91     no       no      COEFFICIENT 'VST         '              
+    34        94     no       no      COEFFICIENT 'VFM         '              
+    35        97     no       no      COEFFICIENT 'VIFM        '              
+    36       100     no       no      COEFFICIENT 'VDFM        '              
+    37       103     no       no      COEFFICIENT 'VIPM        '              
+    38       106     no       no      COEFFICIENT 'VDPM        '              
+    39       109     no       no      COEFFICIENT 'VIGM        '              
+    40       112     no       no      COEFFICIENT 'VDGM        '              
+    41       115     no       no      COEFFICIENT 'VIMS        '              
+    42       122     no       no      COEFFICIENT 'VXWD        '              
+    43       126     no       no      COEFFICIENT 'VIWS        '              
+    44       133     no       no      READ into 'EVOA        '                
+    45       135     no       no      READ into 'EVFA        '                
+    46       136     no       no      READ into 'VIFA        '                
+    47       137     no       no      READ into 'VDFA        '                
+    48       138     no       no      READ into 'VIPA        '                
+    49       139     no       no      READ into 'VDPA        '                
+    50       140     no       no      READ into 'VIGA        '                
+    51       141     no       no      READ into 'VDGA        '                
+    52       142     no       no      READ into 'VXMD        '                
+    53       143     no       no      READ into 'VST         '                
+    54       144     no       no      READ into 'VFM         '                
+    55       145     no       no      READ into 'VIFM        '                
+    56       146     no       no      READ into 'VDFM        '                
+    57       147     no       no      READ into 'VIPM        '                
+    58       148     no       no      READ into 'VDPM        '                
+    59       149     no       no      READ into 'VIGM        '                
+    60       150     no       no      READ into 'VDGM        '                
+    61       151     no       no      READ into 'VIMS        '                
+    62       152     no       no      READ into 'VXWD        '                
+    63       153     no       no      READ into 'VIWS        '                
+    64       159     no       no      ZERODIVIDE instruction                  
+    65       160     no       no      ZERODIVIDE instruction                  
+    66       162     no       no      COEFFICIENT 'VFA         '              
+    67       165     no       no      Formula for "VFA"                       
+    68       168     no       no      Formula for "VFA"                       
+    69       171     no       no      COEFFICIENT 'VOA         '              
+    70       174     no       no      Formula for "VOA"                       
+    71       176     no       no      Formula for "VOA"                       
+    72       179     no       no      COEFFICIENT 'VDM         '              
+    73       182     no       no      Formula for "VDM"                       
+    74       186     no       no      COEFFICIENT 'VOM         '              
+    75       188     no       no      Formula for "VOM"                       
+    76       190     no       no      Formula for "VOM"                       
+    77       192     no       no      Formula for "VOM"                       
+    78       194     no       no      Formula for "VOM"                       
+    79       197     no       no      ZERODIVIDE instruction                  
+    80       206     no       no      COEFFICIENT 'TO_L        '              
+    81       208     no       no      Formula for "TO_L"                      
+    82       210     no       no      COEFFICIENT 'TO_HAT      '              
+    83       212     no       no      Formula for "TO_HAT"                    
+    84       218     no       no      COEFFICIENT 'TF_L        '              
+    85       220     no       no      Formula for "TF_L"                      
+    86       222     no       no      COEFFICIENT 'TF_HAT      '              
+    87       224     no       no      Formula for "TF_HAT"                    
+    88       227     no       no      COEFFICIENT 'TPD_L       '              
+    89       229     no       no      Formula for "TPD_L"                     
+    90       231     no       no      COEFFICIENT 'TPD_HAT     '              
+    91       233     no       no      Formula for "TPD_HAT"                   
+    92       236     no       no      COEFFICIENT 'TPI_L       '              
+    93       238     no       no      Formula for "TPI_L"                     
+    94       240     no       no      COEFFICIENT 'TPI_HAT     '              
+    95       242     no       no      Formula for "TPI_HAT"                   
+    96       245     no       no      COEFFICIENT 'TGD_L       '              
+    97       247     no       no      Formula for "TGD_L"                     
+    98       249     no       no      COEFFICIENT 'TGD_HAT     '              
+    99       251     no       no      Formula for "TGD_HAT"                   
+   100       254     no       no      COEFFICIENT 'TGI_L       '              
+   101       256     no       no      Formula for "TGI_L"                     
+   102       258     no       no      COEFFICIENT 'TGI_HAT     '              
+   103       260     no       no      Formula for "TGI_HAT"                   
+   104       263     no       no      COEFFICIENT 'TFD_L       '              
+   105       265     no       no      Formula for "TFD_L"                     
+   106       267     no       no      COEFFICIENT 'TFD_HAT     '              
+   107       269     no       no      Formula for "TFD_HAT"                   
+   108       272     no       no      COEFFICIENT 'TFI_L       '              
+   109       274     no       no      Formula for "TFI_L"                     
+   110       276     no       no      COEFFICIENT 'TFI_HAT     '              
+   111       278     no       no      Formula for "TFI_HAT"                   
+   112       281     no       no      COEFFICIENT 'TXS_L       '              
+   113       283     no       no      Formula for "TXS_L"                     
+   114       285     no       no      COEFFICIENT 'TXS_HAT     '              
+   115       287     no       no      Formula for "TXS_HAT"                   
+   116       290     no       no      COEFFICIENT 'TMS_L       '              
+   117       292     no       no      Formula for "TMS_L"                     
+   118       294     no       no      COEFFICIENT 'TMS_HAT     '              
+   119       296     no       no      Formula for "TMS_HAT"                   
+   120       299     no       no      FILE 'TOHAT               '             
+   121       300     no       no      FILE 'TFHAT               '             
+   122       301     no       no      FILE 'TPIHAT              '             
+   123       302     no       no      FILE 'TPDHAT              '             
+   124       303     no       no      FILE 'TGIHAT              '             
+   125       304     no       no      FILE 'TGDHAT              '             
+   126       305     no       no      FILE 'TFIHAT              '             
+   127       306     no       no      FILE 'TFDHAT              '             
+   128       307     no       no      FILE 'TXSHAT              '             
+   129       308     no       no      FILE 'TMSHAT              '             
+   130       311     no       no      WRITE from 'TO_HAT      '               
+   131       312     no       no      WRITE from 'TF_HAT      '               
+   132       313     no       no      WRITE from 'TPD_HAT     '               
+   133       314     no       no      WRITE from 'TPI_HAT     '               
+   134       315     no       no      WRITE from 'TGD_HAT     '               
+   135       316     no       no      WRITE from 'TGI_HAT     '               
+   136       317     no       no      WRITE from 'TFD_HAT     '               
+   137       318     no       no      WRITE from 'TFI_HAT     '               
+   138       319     no       no      WRITE from 'TXS_HAT     '               
+   139       320     no       no      WRITE from 'TMS_HAT     '               
+
+
+
+
+ ============
+ ++ SET TABLE
+ ============
+
+                    Defined   [Max] Inter             Set numbers this
+  Number    Name    at line    Size temp? Elements    is subset of
+  ---------------------------------------------------------------------
+     1  REG            27 [       0]  no   read 
+     2  HHLD           29 [       0]  no   read 
+     3  TRAD_COMM      30 [       0]  no   read      7     8
+     4  ENDW_COMM      31 [       0]  no   read      8
+     5  CGDS_COMM      33 [       0]  no   read      7     9
+     6  ENDWC_COMM     35         1   no   fixed     9
+     7  PROD_COMM      36 [       0]  no   other     9
+     8  DEMD_COMM      37 [       0]  no   other     9
+     9  NSAV_COMM      38 [       0]  no   other
+    10  MARG_COMM      39 [       0]  no   read      3
+    11  NMRG_COMM      45 [       0]  no   other     3
+
+
+
+
+ ===============
+ ++ SUBSET TABLE
+ ===============
+ 
+SSNO=1. Set 3 "TRAD_COMM" is subset of set 7 "PROD_COMM"
+SSNO=2. Set 5 "CGDS_COMM" is subset of set 7 "PROD_COMM"
+SSNO=3. Set 4 "ENDW_COMM" is subset of set 8 "DEMD_COMM"
+SSNO=4. Set 3 "TRAD_COMM" is subset of set 8 "DEMD_COMM"
+SSNO=5. Set 8 "DEMD_COMM" is subset of set 9 "NSAV_COMM"
+SSNO=6. Set 5 "CGDS_COMM" is subset of set 9 "NSAV_COMM"
+SSNO=7. Set 10 "MARG_COMM" is subset of set 3 "TRAD_COMM"
+SSNO=8. Set 7 "PROD_COMM" is subset of set 9 "NSAV_COMM"
+SSNO=9. Set 6 "ENDWC_COMM" is subset of set 9 "NSAV_COMM"
+SSNO=10. Set 11 "NMRG_COMM" is subset of set 3 "TRAD_COMM"
+
+
+
+
+ =============
+ ++ FILE TABLE
+ =============
+
+         Logical            Defined  File  File
+  Number  Name              at line  Type  Form  Actual name (if given)
+  --------------------------------------------------------------------
+     1  GTAPSETS                25    old  head
+     2  GTAPDATA                52    old  head
+     3  TOHAT                  299    new  text
+     4  TFHAT                  300    new  text
+     5  TPIHAT                 301    new  text
+     6  TPDHAT                 302    new  text
+     7  TGIHAT                 303    new  text
+     8  TGDHAT                 304    new  text
+     9  TFIHAT                 305    new  text
+    10  TFDHAT                 306    new  text
+    11  TXSHAT                 307    new  text
+    12  TMSHAT                 308    new  text
+
+
+
+
+ ====================
+ ++ COEFFICIENT TABLE
+ ====================
+
+                        Defined  No            Arguments range
+  Number    Name        at line  Args Type     over sets numbered
+  ------------------------------------------------------------
+     1    EVOA              58     3  real       4     2     1
+     2    EVFA              62     3  real       4     7     1
+     3    VIFA              65     3  real       3     7     1
+     4    VDFA              68     3  real       3     7     1
+     5    VIPA              71     3  real       3     2     1
+     6    VDPA              74     3  real       3     2     1
+     7    VIGA              77     2  real       3     1
+     8    VDGA              80     2  real       3     1
+     9    VXMD              87     3  real       3     1     1
+    10    VST               91     2  real      10     1
+    11    VFM               94     3  real       4     7     1
+    12    VIFM              97     3  real       3     7     1
+    13    VDFM             100     3  real       3     7     1
+    14    VIPM             103     3  real       3     2     1
+    15    VDPM             106     3  real       3     2     1
+    16    VIGM             109     2  real       3     1
+    17    VDGM             112     2  real       3     1
+    18    VIMS             115     3  real       3     1     1
+    19    VXWD             122     3  real       3     1     1
+    20    VIWS             126     3  real       3     1     1
+    21    VFA              162     3  real       8     7     1
+    22    VOA              171     2  real       9     1
+    23    VDM              179     2  real       3     1
+    24    VOM              186     2  real       9     1
+    25    TO_L             206     2  real       9     1
+    26    TO_HAT           210     2  real       9     1
+    27    TF_L             218     3  real       4     7     1
+    28    TF_HAT           222     3  real       4     7     1
+    29    TPD_L            227     3  real       3     2     1
+    30    TPD_HAT          231     3  real       3     2     1
+    31    TPI_L            236     3  real       3     2     1
+    32    TPI_HAT          240     3  real       3     2     1
+    33    TGD_L            245     2  real       3     1
+    34    TGD_HAT          249     2  real       3     1
+    35    TGI_L            254     2  real       3     1
+    36    TGI_HAT          258     2  real       3     1
+    37    TFD_L            263     3  real       3     7     1
+    38    TFD_HAT          267     3  real       3     7     1
+    39    TFI_L            272     3  real       3     7     1
+    40    TFI_HAT          276     3  real       3     7     1
+    41    TXS_L            281     3  real       3     1     1
+    42    TXS_HAT          285     3  real       3     1     1
+    43    TMS_L            290     3  real       3     1     1
+    44    TMS_HAT          294     3  real       3     1     1
+
+
+
+
+ ================
+ ++ FORMULA TABLE
+ ================
+
+           Defined   Semantic      LHS                RHS
+  Number   at line    Error?    coefficient       coefficient numbers
+  -------------------------------------------------------------------
+     1         165     no      VFA                2
+     2         168     no      VFA                4     3
+     3         174     no      VOA                1
+     4         176     no      VOA               21
+     5         182     no      VDM               15    17    13
+     6         188     no      VOM               11
+     7         190     no      VOM               23     9    10
+     8         192     no      VOM               23     9
+     9         194     no      VOM               22
+    10         208     no      TO_L              22    24
+    11         212     no      TO_HAT            25
+    12         220     no      TF_L              21    11
+    13         224     no      TF_HAT            27
+    14         229     no      TPD_L              6    15
+    15         233     no      TPD_HAT           29
+    16         238     no      TPI_L              5    14
+    17         242     no      TPI_HAT           31
+    18         247     no      TGD_L              8    17
+    19         251     no      TGD_HAT           33
+    20         256     no      TGI_L              7    16
+    21         260     no      TGI_HAT           35
+    22         265     no      TFD_L              4    13
+    23         269     no      TFD_HAT           37
+    24         274     no      TFI_L              3    12
+    25         278     no      TFI_HAT           39
+    26         283     no      TXS_L              9    19
+    27         287     no      TXS_HAT           41
+    28         292     no      TMS_L             18    20
+    29         296     no      TMS_HAT           43
+
+
+
+
+ =============
+ ++ READ TABLE
+ =============
+
+           Defined    Semantic  Coefficient   File number
+  Number   at line     Error?    read into     read from   Header
+  ---------------------------------------------------------------
+     1        133       no      EVOA                2       EVOA
+     2        135       no      EVFA                2       EVFA
+     3        136       no      VIFA                2       VIFA
+     4        137       no      VDFA                2       VDFA
+     5        138       no      VIPA                2       VIPA
+     6        139       no      VDPA                2       VDPA
+     7        140       no      VIGA                2       VIGA
+     8        141       no      VDGA                2       VDGA
+     9        142       no      VXMD                2       VXMD
+    10        143       no      VST                 2       VST 
+    11        144       no      VFM                 2       VFM 
+    12        145       no      VIFM                2       VIFM
+    13        146       no      VDFM                2       VDFM
+    14        147       no      VIPM                2       VIPM
+    15        148       no      VDPM                2       VDPM
+    16        149       no      VIGM                2       VIGM
+    17        150       no      VDGM                2       VDGM
+    18        151       no      VIMS                2       VIMS
+    19        152       no      VXWD                2       VXWD
+    20        153       no      VIWS                2       VIWS
+
+
+
+
+ ==============
+ ++ WRITE TABLE
+ ==============
+
+        Defined   Sem      Coeff        Write
+ Number at line  Error?   written       file   Header     Long Name
+ --------------------------------------------------------------------------------
+     1      311   no      TO_HAT            3          Not defined by the user
+     2      312   no      TF_HAT            4          Not defined by the user
+     3      313   no      TPD_HAT           6          Not defined by the user
+     4      314   no      TPI_HAT           5          Not defined by the user
+     5      315   no      TGD_HAT           8          Not defined by the user
+     6      316   no      TGI_HAT           7          Not defined by the user
+     7      317   no      TFD_HAT          10          Not defined by the user
+     8      318   no      TFI_HAT           9          Not defined by the user
+     9      319   no      TXS_HAT          11          Not defined by the user
+    10      320   no      TMS_HAT          12          Not defined by the user
+
+
+
+
+ ===================
+ ++ ZERODIVIDE TABLE
+ ===================
+
+           Defined          Coefficient or
+  Number   at line   Type   real value specified
+  -----------------------------------------------
+     1        159     ZDZ   0                   
+     2        160     NDZ   0                   
+     3        197     ZDZ   1                   
+
+
+   
+ ======================
+ ++ INPUT CHECK SUMMARY
+ ======================
+ 
+ Total number of statements is 139.
+ There are NO syntax errors or semantic problems.
+
+
+ ******************************************************************************
+ -3-
+ -->                     Starting CODE GENERATION
+
+ ******************************************************************************
+
+
+
+  CODE OPTIONS CHOSEN
+  -------------------
+ 
+ 
+                         TABLO PORTABLE
+               CODE OPTIONS   ( --> indicates those in effect )
+ 
+      NEQ Do no equations           PGS Prepare output for GEMSIM
+      NDS Do no displays        --> WFP Write a Fortran Program
+      NWR Do no writes                    (i.e. a TABLO-generated program)
+                                --> FC5 Fast Compile TG-prog under LF95
+      ACC All comment lines in      DMS Allow simulations even
+             code                         though are no UPDATEs
+                                --> CIN Code file name same as
+                                          Information file name
+                                    CDM Old option. Has no effect.
+                                    NRZ No run-time reports re use of
+                                           ZERODIVIDE default values
+                                    NXS No "extra" statements allowed
+ 
+  Select an option   :  <opt>      Deselect an option      : -<opt>
+  Help for an option : ?<opt>      Help on all options     : ??
+  Redisplay options  : /           Finish option selection : Carriage return
+
+  END OF CODE OPTIONS CHOSEN
+  --------------------------
+  
+ ! ( Program is
+ ! 'D:\Projects\v10Tools\MyGTAP\to public\single\rungtapsh32\shocksmy.for'.)
+ (Total number of lines of code is 3900.)
+ 
+ This program
+     o can carry out 10 WRITEs
+ 
+ MXGSRS = 0, MXGSIS = 0.
+ MXGSLG = 0, MXGSIC = 0.
+ 
+ MXGSOP = 0, MXGSIN = 0.
+ MXGSRC = 0, MXGSNS=0.
+ ! (Model Information file is
+ ! 'D:\Projects\v10Tools\MyGTAP\to public\single\rungtapsh32\shocksmy.min'.)
+ 
+ (Total number of programs written is 1.)
+ 
+ *******************************************************************
+ Successful completion of TABLO.
+ The program is
+   'shocksmy.for'.
+ 
+ This program
+     o can carry out 10 WRITEs
+ 
+ *******************************************************************

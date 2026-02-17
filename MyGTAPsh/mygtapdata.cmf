@@ -1,0 +1,12 @@
+auxiliary files = mygtapdata;
+check-on-read elements = no;
+cpu = yes;
+log only = yes;
+! Input files:
+File GTAPSETS = sets.har;      ! Original GTAP sets file
+File GTAPDATA = baseorig.har;  ! Base data
+File EXTDATA  = extradata.har;   ! Old parameters file
+
+! Output files:
+File NEWDATA   = basedatanew.har; ! New parameters file
+

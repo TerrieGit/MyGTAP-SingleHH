@@ -1,0 +1,362 @@
+#FILES
+Logical Name         In/Out Ud  Type Actual Name
+GTAPSETS              In     n  HAR
+ File with set specification
+GTAPDATA              In     n  HAR
+ The file containing all base data.
+TOHAT                 Out    n  TXT
+ The file with shocks to obtain TO = 1
+TFHAT                 Out    n  TXT
+ The file with shocks to obtain TF = 1
+TPIHAT                Out    n  TXT
+ The file with shocks to obtain TPI = 1
+TPDHAT                Out    n  TXT
+ The file with shocks to obtain TPD = 1
+TGIHAT                Out    n  TXT
+ The file with shocks to obtain TGI = 1
+TGDHAT                Out    n  TXT
+ The file with shocks to obtain TGD = 1
+TFIHAT                Out    n  TXT
+ The file with shocks to obtain TFI = 1
+TFDHAT                Out    n  TXT
+ The file with shocks to obtain TFD = 1
+TXSHAT                Out    n  TXT
+ The file with shocks to obtain TXS = 1
+TMSHAT                Out    n  TXT
+ The file with shocks to obtain TMS = 1
+(Display)             Out    n  DIS
+(Solution)            Out    n  SL4
+(Equations)           Out    n  EQ4
+#TABFILE
+shocksmy.tab
+#TMDATE
+at 21:20:58 on 19-JAN-2016
+#STIFILE
+TABmate.sif
+#SETS
+   11
+    1 REG             -1  u Regions
+    2 HHLD            -1  u Households
+    3 TRAD_COMM       -1  u Traded commodities
+    4 ENDW_COMM       -1  u Endowment commodities
+    5 CGDS_COMM       -1  u Capital goods commodities
+    6 ENDWC_COMM       1  k Capital Endowment Commodity
+capital     
+    7 PROD_COMM       -1  u Produced commodities
+    8 DEMD_COMM       -1  u Demanded commodities
+    9 NSAV_COMM       -1  u Non-savings commodities
+   10 MARG_COMM       -1  u Margin commodities
+   11 NMRG_COMM       -1  u Non-margin commodities
+#VARIABLES
+         0
+#SUBSETS
+    10
+     1     3     7
+     2     5     7
+     3     4     8
+     4     3     8
+     5     8     9
+     6     5     9
+     7    10     3
+     8     7     9
+     9     6     9
+    10    11     3
+#COEFFICIENTS
+   44
+    1 EVOA            3 r y n  Value of commodity i output in region r.
+    4    2    1
+    2 EVFA            3 r y n  Producer expenditure on i by ind j in r, valued at agent's prices
+    4    7    1
+    3 VIFA            3 r y n  Purchases of imported i r for use in j in region r
+    3    7    1
+    4 VDFA            3 r y n  Purchases of domestic i r for use in j in region r
+    3    7    1
+    5 VIPA            3 r y n  Private household expenditure on imported i
+    3    2    1
+    6 VDPA            3 r y n  Private household expenditure on domestic i in r
+    3    2    1
+    7 VIGA            2 r y n  Government household expenditure on imported i
+    3    1
+    8 VDGA            2 r y n  Government household expenditure on domestic i in r
+    3    1
+    9 VXMD            3 r y n  Exports of i from r to s valued at market prices (tradeables only)
+    3    1    1
+   10 VST             2 r y n  Margin good i from r used for international transport (market prices)
+   10    1
+   11 VFM             3 r y n  Producer expenditure on i by industry j in r, valued at market prices
+    4    7    1
+   12 VIFM            3 r y n   Purchases of imports i for use in j in region r
+    3    7    1
+   13 VDFM            3 r y n  Purchases of domestic i r for use in j in region r
+    3    7    1
+   14 VIPM            3 r y n  Private household expenditure on i in r
+    3    2    1
+   15 VDPM            3 r y n  Private household expenditure on domestic i in r
+    3    2    1
+   16 VIGM            2 r y n  Gov't household expenditure on i in r
+    3    1
+   17 VDGM            2 r y n  Government household expenditure on domestic i in r
+    3    1
+   18 VIMS            3 r y n  Imports of commodity i from r to s, valued at domestic market prices
+    3    1    1
+   19 VXWD            3 r y n  Exports of i from r to s valued fob (tradeables only)
+    3    1    1
+   20 VIWS            3 r y n  Imports of commodity i from r to s, valued cif (tradeables only)
+    3    1    1
+   21 VFA             3 r n n  Producer expenditure on i by ind j in r, valued at agent's prices
+    8    7    1
+   22 VOA             2 r n n  Value of commodity i output in region r
+    9    1
+   23 VDM             2 r n n  Domestic sales of com i in r valued at market prices (tradeables only)
+    3    1
+   24 VOM             2 r n n  Value of commodity i output in region r at market prices
+    9    1
+   25 TO_L            2 r n n  benchmark power: output (or income) tax in region r
+    9    1
+   26 TO_HAT          2 r n n  shock to remove all output (or income) tax in region r
+    9    1
+   27 TF_L            3 r n n  benchmark power: tax on primary factor i used by j in region r
+    4    7    1
+   28 TF_HAT          3 r n n  shock to remove all tax on primary factor i used by j in region r
+    4    7    1
+   29 TPD_L           3 r n n  benchmark power: tax on private cons. of dom.
+    3    2    1
+   30 TPD_HAT         3 r n n  shock to remove all tax on private cons. of dom.
+    3    2    1
+   31 TPI_L           3 r n n  benchmark power: tax on private cons. of imp. [tpm]
+    3    2    1
+   32 TPI_HAT         3 r n n  shock to remove all tax on private cons. of imp. [tpm]
+    3    2    1
+   33 TGD_L           2 r n n  benchmark power: tax on gov cons. of dom.
+    3    1
+   34 TGD_HAT         2 r n n  shock to remove all tax on gov cons. of dom.
+    3    1
+   35 TGI_L           2 r n n  benchmark power: tax on gov cons. of dom. [tgm]
+    3    1
+   36 TGI_HAT         2 r n n  shock to remove all tax on gov cons. of dom. [tgm]
+    3    1
+   37 TFD_L           3 r n n  benchmark power: tax on domestic i purchased by firm j in r
+    3    7    1
+   38 TFD_HAT         3 r n n  shock to remove all tax on domestic i purchased by firm j in r
+    3    7    1
+   39 TFI_L           3 r n n  benchmark power: tax on imported i purchased by firm j in r [tfm]
+    3    7    1
+   40 TFI_HAT         3 r n n  shock to remove all tax on imported i purchased by firm j in r [tfm]
+    3    7    1
+   41 TXS_L           3 r n n  benchmark rate: subsidy on exports of i from r to s
+    3    1    1
+   42 TXS_HAT         3 r n n  shock to remove subsidy on exports of i from r to s
+    3    1    1
+   43 TMS_L           3 r n n  benchmark power: tax on imports of i from r into s
+    3    1    1
+   44 TMS_HAT         3 r n n  shock to remove tax on imports of i from r into s
+    3    1    1
+#EQUATIONS
+    0
+#READS
+   20
+    1     1 EVOA              2 GTAPDATA             EVOA a h     3
+     4     2     1
+    2     2 EVFA              2 GTAPDATA             EVFA a h     3
+     4     7     1
+    3     3 VIFA              2 GTAPDATA             VIFA a h     3
+     3     7     1
+    4     4 VDFA              2 GTAPDATA             VDFA a h     3
+     3     7     1
+    5     5 VIPA              2 GTAPDATA             VIPA a h     3
+     3     2     1
+    6     6 VDPA              2 GTAPDATA             VDPA a h     3
+     3     2     1
+    7     7 VIGA              2 GTAPDATA             VIGA a h     2
+     3     1
+    8     8 VDGA              2 GTAPDATA             VDGA a h     2
+     3     1
+    9     9 VXMD              2 GTAPDATA             VXMD a h     3
+     3     1     1
+   10    10 VST               2 GTAPDATA             VST  a h     2
+    10     1
+   11    11 VFM               2 GTAPDATA             VFM  a h     3
+     4     7     1
+   12    12 VIFM              2 GTAPDATA             VIFM a h     3
+     3     7     1
+   13    13 VDFM              2 GTAPDATA             VDFM a h     3
+     3     7     1
+   14    14 VIPM              2 GTAPDATA             VIPM a h     3
+     3     2     1
+   15    15 VDPM              2 GTAPDATA             VDPM a h     3
+     3     2     1
+   16    16 VIGM              2 GTAPDATA             VIGM a h     2
+     3     1
+   17    17 VDGM              2 GTAPDATA             VDGM a h     2
+     3     1
+   18    18 VIMS              2 GTAPDATA             VIMS a h     3
+     3     1     1
+   19    19 VXWD              2 GTAPDATA             VXWD a h     3
+     3     1     1
+   20    20 VIWS              2 GTAPDATA             VIWS a h     3
+     3     1     1
+#READ(EXTRA)
+    6
+    1 el
+ REG          GTAPSETS             H1  
+    2 el
+ HHLD         GTAPSETS             HOU 
+    3 el
+ TRAD_COMM    GTAPSETS             H2  
+    4 el
+ ENDW_COMM    GTAPSETS             H6  
+    5 el
+ CGDS_COMM    GTAPSETS             H9  
+    6 el
+ MARG_COMM    GTAPSETS             MARG
+#NCVARIABLES
+    0
+#STATEMENTS
+      25   1 fl                                                 25  46    0 n
+      27   1 st REG                                             28  62    0 n
+      29   2 st HHLD                                            29  67    0 n
+      30   2 st TRAD_COMM                                       30  79    0 n
+      31   2 st ENDW_COMM                                       32  48    0 n
+      33   2 st CGDS_COMM                                       34  48    0 n
+      35   2 st ENDWC_COMM                                      35  54    0 n
+      36   2 st PROD_COMM                                       36  64    0 n
+      36   2 ss                                                 36  64    0 n
+      36   2 ss                                                 36  64    0 n
+      37   2 st DEMD_COMM                                       37  64    0 n
+      37   2 ss                                                 37  64    0 n
+      37   2 ss                                                 37  64    0 n
+      38   2 st NSAV_COMM                                       38  67    0 n
+      38   2 ss                                                 38  67    0 n
+      38   2 ss                                                 38  67    0 n
+      39   2 st MARG_COMM                                       40  50    0 n
+      41   1 ss                                                 42  34    0 n
+      43   2 ss                                                 43  34    0 n
+      44   2 ss                                                 44  35    0 n
+      45   1 st NMRG_COMM                                       46  62    0 n
+      45   1 ss                                                 46  62    0 n
+      52   1 fl                                                 52  53    0 n
+      58   1 cs EVOA                                            60  50    0 n
+      62   2 cs EVFA                                            63  75    0 n
+      65   2 cs VIFA                                            66  60    0 n
+      68   2 cs VDFA                                            69  60    0 n
+      71   2 cs VIPA                                            72  53    0 n
+      74   2 cs VDPA                                            75  58    0 n
+      77   2 cs VIGA                                            78  56    0 n
+      80   2 cs VDGA                                            81  61    0 n
+      87   1 cs VXMD                                            89  77    0 n
+      91   2 cs VST                                             92  79    0 n
+      94   2 cs VFM                                             95  79    0 n
+      97   2 cs VIFM                                            98  58    0 n
+     100   2 cs VDFM                                           101  60    0 n
+     103   2 cs VIPM                                           104  49    0 n
+     106   2 cs VDPM                                           107  58    0 n
+     109   2 cs VIGM                                           110  47    0 n
+     112   2 cs VDGM                                           113  61    0 n
+     115   2 cs VIMS                                           116  78    0 n
+     122   1 cs VXWD                                           124  63    0 n
+     126   2 cs VIWS                                           127  75    0 n
+     133   1 rd EVOA                 a                         134  39    0 n
+     135   2 rd EVFA                 a                         135  39    0 n
+     136   2 rd VIFA                 a                         136  39    0 n
+     137   2 rd VDFA                 a                         137  39    0 n
+     138   2 rd VIPA                 a                         138  39    0 n
+     139   2 rd VDPA                 a                         139  39    0 n
+     140   2 rd VIGA                 a                         140  39    0 n
+     141   2 rd VDGA                 a                         141  39    0 n
+     142   2 rd VXMD                 a                         142  39    0 n
+     143   2 rd VST                  a                         143  38    0 n
+     144   2 rd VFM                  a                         144  38    0 n
+     145   2 rd VIFM                 a                         145  39    0 n
+     146   2 rd VDFM                 a                         146  39    0 n
+     147   2 rd VIPM                 a                         147  39    0 n
+     148   2 rd VDPM                 a                         148  39    0 n
+     149   2 rd VIGM                 a                         149  39    0 n
+     150   2 rd VDGM                 a                         150  39    0 n
+     151   2 rd VIMS                 a                         151  39    0 n
+     152   2 rd VXWD                 a                         152  39    0 n
+     153   2 rd VIWS                 a                         153  39    0 n
+     159   1 zd                                                159  36    0 n
+     160   1 zd                                                160  39    0 n
+     162   1 cs VFA                                            163  71    0 n
+     165   1 fm                                                166  33    0 n
+     168   1 fm                                                169  47    0 n
+     171   1 cs VOA                                            172  45    0 n
+     174   1 fm                                                174  74    0 n
+     176   1 fm                                                177  48    0 n
+     179   1 cs VDM                                            180  76    0 n
+     182   1 fm                                                184  49    0 n
+     186   1 cs VOM                                            187  74    0 n
+     188   1 fm                                                189  44    0 n
+     190   1 fm                                                191  61    0 n
+     192   1 fm                                                193  50    0 n
+     194   1 fm                                                195  24    0 n
+     197   1 zd                                                197  21    0 n
+     206   1 cs TO_L                                           207  57    0 n
+     208   1 fm                                                209  35    0 n
+     210   1 cs TO_HAT                                         211  60    0 n
+     212   1 fm                                                213  49    0 n
+     218   1 cs TF_L                                           219  68    0 n
+     220   1 fm                                                221  41    0 n
+     222   1 cs TF_HAT                                         223  71    0 n
+     224   1 fm                                                225  55    0 n
+     227   1 cs TPD_L                                          228  51    0 n
+     229   1 fm                                                230  44    0 n
+     231   1 cs TPD_HAT                                        232  54    0 n
+     233   1 fm                                                234  58    0 n
+     236   1 cs TPI_L                                          237  57    0 n
+     238   1 fm                                                239  44    0 n
+     240   1 cs TPI_HAT                                        241  60    0 n
+     242   1 fm                                                243  58    0 n
+     245   1 cs TGD_L                                          246  47    0 n
+     247   1 fm                                                248  38    0 n
+     249   1 cs TGD_HAT                                        250  50    0 n
+     251   1 fm                                                252  52    0 n
+     254   1 cs TGI_L                                          255  53    0 n
+     256   1 fm                                                257  38    0 n
+     258   1 cs TGI_HAT                                        259  56    0 n
+     260   1 fm                                                261  52    0 n
+     263   1 cs TFD_L                                          264  65    0 n
+     265   1 fm                                                266  44    0 n
+     267   1 cs TFD_HAT                                        268  68    0 n
+     269   1 fm                                                270  58    0 n
+     272   1 cs TFI_L                                          273  71    0 n
+     274   1 fm                                                275  44    0 n
+     276   1 cs TFI_HAT                                        277  74    0 n
+     278   1 fm                                                279  58    0 n
+     281   1 cs TXS_L                                          282  57    0 n
+     283   1 fm                                                284  44    0 n
+     285   1 cs TXS_HAT                                        286  58    0 n
+     287   1 fm                                                288  58    0 n
+     290   1 cs TMS_L                                          291  56    0 n
+     292   1 fm                                                293  44    0 n
+     294   1 cs TMS_HAT                                        295  55    0 n
+     296   1 fm                                                297  58    0 n
+     299   1 fl                                                299  66    0 n
+     300   1 fl                                                300  66    0 n
+     301   1 fl                                                301  66    0 n
+     302   1 fl                                                302  66    0 n
+     303   1 fl                                                303  66    0 n
+     304   1 fl                                                304  66    0 n
+     305   1 fl                                                305  66    0 n
+     306   1 fl                                                306  66    0 n
+     307   1 fl                                                307  66    0 n
+     308   1 fl                                                308  66    0 n
+     311   1 wr TO_HAT               a                         311  27    0 n
+     312   1 wr TF_HAT               a                         312  27    0 n
+     313   1 wr TPD_HAT              a                         313  29    0 n
+     314   1 wr TPI_HAT              a                         314  29    0 n
+     315   1 wr TGD_HAT              a                         315  29    0 n
+     316   1 wr TGI_HAT              a                         316  29    0 n
+     317   1 wr TFD_HAT              a                         317  29    0 n
+     318   1 wr TFI_HAT              a                         318  29    0 n
+     319   1 wr TXS_HAT              a                         319  29    0 n
+     320   1 wr TMS_HAT              a                         320  29    0 n
+     320   1 en TMS_HAT              a                         320  29    0 n
+#GPVER
+  112003
+#PRVER
+    6400
+#FINAL_LEVEL
+#CSPSIM
+nnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnn
+nnnn

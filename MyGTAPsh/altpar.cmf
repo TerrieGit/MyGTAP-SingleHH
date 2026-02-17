@@ -1,0 +1,9 @@
+auxiliary files = altpar;
+check-on-read elements = yes;
+cpu = yes ; 
+log only = yes;   
+! Input files:
+
+file GTAPSETS = sets.har ;! sets data from MyGTAP
+! Output files:
+file ALTERPAR = altertax.prm ;! Output new parameter file

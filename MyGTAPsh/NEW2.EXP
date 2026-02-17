@@ -1,0 +1,47 @@
+file gtapPARM = default.prm;
+Verbal Description =
+Tariff shock - long run;
+Method = Gragg;
+Steps = 2 4 6;
+automatic accuracy = yes;
+accuracy figures = 4;
+accuracy percent = 80;
+minimum subinterval length =  1.0E-0003;
+minimum subinterval fails = stop;
+accuracy criterion = Data;
+subintervals = 2;
+exogenous
+    poph 
+    qoh_s
+    pfactwld
+    psaveslack profitslack incomeslack endwslack
+    cgdslack tradslack
+    gincomeslack hincomeslack 
+    ams atm atf ats atd
+    aosec aoreg avasec avareg
+    afcom afsec afreg afecom afesec afereg
+    aoall afall afeall
+    dppriv dpgov dpgsave dphsave dphsave_all
+    to tp tm tms tx txs tpdh tpmh toh
+    emplh empl
+    sremoh sremih remavo
+    sfyoh sfyih fyavo
+    saidout saidin aidavo
+    realTRNH realTRNG 
+    s_sub 
+    au ;
+Rest Endogenous ;
+
+swap qoh_s(ENDWC_COMM, HHLD,REG)  = expand(ENDWC_COMM, HHLD,REG);
+ Shock tms(TRAD_COMM,REG,REG) = rate% -100 from file tms.shk;
+
+!@ contents of CMFStart when this EXP file was last saved
+!@ below is a record only....not read by RunGTAP
+!@ RunGTAP reads from the actual CMFSTART file
+!@ ! This is the default CMFSTART file which RunGTAP uses when
+!@ ! a version has no CMFSTART file of its own
+!@ iz1 = no ;
+!@ NDS = yes; ! no displays
+!@ Extrapolation accuracy file = YES ;
+!@ CPU = yes;
+!@ end of CMFSTART part

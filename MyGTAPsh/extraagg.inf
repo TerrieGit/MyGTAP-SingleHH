@@ -1,0 +1,434 @@
+
+    TTTTTTTTTT  AAAAAAAAAA   BBBBBBB      LLLL        OOOOOOOOOO
+    TTTTTTTTTT  AAA    AAA   BBBBBBBBB    LLLL        OOOOOOOOOO
+       TTT      AAA    AAA   BBB    BBB   LLLL        OOO    OOO
+       TTT      AAA    AAA   BBB  BBB     LLLL        OOO    OOO
+       TTT      AAAAAAAAAA   BBBBBBB      LLLL        OOO    OOO
+       TTT      AAAAAAAAAA   BBB  BBB     LLLL        OOO    OOO
+       TTT      AAA    AAA   BBB    BBB   LLLL        OOO    OOO
+       TTT      AAA    AAA   BBBBBBBBB    LLLLLLLLL   OOOOOOOOOO
+       TTT      AAA    AAA   BBBBBBB      LLLLLLLLL   OOOOOOOOOO
+
+ <TABLO  Version 6.4   April 2012>                                     
+
+
+
+
+
+                     GEMPACK SOFTWARE
+     << COPYRIGHT 1987-2010:  The Impact Project and KPSOFT >>
+   
+   
+
+    +++  INFORMATION ABOUT THIS PRINT FILE  +++
+   
+ 
+ ! This file was created at 17:38:32 on 23-FEB-2020 by the program
+ !  <TABLO  Version 6.4   April 2012>
+ ! which accesses some of the routines in the GEMPACK software release
+ !  <GEMPACK Release 11.3.001   May 2014>
+ 
+ !     -------------------------------------------------------                
+ !    !            GEMPACK Software System Licence            !               
+ !    !  Source Code Licence for the GEMPACK Software System  !               
+ !    !                 Licence No.  GFM-1140                 !               
+ !    !          Licence for Release 11.0 of GEMPACK          !               
+ !    !                     Peter J Minor                     !               
+ !    !                      Boulder CO                       !               
+ !    !                          USA                          !               
+ !     -------------------------------------------------------                
+    
+
+    +++  END OF INFORMATION ABOUT THIS PRINT FILE  +++
+
+ ======================================================
+           TABLO PORTABLE   
+ ++> TABLO OPTIONS   ( --> indicates those in effect )
+ ======================================================
+
+
+
+      -----------                   ----------
+  --> F1 CHECK                      L1 CHECK
+      F2 CONDENSATION               L2 CONDENSATION
+      F3 CODE GENERATION        --> L3 CODE GENERATION
+      Mode
+      ----
+      INTERACTIVE
+      BATCH
+  --> UNSPECIFIED
+ 
+
+ ==================================================
+ ++> TABLO Input file is 'extraagg.tab'
+ ++> This Information file is 'extraagg'
+ ==================================================
+
+
+
+ ******************************************************************************
+ -1-
+ -->                     Starting CHECK stage
+
+ ******************************************************************************
+
+
+      1   ![[!
+      2       ==========================================
+      3       ImpactECON MyGTAP Model auxillary programs
+      4       May 2016
+      5    
+      6       This program aggregates extra data countries to regions for MyGTAP model
+      7    
+      8       ImpactECON LLC, Boulder, Colorado
+      9       https://impactecon.com/
+     10    
+     11       ==========================================
+     12    
+     13   Purpose of program:
+     14   1. Produce MGTAP database for RunGTAP application with single household.
+     15    
+     16   Author: Peter Minor and Terrie L walmsley
+     17   Date: June 2 2015
+     18    
+     19   !]]!
+     20    
+     21   file
+     22       SSFILE #standard sets#;
+     23    
+     24   set
+     25       REG #regions#
+     26       read elements from file SSFILE header "H1";
+     27   set
+     28       CTRY #countries#
+     29       read elements from file SSFILE header "DH1";
+     30    
+     31   mapping
+     32       C2R from CTRY to REG;
+     33   read (by_elements)
+     34       C2R from file SSFILE header "MREG";
+     35    
+     36   file
+     37       INFILE #foreign income data, by country#;
+     38    
+     39   file (new)
+     40       OUTFILE #foreign income#;
+     41    
+     42   coefficient (all,c,CTRY)
+     43       AIDIN(c) #foreign income receipts, by country#;
+     44   read
+     45       AIDIN from file INFILE header "AIDI";
+     46    
+     47   coefficient (all,c,CTRY)
+     48       AIDOUT(c) #foreign income receipts, by country#;
+     49   read
+     50       AIDOUT from file INFILE header "AIDO";
+     51    
+     52   coefficient (all,c,CTRY)
+     53       FYIN(c) #foreign income receipts, by country#;
+     54   read
+     55       FYIN from file INFILE header "FYI";
+     56    
+     57   coefficient (all,c,CTRY)
+     58       FYOUT(c) #foreign income receipts, by country#;
+     59   read
+     60       FYOUT from file INFILE header "FYO";
+     61    
+     62   coefficient (all,c,CTRY)
+     63       REMIN(c) #foreign income receipts, by country#;
+     64   read
+     65       REMIN from file INFILE header "REMI";
+     66    
+     67   coefficient (all,c,CTRY)
+     68       REMOUT(c) #foreign income receipts, by country#;
+     69   read
+     70       REMOUT from file INFILE header "REMO";
+     71    
+     72   coefficient (all,c,CTRY)
+     73       TRANG(c) #foreign income receipts, by country#;
+     74   read
+     75       TRANG from file INFILE header "TRNG";
+     76    
+     77   coefficient (all,r,REG)
+     78       AIDIN_NEW(r) #foreign income receipts, by country#;
+     79   formula (all,r,REG)
+     80       AIDIN_NEW(r) = sum{c, CTRY: C2R(c) = r, AIDIN(c)};
+     81    
+     82   coefficient (all,r,REG)
+     83       AIDOUT_NEW(r) #foreign income receipts, by country#;
+     84   formula (all,r,REG)
+     85       AIDOUT_NEW(r) = sum{c, CTRY: C2R(c) = r, AIDOUT(c)};
+     86    
+     87   coefficient (all,r,REG)
+     88       FYIN_NEW(r) #foreign income receipts, by country#;
+     89   formula (all,r,REG)
+     90       FYIN_NEW(r) = sum{c, CTRY: C2R(c) = r, FYIN(c)};
+     91    
+     92   coefficient (all,r,REG)
+     93       FYOUT_NEW(r) #foreign income receipts, by country#;
+     94   formula (all,r,REG)
+     95       FYOUT_NEW(r) = sum{c, CTRY: C2R(c) = r, FYOUT(c)};
+     96    
+     97   coefficient (all,r,REG)
+     98       REMIN_NEW(r) #foreign income receipts, by country#;
+     99   formula (all,r,REG)
+    100       REMIN_NEW(r) = sum{c, CTRY: C2R(c) = r, REMIN(c)};
+    101    
+    102   coefficient (all,r,REG)
+    103       REMOUT_NEW(r) #foreign income receipts, by country#;
+    104   formula (all,r,REG)
+    105       REMOUT_NEW(r) = sum{c, CTRY: C2R(c) = r, REMOUT(c)};
+    106    
+    107   coefficient (all,r,REG)
+    108       TRANG_NEW(r) #foreign income receipts, by country#;
+    109   formula (all,r,REG)
+    110       TRANG_NEW(r) = sum{c, CTRY: C2R(c) = r, TRANG(c)};
+    111    
+    112   write
+    113       AIDIN_NEW to file OUTFILE header "AIDI" ;
+    114       AIDOUT_NEW to file OUTFILE header "AIDO" ;
+    115       FYIN_NEW to file OUTFILE header "FYI" ;
+    116       FYOUT_NEW to file OUTFILE header "FYO" ;
+    117       REMIN_NEW to file OUTFILE header "REMI" ;
+    118       REMOUT_NEW to file OUTFILE header "REMO" ;
+    119       TRANG_NEW to file OUTFILE header "TRNG" ;
+    120    
+    121   transfer unread from file INFILE to file OUTFILE ;
+    122    
+    123    
+
+
+
+
+ ========================
+ ++ INPUT STATEMENT TABLE
+ ========================
+
+          Starts   Syntax  Semantic
+  Number  at line  Error?   Error?            Description
+  ------------------------------------------------------------
+     1        21     no       no      FILE 'SSFILE              '             
+     2        24     no       no      SET 'REG         '                      
+     3        27     no       no      SET 'CTRY        '                      
+     4        31     no       no      MAPPING 'C2R         '                  
+     5        33     no       no      READ into 'C2R         '                
+     6        36     no       no      FILE 'INFILE              '             
+     7        39     no       no      FILE 'OUTFILE             '             
+     8        42     no       no      COEFFICIENT 'AIDIN       '              
+     9        44     no       no      READ into 'AIDIN       '                
+    10        47     no       no      COEFFICIENT 'AIDOUT      '              
+    11        49     no       no      READ into 'AIDOUT      '                
+    12        52     no       no      COEFFICIENT 'FYIN        '              
+    13        54     no       no      READ into 'FYIN        '                
+    14        57     no       no      COEFFICIENT 'FYOUT       '              
+    15        59     no       no      READ into 'FYOUT       '                
+    16        62     no       no      COEFFICIENT 'REMIN       '              
+    17        64     no       no      READ into 'REMIN       '                
+    18        67     no       no      COEFFICIENT 'REMOUT      '              
+    19        69     no       no      READ into 'REMOUT      '                
+    20        72     no       no      COEFFICIENT 'TRANG       '              
+    21        74     no       no      READ into 'TRANG       '                
+    22        77     no       no      COEFFICIENT 'AIDIN_NEW   '              
+    23        79     no       no      Formula for "AIDIN_NEW"                 
+    24        82     no       no      COEFFICIENT 'AIDOUT_NEW  '              
+    25        84     no       no      Formula for "AIDOUT_NEW"                
+    26        87     no       no      COEFFICIENT 'FYIN_NEW    '              
+    27        89     no       no      Formula for "FYIN_NEW"                  
+    28        92     no       no      COEFFICIENT 'FYOUT_NEW   '              
+    29        94     no       no      Formula for "FYOUT_NEW"                 
+    30        97     no       no      COEFFICIENT 'REMIN_NEW   '              
+    31        99     no       no      Formula for "REMIN_NEW"                 
+    32       102     no       no      COEFFICIENT 'REMOUT_NEW  '              
+    33       104     no       no      Formula for "REMOUT_NEW"                
+    34       107     no       no      COEFFICIENT 'TRANG_NEW   '              
+    35       109     no       no      Formula for "TRANG_NEW"                 
+    36       112     no       no      WRITE from 'AIDIN_NEW   '               
+    37       114     no       no      WRITE from 'AIDOUT_NEW  '               
+    38       115     no       no      WRITE from 'FYIN_NEW    '               
+    39       116     no       no      WRITE from 'FYOUT_NEW   '               
+    40       117     no       no      WRITE from 'REMIN_NEW   '               
+    41       118     no       no      WRITE from 'REMOUT_NEW  '               
+    42       119     no       no      WRITE from 'TRANG_NEW   '               
+    43       121     no       no                                              
+
+
+
+
+ ============
+ ++ SET TABLE
+ ============
+
+                    Defined   [Max] Inter             Set numbers this
+  Number    Name    at line    Size temp? Elements    is subset of
+  ---------------------------------------------------------------------
+     1  REG            24 [       0]  no   read 
+     2  CTRY           27 [       0]  no   read 
+
+
+
+
+ =============
+ ++ FILE TABLE
+ =============
+
+         Logical            Defined  File  File
+  Number  Name              at line  Type  Form  Actual name (if given)
+  --------------------------------------------------------------------
+     1  SSFILE                  21    old  head
+     2  INFILE                  36    old  head
+     3  OUTFILE                 39    new  head
+
+
+
+
+ ====================
+ ++ COEFFICIENT TABLE
+ ====================
+
+                        Defined  No            Arguments range
+  Number    Name        at line  Args Type     over sets numbered
+  ------------------------------------------------------------
+     1    C2R               31     1  int        2
+     2    AIDIN             42     1  real       2
+     3    AIDOUT            47     1  real       2
+     4    FYIN              52     1  real       2
+     5    FYOUT             57     1  real       2
+     6    REMIN             62     1  real       2
+     7    REMOUT            67     1  real       2
+     8    TRANG             72     1  real       2
+     9    AIDIN_NEW         77     1  real       1
+    10    AIDOUT_NEW        82     1  real       1
+    11    FYIN_NEW          87     1  real       1
+    12    FYOUT_NEW         92     1  real       1
+    13    REMIN_NEW         97     1  real       1
+    14    REMOUT_NEW       102     1  real       1
+    15    TRANG_NEW        107     1  real       1
+
+
+
+
+ ================
+ ++ FORMULA TABLE
+ ================
+
+           Defined   Semantic      LHS                RHS
+  Number   at line    Error?    coefficient       coefficient numbers
+  -------------------------------------------------------------------
+     1          79     no      AIDIN_NEW          1     2
+     2          84     no      AIDOUT_NEW         1     3
+     3          89     no      FYIN_NEW           1     4
+     4          94     no      FYOUT_NEW          1     5
+     5          99     no      REMIN_NEW          1     6
+     6         104     no      REMOUT_NEW         1     7
+     7         109     no      TRANG_NEW          1     8
+
+
+
+
+ =============
+ ++ READ TABLE
+ =============
+
+           Defined    Semantic  Coefficient   File number
+  Number   at line     Error?    read into     read from   Header
+  ---------------------------------------------------------------
+     1         33       no      C2R                 1       MREG
+     2         44       no      AIDIN               2       AIDI
+     3         49       no      AIDOUT              2       AIDO
+     4         54       no      FYIN                2       FYI 
+     5         59       no      FYOUT               2       FYO 
+     6         64       no      REMIN               2       REMI
+     7         69       no      REMOUT              2       REMO
+     8         74       no      TRANG               2       TRNG
+
+
+
+
+ ==============
+ ++ WRITE TABLE
+ ==============
+
+        Defined   Sem      Coeff        Write
+ Number at line  Error?   written       file   Header     Long Name
+ --------------------------------------------------------------------------------
+     1      112   no      AIDIN_NEW         3  AIDI    Not defined by the user
+     2      114   no      AIDOUT_NEW        3  AIDO    Not defined by the user
+     3      115   no      FYIN_NEW          3  FYI     Not defined by the user
+     4      116   no      FYOUT_NEW         3  FYO     Not defined by the user
+     5      117   no      REMIN_NEW         3  REMI    Not defined by the user
+     6      118   no      REMOUT_NEW        3  REMO    Not defined by the user
+     7      119   no      TRANG_NEW         3  TRNG    Not defined by the user
+
+
+   
+ ======================
+ ++ INPUT CHECK SUMMARY
+ ======================
+ 
+ Total number of statements is 43.
+ There are NO syntax errors or semantic problems.
+
+
+ ******************************************************************************
+ -3-
+ -->                     Starting CODE GENERATION
+
+ ******************************************************************************
+
+
+
+  CODE OPTIONS CHOSEN
+  -------------------
+ 
+ 
+                         TABLO PORTABLE
+               CODE OPTIONS   ( --> indicates those in effect )
+ 
+      NEQ Do no equations           PGS Prepare output for GEMSIM
+      NDS Do no displays        --> WFP Write a Fortran Program
+      NWR Do no writes                    (i.e. a TABLO-generated program)
+                                --> FC5 Fast Compile TG-prog under LF95
+      ACC All comment lines in      DMS Allow simulations even
+             code                         though are no UPDATEs
+                                --> CIN Code file name same as
+                                          Information file name
+                                    CDM Old option. Has no effect.
+                                    NRZ No run-time reports re use of
+                                           ZERODIVIDE default values
+                                    NXS No "extra" statements allowed
+ 
+  Select an option   :  <opt>      Deselect an option      : -<opt>
+  Help for an option : ?<opt>      Help on all options     : ??
+  Redisplay options  : /           Finish option selection : Carriage return
+
+  END OF CODE OPTIONS CHOSEN
+  --------------------------
+  
+ ! ( Program is
+ ! 'D:\Projects\v10Tools\MyGTAP\to public\single\rungtapsh32\extraagg.for'.)
+ (Total number of lines of code is 1092.)
+ 
+ This program
+     o can carry out 7 WRITEs
+     o can carry out 1 TRANSFERs
+ 
+ MXGSRS = 0, MXGSIS = 0.
+ MXGSLG = 0, MXGSIC = 0.
+ 
+ MXGSOP = 0, MXGSIN = 0.
+ MXGSRC = 0, MXGSNS=0.
+ ! (Model Information file is
+ ! 'D:\Projects\v10Tools\MyGTAP\to public\single\rungtapsh32\extraagg.min'.)
+ 
+ (Total number of programs written is 1.)
+ 
+ *******************************************************************
+ Successful completion of TABLO.
+ The program is
+   'extraagg.for'.
+ 
+ This program
+     o can carry out 7 WRITEs
+     o can carry out 1 TRANSFERs
+ 
+ *******************************************************************

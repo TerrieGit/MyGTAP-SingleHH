@@ -1,0 +1,137 @@
+#FILES
+Logical Name         In/Out Ud  Type Actual Name
+SSFILE                In     n  HAR
+standard sets
+INFILE                In     n  HAR
+foreign income data, by country
+OUTFILE               Out    n  HAR
+foreign income
+(Display)             Out    n  DIS
+(Solution)            Out    n  SL4
+(Equations)           Out    n  EQ4
+#TABFILE
+extraagg.tab
+#TMDATE
+at 17:38:32 on 23-FEB-2020
+#STIFILE
+%none
+#SETS
+    2
+    1 REG             -1  uregions
+    2 CTRY            -1  ucountries
+#VARIABLES
+         0
+#SUBSETS
+     0
+#COEFFICIENTS
+   15
+    1 C2R             1 i y n
+    2 m    2    1
+    2 AIDIN           1 r y n foreign income receipts, by country
+    2
+    3 AIDOUT          1 r y n foreign income receipts, by country
+    2
+    4 FYIN            1 r y n foreign income receipts, by country
+    2
+    5 FYOUT           1 r y n foreign income receipts, by country
+    2
+    6 REMIN           1 r y n foreign income receipts, by country
+    2
+    7 REMOUT          1 r y n foreign income receipts, by country
+    2
+    8 TRANG           1 r y n foreign income receipts, by country
+    2
+    9 AIDIN_NEW       1 r n n foreign income receipts, by country
+    1
+   10 AIDOUT_NEW      1 r n n foreign income receipts, by country
+    1
+   11 FYIN_NEW        1 r n n foreign income receipts, by country
+    1
+   12 FYOUT_NEW       1 r n n foreign income receipts, by country
+    1
+   13 REMIN_NEW       1 r n n foreign income receipts, by country
+    1
+   14 REMOUT_NEW      1 r n n foreign income receipts, by country
+    1
+   15 TRANG_NEW       1 r n n foreign income receipts, by country
+    1
+#EQUATIONS
+    0
+#READS
+    8
+    1     1 C2R               1 SSFILE               MREG a h     1
+     0
+    2     2 AIDIN             2 INFILE               AIDI a h     1
+     2
+    3     3 AIDOUT            2 INFILE               AIDO a h     1
+     2
+    4     4 FYIN              2 INFILE               FYI  a h     1
+     2
+    5     5 FYOUT             2 INFILE               FYO  a h     1
+     2
+    6     6 REMIN             2 INFILE               REMI a h     1
+     2
+    7     7 REMOUT            2 INFILE               REMO a h     1
+     2
+    8     8 TRANG             2 INFILE               TRNG a h     1
+     2
+#READ(EXTRA)
+    2
+    1 el
+ REG          SSFILE               H1  
+    2 el
+ CTRY         SSFILE               DH1 
+#NCVARIABLES
+    0
+#STATEMENTS
+      21   1 fl                                                 22  27    0 n
+      24   1 st REG                                             26  47    0 n
+      27   1 st CTRY                                            29  48    0 n
+      31   1 cs C2R                                             32  25    0 n
+      33   1 rd C2R                  a                          34  39    0 n
+      36   1 fl                                                 37  45    0 n
+      39   1 fl                                                 40  29    0 n
+      42   1 cs AIDIN                                           43  51    0 n
+      44   1 rd AIDIN                a                          45  41    0 n
+      47   1 cs AIDOUT                                          48  52    0 n
+      49   1 rd AIDOUT               a                          50  42    0 n
+      52   1 cs FYIN                                            53  50    0 n
+      54   1 rd FYIN                 a                          55  39    0 n
+      57   1 cs FYOUT                                           58  51    0 n
+      59   1 rd FYOUT                a                          60  40    0 n
+      62   1 cs REMIN                                           63  51    0 n
+      64   1 rd REMIN                a                          65  41    0 n
+      67   1 cs REMOUT                                          68  52    0 n
+      69   1 rd REMOUT               a                          70  42    0 n
+      72   1 cs TRANG                                           73  51    0 n
+      74   1 rd TRANG                a                          75  41    0 n
+      77   1 cs AIDIN_NEW                                       78  55    0 n
+      79   1 fm                                                 80  54    0 n
+      82   1 cs AIDOUT_NEW                                      83  56    0 n
+      84   1 fm                                                 85  56    0 n
+      87   1 cs FYIN_NEW                                        88  54    0 n
+      89   1 fm                                                 90  52    0 n
+      92   1 cs FYOUT_NEW                                       93  55    0 n
+      94   1 fm                                                 95  54    0 n
+      97   1 cs REMIN_NEW                                       98  55    0 n
+      99   1 fm                                                100  54    0 n
+     102   1 cs REMOUT_NEW                                     103  56    0 n
+     104   1 fm                                                105  56    0 n
+     107   1 cs TRANG_NEW                                      108  55    0 n
+     109   1 fm                                                110  54    0 n
+     112   1 wr AIDIN_NEW            a                         113  45    0 n
+     114   5 wr AIDOUT_NEW           a                         114  46    0 n
+     115   5 wr FYIN_NEW             a                         115  43    0 n
+     116   5 wr FYOUT_NEW            a                         116  44    0 n
+     117   5 wr REMIN_NEW            a                         117  45    0 n
+     118   5 wr REMOUT_NEW           a                         118  46    0 n
+     119   5 wr TRANG_NEW            a                         119  45    0 n
+     121   1 tr                                                121  50    0 n
+     121   1 en                                                121  50    0 n
+#GPVER
+  113001
+#PRVER
+    6400
+#FINAL_LEVEL
+#CSPSIM
+nnnnnnnnnnnnnnn

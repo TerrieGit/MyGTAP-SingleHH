@@ -1,0 +1,19 @@
+# This is INTEL_1_O1.FIG
+
+# Optimization options
+# /O1    optimize for maximum speed, but disable some optimizations which
+#       increase code size for a small speed benefit: /Ob1gysi-
+#/O2    optimize for maximum speed (same as /Ox)
+#/O3    enable /O2 plus more aggressive optimizations that may not improve
+#       performance for all programs
+#/Ox    enable maximum optimizations (DEFAULT):       /Ob1gyti
+# /OD means no optimization
+
+# /O1 level 1 optimization
+ /O1
+
+# INTEL_1_COMMON.FIG contains all options common to all GEMPACK INTEL_1*.FIG
+ @intel_1_common.fig   
+
+/I"C:\GP\includes" 
+/I"C:\GP\modules" 

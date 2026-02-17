@@ -1,0 +1,20 @@
+REM this batch file is designed to remove junk from your RunGTAP directory
+del *.~??
+del *.f9m
+del *.for
+del *.mod
+del *.lib
+del *.sol
+del *.sli
+del *.bcv
+del *.upd
+del *.rpt
+del *.$$$
+del *.pi5
+del *.bak
+del temp.*
+del *.log
+del *.flg
+del gpxx*.*
+del opt.
+del modtable.txt

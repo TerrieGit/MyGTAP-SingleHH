@@ -1,0 +1,2467 @@
+
+    TTTTTTTTTT  AAAAAAAAAA   BBBBBBB      LLLL        OOOOOOOOOO
+    TTTTTTTTTT  AAA    AAA   BBBBBBBBB    LLLL        OOOOOOOOOO
+       TTT      AAA    AAA   BBB    BBB   LLLL        OOO    OOO
+       TTT      AAA    AAA   BBB  BBB     LLLL        OOO    OOO
+       TTT      AAAAAAAAAA   BBBBBBB      LLLL        OOO    OOO
+       TTT      AAAAAAAAAA   BBB  BBB     LLLL        OOO    OOO
+       TTT      AAA    AAA   BBB    BBB   LLLL        OOO    OOO
+       TTT      AAA    AAA   BBBBBBBBB    LLLLLLLLL   OOOOOOOOOO
+       TTT      AAA    AAA   BBBBBBB      LLLLLLLLL   OOOOOOOOOO
+
+ <TABLO  Version 6.4   April 2012>                                     
+
+
+
+
+
+                     GEMPACK SOFTWARE
+     << COPYRIGHT 1987-2010:  The Impact Project and KPSOFT >>
+   
+   
+
+    +++  INFORMATION ABOUT THIS PRINT FILE  +++
+   
+ 
+ ! This file was created at 17:36:21 on 23-FEB-2020 by the program
+ !  <TABLO  Version 6.4   April 2012>
+ ! which accesses some of the routines in the GEMPACK software release
+ !  <GEMPACK Release 11.3.001   May 2014>
+ 
+ !     -------------------------------------------------------                
+ !    !            GEMPACK Software System Licence            !               
+ !    !  Source Code Licence for the GEMPACK Software System  !               
+ !    !                 Licence No.  GFM-1140                 !               
+ !    !          Licence for Release 11.0 of GEMPACK          !               
+ !    !                     Peter J Minor                     !               
+ !    !                      Boulder CO                       !               
+ !    !                          USA                          !               
+ !     -------------------------------------------------------                
+    
+
+    +++  END OF INFORMATION ABOUT THIS PRINT FILE  +++
+
+ ======================================================
+           TABLO PORTABLE   
+ ++> TABLO OPTIONS   ( --> indicates those in effect )
+ ======================================================
+
+
+
+      -----------                   ----------
+  --> F1 CHECK                      L1 CHECK
+      F2 CONDENSATION               L2 CONDENSATION
+      F3 CODE GENERATION        --> L3 CODE GENERATION
+      Mode
+      ----
+      INTERACTIVE
+      BATCH
+  --> UNSPECIFIED
+ 
+
+ ==================================================
+ ++> TABLO Input file is 'samview.tab'
+ ++> This Information file is 'samview'
+ ==================================================
+
+
+
+ ******************************************************************************
+ -1-
+ -->                     Starting CHECK stage
+
+ ******************************************************************************
+
+
+      1   !<
+      2       ==========================================
+      3       ImpactECON MyGTAP Model auxillary programs
+      4       May 2016
+      5    
+      6       SAMView program
+      7    
+      8       ImpactECON LLC, Boulder, Colorado
+      9       https://impactecon.com/
+     10    
+     11       ==========================================
+     12    
+     13   Adapted from:
+     14    
+     15       Deriving a Global Social Accounting Matrix from GTAP Data
+     16               By Vitaly Kharitonov, Tasneem Mirza and Terrie Walmsley
+     17                               Nov 2006
+     18    
+     19    
+     20   This program is a compliment to:
+     21   Scott McDonald and Karen Thierfelder, "Deriving a Global Social Accounting
+     22   Matrix from GTAP version 5 Data", Sheffield Economic Research Paper 2004:002.
+     23   Dept of Economics University of Sheffield. www.shef.ac.uk/economics/serp
+     24    
+     25   The program was developed by Vitaly Kharitonov
+     26   (Center for Global Trade Analysis, Purdue University).
+     27    
+     28    
+     29   >!
+     30    
+     31   !========================================================================!
+     32   !                              Declare Files                             !
+     33   !========================================================================!
+     34    
+     35   File
+     36         GTAPDATA # File containing all base data #;
+     37         GTAPSETS # File with set specification #;
+     38         GTAPPARM # File containing behavioral prameters #; ! even if unused !
+     39   (new) GTAPSAM # File with headers for viewing #;
+     40    
+     41   !========================================================================!
+     42   !                              Declare Sets                              !
+     43   !========================================================================!
+     44    
+     45   !GTAPSets from GTAPAgg!
+     46    
+     47   Set
+     48       REG # regions in the model #
+     49       read elements from file GTAPSETS header "H1";
+     50       HHLD # Households #
+     51       read elements from file GTAPSETS header "HOU";
+     52       TRAD_COMM # traded commodities #
+     53       read elements from file GTAPSETS header "H2";
+     54       MARG_COMM # margin commodities #
+     55       read elements from file GTAPSETS header "MARG";
+     56   Subset
+     57       MARG_COMM is subset of TRAD_COMM;
+     58   Set
+     59       ENDW_COMM #Factors# read elements from file GTAPsets header "H6";
+     60       CGDS_COMM # capial goods # read elements from file GTAPSETS header "H9";
+     61       PROD_COMM #production commodities# = TRAD_COMM union CGDS_COMM ;
+     62       ENDWC_COMM read elements from file GTAPSETS header"ENDC";
+     63       ENDWL_COMM read elements from file GTAPSETS header"ENDL";
+     64    
+     65   subset ENDWC_COMM is subset of ENDW_COMM ;
+     66   subset ENDWL_COMM is subset of ENDW_COMM ;
+     67    
+     68   ! Common sets !
+     69    
+     70   Set
+     71       FACTDEP #Factors subject to depreciation# (Capital);
+     72   Subset
+     73       FACTDEP is subset of ENDW_COMM;
+     74    
+     75   Set
+     76       PRIV #Private Expenditure# = HHLD;
+     77       PRODTAX #Production Taxes# (PRODTAX);
+     78       DIRTAX #Direct Taxes# (DIRTAX);
+     79       GOVT #Government# (GOVT);
+     80       ROW #Aggregated region# (world);
+     81    
+     82   !Makes new set labels!
+     83    
+     84   Set
+     85       MLABL #Imported commodities labels# (m) ;
+     86   Set
+     87       DLABL #Domestic commodities labels# (d) ;
+     88   Set
+     89       ALABL #Activity labels# (a) ;
+     90   Set
+     91       LTMM #Import duties# (tmm);
+     92   Set
+     93       LTEE #Export taxes# (tee);
+     94   Set
+     95       LTSSM #Import Sales Taxes# (tssm);
+     96   Set
+     97       LTSSD #Domestic Sales Taxes# (tssd);
+     98   Set
+     99       LTFF #Factor Taxes# (tf);
+    100   Set
+    101       LTRXM #Export of Margins# (pvst);
+    102   Set
+    103       LWW #Rest of World# (ww);
+    104    
+    105   !For gempack 11!
+    106   ! Set LABELS #Special labels for SAM# = MLABL + DLABL + ALABL + LTMM + LTEE +
+    107   LTSSM + LTSSD + LTFF + LTRXM + LWW + FACTDEP + REGHOUS + PRIV + PRODTAX + DIRTAX
+    108   + GOVT + ROW ;!
+    109    
+    110   !For gempack 10!
+    111   Set LABELS1 #Special labels for SAM# = MLABL + DLABL;
+    112   Set LABELS2 #Special labels for SAM# = ALABL + LTMM;
+    113   Set LABELS3 #Special labels for SAM# = LTEE + LTSSM;
+    114   Set LABELS4 #Special labels for SAM# = LTSSD + LTFF;
+    115   Set LABELS5 #Special labels for SAM# = LTRXM + LWW;
+    116   Set LABELS6 #Special labels for SAM# = FACTDEP ;
+    117   Set LABELS7 #Special labels for SAM# = PRIV + GOVT;
+    118   Set LABELS8 #Special labels for SAM# = DIRTAX + PRODTAX;
+    119   Set LABELS9 #Special labels for SAM# = ROW;
+    120    
+    121   Set LABELS10 #Special labels for SAM# = LABELS1 + LABELS2;
+    122   Set LABELS11 #Special labels for SAM# = LABELS10 + LABELS3;
+    123   Set LABELS12 #Special labels for SAM# = LABELS11 + LABELS4;
+    124   Set LABELS13 #Special labels for SAM# = LABELS12 + LABELS5;
+    125   Set LABELS14 #Special labels for SAM# = LABELS13 + LABELS6;
+    126   Set LABELS15 #Special labels for SAM# = LABELS14 + LABELS7;
+    127   Set LABELS16 #Special labels for SAM# = LABELS15 + LABELS8;
+    128   Set LABELS #Special labels for SAM# = LABELS16 + LABELS9;
+    129    
+    130    
+    131   set LONGLABEL #Long names of special labels for SAM#
+    132   (ImportCommod, DomCommod, Activities,ImportDuties, ExportTaxes,
+    133   ImportSalTax, DomSalTax,FactorTaxes, ExportMargin,RestOfWorld,
+    134   Depreciation,RegionHhold, PrivExpend,
+    135   ProductTaxes, DirectTaxes,Government, AggregRegion);
+    136    
+    137   !New sets for SAM!
+    138    
+    139   Set
+    140       MCOM #Imported commodities # = MLABL x TRAD_COMM ;
+    141   Set
+    142       DCOM #Domestic commodities # = DLABL x TRAD_COMM ;
+    143    
+    144    
+    145   Coefficient (all,i,TRAD_COMM) ISMAR(i) # 1 iff margin #;
+    146   Formula     (all,i,TRAD_COMM) ISMAR(i) =0;
+    147               (all,i,MARG_COMM) ISMAR(i) =1;
+    148    
+    149   MAPPING (PROJECT) COMDCOM from DCOM to TRAD_COMM ;
+    150    
+    151   Set
+    152     !  MARG_DCOM #Domestic margins commodities # = DLABL x MARG_COMM ;!
+    153      MARG_DCOM #Domestic margins commodities # = (all,d,DCOM:ISMAR(COMDCOM(d))=1);
+    154    
+    155   MAPPING  MARGCOM from MARG_DCOM to MARG_COMM ;
+    156   Formula (all,d,MARG_DCOM) MARGCOM(d)=$pos(d);
+    157   !Subset MARG_DCOM is subset of DCOM ;!
+    158   Set
+    159       ACT #Activities# = ALABL x TRAD_COMM ;
+    160   Set
+    161       TMM #Import duties# = LTMM x REG ;
+    162   Set
+    163       TEE #Export taxes# = LTEE x REG ;
+    164   Set
+    165       TSSM #Import Sales Taxes# = LTSSM x TRAD_COMM ;
+    166   Set
+    167       TSSD #Domestic Sales Taxes# = LTSSD x TRAD_COMM ;
+    168   Set
+    169       TFF #Factor Taxes# = LTFF x ENDW_COMM ;
+    170   Set
+    171       TRMM #Import of Margins# = MARG_COMM x REG ;
+    172   Set
+    173       TRXM #Export of Margins# = MARG_COMM x LTRXM ;
+    174   Set
+    175       WW #Rest of World# = LWW x REG ;
+    176    
+    177   !For gempack 11!
+    178   !Set SAMAC #Social Accounting Matrix Accounts# = MCOM + DCOM + ACT + ENDW_COMM +
+    179   TMM + TEE + TSSM + TSSD + TFF + TRMM + TRXM + WW + REGHOUS + PRIV + PRODTAX
+    180   + DIRTAX + GOVT + CGDS_COMM ;
+    181   !
+    182    
+    183   Set
+    184       ATMM #Aggregate Import duties# = LTMM x ROW ;
+    185   Set
+    186       ATEE #Aggregate Export taxes# = LTEE x ROW ;
+    187   Set
+    188       AWW #Aggregate Rest of World# = LWW x ROW ;
+    189   Set
+    190       AMARG #Aggregate Import Margins# = MARG_COMM x ROW ;
+    191    
+    192   !For gempack 10!
+    193   Set SAMAC1 #Special labels for SAM# = MCOM + DCOM ;
+    194   Set SAMAC2 #Special labels for SAM# = ACT + ENDW_COMM;
+    195   Set SAMAC3 #Special labels for SAM# = TMM + TEE;
+    196   Set SAMAC4 #Special labels for SAM# = TSSM + TSSD;
+    197   Set SAMAC5 #Special labels for SAM# = TFF + TRMM;
+    198   Set SAMAC6 #Special labels for SAM# = TRXM + WW;
+    199   Set SAMAC7 #Special labels for SAM# = AWW + PRIV;
+    200   Set SAMAC8 #Special labels for SAM# = PRODTAX + DIRTAX;
+    201   Set SAMAC9 #Special labels for SAM# =GOVT + CGDS_COMM;
+    202    
+    203   Set SAMAC10 #Special labels for SAM# = SAMAC1 + SAMAC2;
+    204   Set SAMAC11 #Special labels for SAM# = SAMAC10 + SAMAC3;
+    205   Set SAMAC12 #Special labels for SAM# = SAMAC11 + SAMAC4;
+    206   Set SAMAC13 #Special labels for SAM# = SAMAC12 + SAMAC5;
+    207   Set SAMAC14 #Special labels for SAM# = SAMAC13 + SAMAC6;
+    208   Set SAMAC15 #Special labels for SAM# = SAMAC14 + SAMAC7;
+    209   Set SAMAC16 #Special labels for SAM# = SAMAC15 + SAMAC8;
+    210   Set SAMAC #Special labels for SAM# = SAMAC16 + SAMAC9;
+    211    
+    212    
+    213   !For gempack 11!
+    214   !
+    215   Set ASAMAC #Social Accounting Matrix Accounts# = MCOM + DCOM + ACT + ENDW_COMM
+    216   + ATMM + ATEE + TSSM + TSSD + TFF + AMARG + TRXM + AWW + REGHOUS + PRIV
+    217   + PRODTAX + DIRTAX + GOVT + CGDS_COMM ;!
+    218    
+    219   !For gempack 10!
+    220   Set ASAMAC1 #Special labels for SAM# = MCOM + DCOM ;
+    221   Set ASAMAC2 #Special labels for SAM# = ACT + ENDW_COMM;
+    222   Set ASAMAC3 #Special labels for SAM# = ATMM + ATEE;
+    223   Set ASAMAC4 #Special labels for SAM# = TSSM + TSSD;
+    224   Set ASAMAC5 #Special labels for SAM# = TFF + AMARG;
+    225   Set ASAMAC6 #Special labels for SAM# = TRXM + AWW;
+    226   Set ASAMAC7 #Special labels for SAM# = PRIV;
+    227   Set ASAMAC8 #Special labels for SAM# = PRODTAX + DIRTAX;
+    228   Set ASAMAC9 #Special labels for SAM# =GOVT + CGDS_COMM;
+    229    
+    230   Set ASAMAC10 #Special labels for SAM# = ASAMAC1 + ASAMAC2;
+    231   Set ASAMAC11 #Special labels for SAM# = ASAMAC10 + ASAMAC3;
+    232   Set ASAMAC12 #Special labels for SAM# = ASAMAC11 + ASAMAC4;
+    233   Set ASAMAC13 #Special labels for SAM# = ASAMAC12 + ASAMAC5;
+    234   Set ASAMAC14 #Special labels for SAM# = ASAMAC13 + ASAMAC6;
+    235   Set ASAMAC15 #Special labels for SAM# = ASAMAC14 + ASAMAC7;
+    236   Set ASAMAC16 #Special labels for SAM# = ASAMAC15 + ASAMAC8;
+    237   Set ASAMAC #Special labels for SAM# = ASAMAC16 + ASAMAC9;
+    238    
+    239    
+    240    
+    241   !========================================================================!
+    242   !                              Declare Mappings                          !
+    243   !========================================================================!
+    244    
+    245   MAPPING (PROJECT) REGTMM from TMM to REG ;
+    246   MAPPING (PROJECT) REGTEE from TEE to REG ;
+    247   MAPPING (PROJECT) REGWW from WW to REG ;
+    248   MAPPING (PROJECT) ACTCOM from ACT to TRAD_COMM ;
+    249   MAPPING (PROJECT) COMMCOM from MCOM to TRAD_COMM ;
+    250   MAPPING (PROJECT) MARGTRXM from TRXM to MARG_COMM ;
+    251   MAPPING (PROJECT) COMTSSM from TSSM to TRAD_COMM ;
+    252   MAPPING (PROJECT) COMTSSD from TSSD to TRAD_COMM ;
+    253   MAPPING (PROJECT) FACTTFF from TFF to ENDW_COMM ;
+    254   MAPPING (PROJECT) MARGTRMM from TRMM to MARG_COMM ;
+    255   MAPPING (PROJECT) REGTRMM from TRMM to REG ;
+    256   MAPPING (PROJECT) MARGAMARG from AMARG to MARG_COMM ;
+    257    
+    258   !========================================================================!
+    259   !                      Reading Data from GTAP Database                    !
+    260   !========================================================================!
+    261    
+    262   !Imported Commodities!
+    263    
+    264   Coefficient (all,i,TRAD_COMM)(all,j,PROD_COMM)(all,r,REG)
+    265       VIFM_GT(i,j,r) #Firms' Imports at Market Prices#;
+    266   Read
+    267       VIFM_GT from file GTAPDATA header "VIFM";
+    268    
+    269   Coefficient (all,i,TRAD_COMM)(all,h,HHLD)(all,r,REG)
+    270       VIPM_GT(i,h,r) #Private Consumption of Imported Commodities Market Prices#;
+    271   Read
+    272       VIPM_GT from file GTAPDATA header "VIPM";
+    273    
+    274   Coefficient (all,i,TRAD_COMM)(all,r,REG)
+    275       VIGM_GT(i,r) #Government Consumption of Imported Commodities Market Prices#;
+    276   Read
+    277       VIGM_GT from file GTAPDATA header "VIGM";
+    278   Coefficient (all,i,TRAD_COMM)(all,j,PROD_COMM)(all,r,REG)
+    279       VIFA_GT(i,j,r) #Firms' Imports at Agent Prices#;
+    280   Read
+    281       VIFA_GT from file GTAPDATA header "VIFA";
+    282    
+    283   Coefficient (all,i,TRAD_COMM)(all,h,HHLD)(all,r,REG)
+    284       VIPA_GT(i,h,r) #Private Consumption of Imported Commodities Agent Prices#;
+    285   Read
+    286       VIPA_GT from file GTAPDATA header "VIPA";
+    287    
+    288   Coefficient (all,i,TRAD_COMM)(all,r,REG)
+    289       VIGA_GT(i,r) #Private Consumption of Imported Commodities Agent Prices#;
+    290   Read
+    291       VIGA_GT from file GTAPDATA header "VIGA";
+    292    
+    293   !Domestic Commodities!
+    294   Coefficient (all,i,TRAD_COMM)(all,j,PROD_COMM)(all,r,REG)
+    295       VDFM_GT(i,j,r) #Firms' Usage of Domestics at Market Prices#;
+    296   Read
+    297       VDFM_GT from file GTAPDATA header "VDFM";
+    298    
+    299   Coefficient (all,i,TRAD_COMM)(all,h,HHLD)(all,r,REG)
+    300       VDPM_GT(i,h,r) #Private Consumption of Domestic Commodities Market Prices#;
+    301   Read
+    302       VDPM_GT from file GTAPDATA header "VDPM";
+    303    
+    304   Coefficient (all,i,TRAD_COMM)(all,r,REG)
+    305       VDGM_GT(i,r) #Government Consumption of Imported Commodities Market Prices#;
+    306   Read
+    307       VDGM_GT from file GTAPDATA header "VDGM";
+    308    
+    309   Coefficient (all,i,MARG_COMM)(all,r,REG)
+    310       VST_GT(i,r) #Marginal Domestic Commodities Market Prices#;
+    311   Read
+    312       VST_GT from file GTAPDATA header "VST";
+    313   Coefficient (all,i,TRAD_COMM)(all,j,REG)(all,r,REG)
+    314       VXWD_GT(i,j,r);
+    315   Read
+    316       VXWD_GT from file GTAPDATA header "VXWD";
+    317   Coefficient (all,i,TRAD_COMM)(all,j,REG)(all,r,REG)
+    318       VXMD_GT(i,j,r);
+    319   Read
+    320       VXMD_GT from file GTAPDATA header "VXMD";
+    321    
+    322   Coefficient (all,i,TRAD_COMM)(all,j,PROD_COMM)(all,r,REG)
+    323       VDFA_GT(i,j,r) #Firms' Domestic Purchases at Agent Prices#;
+    324   Read
+    325       VDFA_GT from file GTAPDATA header "VDFA";
+    326    
+    327   Coefficient (all,i,TRAD_COMM)(all,h,HHLD)(all,r,REG)
+    328       VDPA_GT(i,h,r) #Private Consumption of Domestic Commodities Agent Prices#;
+    329   Read
+    330       VDPA_GT from file GTAPDATA header "VDPA";
+    331    
+    332   Coefficient (all,i,TRAD_COMM)(all,r,REG)
+    333       VDGA_GT(i,r) #Private Consumption of Domestic Commodities Agent Prices#;
+    334   Read
+    335       VDGA_GT from file GTAPDATA header "VDGA";
+    336    
+    337   !Factors!
+    338   Coefficient (all,i,ENDW_COMM)(all,j,PROD_COMM)(all,r,REG)
+    339       VFM_GT(i,j,r) #Factor Usage at Market Price#;
+    340   Read
+    341       VFM_GT from file GTAPDATA header "VFM";
+    342   Coefficient (all,i,ENDW_COMM)(all,j,PROD_COMM)(all,r,REG)
+    343       EVFA_GT(i,j,r)#Endowments: Firms Purchase at Agent Price#;
+    344   Read
+    345       EVFA_GT from file GTAPDATA header "EVFA";
+    346   Coefficient (all,i,ENDW_COMM)(all,h,HHLD)(all,r,REG)
+    347       EVOA_GT(i,h,r)#Endowments: Outputs at Agent Price#;
+    348   Read
+    349       EVOA_GT from file GTAPDATA header "EVOA";
+    350   Coefficient (all,i,FACTDEP)(all,h,HHLD)(all,r,REG)
+    351       VDEP_GT(i,h,r)#Capital Depreciation#;
+    352   Read
+    353       VDEP_GT from file GTAPDATA header "VDEP";
+    354    
+    355   !Trade: Import!
+    356   Coefficient (all,i,TRAD_COMM)(all,j,REG)(all,r,REG)
+    357       VIMS_GT(i,j,r) #Import at Market Price#;
+    358   Read
+    359       VIMS_GT from file GTAPDATA header "VIMS";
+    360    
+    361   Coefficient (all,i,TRAD_COMM)(all,j,REG)(all,r,REG)
+    362       VIWS_GT(i,j,r) #Import at World Price#;
+    363   Read
+    364       VIWS_GT from file GTAPDATA header "VIWS";
+    365   !Transportation!
+    366   Coefficient (all,i,MARG_COMM) (all,j,TRAD_COMM) (all,s,REG) (all,r,REG)
+    367       VTWR_GT(i,j,s,r);
+    368   Read
+    369       VTWR_GT from file GTAPDATA header "VTWR";
+    370   Coefficient (all,i,CGDS_COMM)(all,h,HHLD)(all,r,REG)
+    371       SAVEH_GT(i,h,r);
+    372   Read
+    373       SAVEH_GT from file GTAPDATA header "SHLD";
+    374   Coefficient (all,i,CGDS_COMM)(all,h,GOVT)(all,r,REG)
+    375       SAVEG_GT(i,h,r);
+    376   Read
+    377       SAVEG_GT from file GTAPDATA header "SGOV";
+    378    
+    379   !Inter-regional transfers!
+    380   Coefficient (all,h,HHLD)(all,r,REG)
+    381       REMI_GT(h,r);
+    382   Read
+    383       REMI_GT from file GTAPDATA header "REMI";
+    384   Coefficient (all,h,HHLD)(all,r,REG)
+    385       REMO_GT(h,r);
+    386   Read
+    387       REMO_GT from file GTAPDATA header "REMO";
+    388   Coefficient (all,h,HHLD)(all,r,REG)
+    389       FYI_GT(h,r);
+    390   Read
+    391       FYI_GT from file GTAPDATA header "FYI";
+    392   Coefficient (all,h,HHLD)(all,r,REG)
+    393       FYO_GT(h,r);
+    394   Read
+    395       FYO_GT from file GTAPDATA header "FYO";
+    396   Coefficient (all,r,REG)
+    397       AIDI_GT(r);
+    398   Read
+    399       AIDI_GT from file GTAPDATA header "AIDI";
+    400   Coefficient (all,r,REG)
+    401       AIDO_GT(r);
+    402   Read
+    403       AIDO_GT from file GTAPDATA header "AIDO";
+    404   Coefficient (all,h,HHLD)(all,r,REG)
+    405       TRANG_GT(h,r);
+    406   Read
+    407       TRANG_GT from file GTAPDATA header "TRNG";
+    408   Coefficient (all,h,HHLD)(all,s,HHLD)(all,r,REG)
+    409       TRANH_GT(h,s,r);
+    410   Read
+    411       TRANH_GT from file GTAPDATA header "TRNH";
+    412    
+    413   !=========================================================================!
+    414   !                       Preparing Data for SAM                            !
+    415   !=========================================================================!
+    416    
+    417                   !=============================!
+    418                   !Block 1. Imported Commodities!
+    419                   !=============================!
+    420   ! Usage of imported comodities by firms (1:3 in SAM)!
+    421   Coefficient (all,i,MCOM)(all,j,ACT)(all,r,REG)
+    422       VIAM(i,j,r);
+    423   Formula (all, i,MCOM)(all, j, ACT) (all,r,REG)
+    424       VIAM(i,j,r) = VIFM_GT(COMMCOM(i),ACTCOM(j),r);
+    425   !Private Consumption of Imported Commodities(1:14 in SAM)!
+    426   Coefficient (all,i,MCOM)(all,j,PRIV)(all,r,REG)
+    427       VIPM(i,j,r);
+    428   Formula (all,i,MCOM)(all,j,PRIV)(all,r,REG)
+    429       VIPM(i,j,r)= VIPM_GT(COMMCOM(i),j,r);
+    430   !Government Consumption of Imported Commodities(1:17 in SAM)!
+    431   Coefficient (all,i,MCOM)(all,j,GOVT)(all,r,REG)
+    432       VIGM(i,j,r);
+    433   Formula (all,i,MCOM)(all,j,GOVT)(all,r,REG)
+    434       VIGM(i,j,r)= VIGM_GT(COMMCOM(i),r);
+    435   !Usage of imported capital good (1:18 in SAM)!
+    436   Coefficient (all,i,MCOM)(all,j,CGDS_COMM)(all,r,REG)
+    437       VIIM(i,j,r);
+    438   Formula (all,i,MCOM)(all,j,CGDS_COMM)(all,r,REG)
+    439       VIIM(i,j,r)= VIFM_GT(COMMCOM(i),j,r);
+    440    
+    441                   !=============================!
+    442                   !Block 2. Domestic Commodities!
+    443                   !=============================!
+    444   !Usage of Domestic Comodities by firms (2:3 in SAM)!
+    445   Coefficient (all,i,DCOM)(all,j,ACT)(all,r,REG)
+    446       VDAM(i,j,r);
+    447   Formula (all, i,DCOM)(all, j, ACT) (all,r,REG)
+    448       VDAM(i,j,r)
+    449            = VDFM_GT(COMDCOM(i),ACTCOM(j),r);
+    450    
+    451   !Private Consumption of Domestic Commodities(2:14 in SAM)!
+    452   Coefficient (all,i,DCOM)(all,j,PRIV)(all,r,REG)
+    453       VDPM(i,j,r);
+    454   Formula (all,i,DCOM)(all,j,PRIV)(all,r,REG)
+    455       VDPM(i,j,r) = VDPM_GT(COMDCOM(i),j,r);
+    456    
+    457   !Government Consumption of Domestic Commodities(2:17 in SAM)!
+    458   Coefficient (all,i,DCOM)(all,j,GOVT)(all,r,REG)
+    459       VDGM(i,j,r);
+    460   Formula (all,i,DCOM)(all,j,GOVT)(all,r,REG)
+    461       VDGM(i,j,r)= VDGM_GT(COMDCOM(i),r);
+    462   !Usage of Domestic Capital Good (2:18 in SAM)!
+    463   Coefficient (all,i,DCOM)(all,j,CGDS_COMM)(all,r,REG)
+    464       VDIM(i,j,r);
+    465   Formula (all,i,DCOM)(all,j,CGDS_COMM)(all,r,REG)
+    466       VDIM(i,j,r)= VDFM_GT(COMDCOM(i),j,r);
+    467   !Export of Margings (2:11 in SAM)!
+    468   Coefficient (all,i,MARG_COMM)(all,j,MARG_COMM)(all,r,REG)
+    469       VST_GT1(i,j,r);
+    470   Formula (all,i,MARG_COMM)(all,r,REG)
+    471       VST_GT1(i,i,r)= VST_GT(i,r);
+    472   Coefficient (all,i,DCOM)(all,j,TRXM)(all,r,REG)
+    473       VST(i,j,r);
+    474   Formula (all,i,DCOM)(all,j,TRXM)(all,r,REG)
+    475       VST(i,j,r)=0;
+    476   Formula (all,i,MARG_DCOM) (all,j,TRXM) (all,r,REG)
+    477       VST(i,j,r)= VST_GT1(MARGCOM(i),MARGTRXM(j),r);
+    478   !Rest of World Consumption of Domestic Commodities!
+    479   Coefficient (all,i,DCOM)(all,j,WW)(all,r,REG)
+    480       VXWD(i,j,r);
+    481   Formula (all,i,DCOM)(all,j,WW)(all,r,REG)
+    482       VXWD(i,j,r) = VXWD_GT(COMDCOM(i),r,REGWW(j));
+    483   !Aggregate Rest of World Consumption of Domestic Commodities(2:12 in SAM)!
+    484   Coefficient (all,i,DCOM)(all,j,AWW)(all,r,REG)
+    485       AVXWD(i,j,r);
+    486   Formula (all,i,DCOM)(all,j,AWW)(all,r,REG)
+    487       AVXWD(i,j,r)= sum{k,WW, VXWD(i,k,r)};
+    488    
+    489    
+    490                   !=============================!
+    491                   !      Block 3. Activities    !
+    492                   !=============================!
+    493   !Value of Output Market Price (3:2 in SAM)!
+    494   Coefficient (all,i,TRAD_COMM)(all,r,REG)
+    495       VOM_GT(i,r);
+    496   Formula (all,i,TRAD_COMM)(all,r,REG)
+    497       VOM_GT(i,r)=sum{j,PROD_COMM,VDFM_GT(i,j,r)}+sum(h, HHLD, VDPM_GT(i,h,r))
+    498                  +VDGM_GT(i,r)+
+    499                   sum{s,REG,VXMD_GT(i,r,s)};
+    500   Formula (all,i,MARG_COMM)(all,r,REG)
+    501       VOM_GT(i,r)=sum{j,PROD_COMM,VDFM_GT(i,j,r)}+sum(h, HHLD, VDPM_GT(i,h,r))
+    502                  +VDGM_GT(i,r)+
+    503                   sum{s,REG,VXMD_GT(i,r,s)}+VST_GT(i,r);
+    504   Coefficient (all,i,TRAD_COMM)(all,j,TRAD_COMM)(all,r,REG)
+    505       VOM_GT1(i,j,r);
+    506   Formula (all,i,TRAD_COMM)(all,r,REG)
+    507       VOM_GT1(i,i,r)= VOM_GT(i,r);
+    508   Coefficient (all,i,ACT)(all,j,DCOM)(all,r,REG)
+    509       VOM(i,j,r)#Value of Output (3:2 in SAM)#;
+    510   Formula (all,i,ACT)(all,j,DCOM)(all,r,REG)
+    511       VOM(i,j,r)
+    512           = VOM_GT1(ACTCOM(i),COMDCOM(j),r);
+    513    
+    514                   !=============================!
+    515                   !   Block 4. Factors          !
+    516                   !=============================!
+    517   !Factor Usage (4:3 in SAM)!
+    518   Coefficient (all,i,ENDW_COMM)(all,j,ACT)(all,r,REG)
+    519       VFM(i,j,r);
+    520   Formula (all,i,ENDW_COMM)(all,j,ACT)(all,r,REG)
+    521       VFM(i,j,r)= VFM_GT(i,ACTCOM(j),r);
+    522    
+    523                   !=============================!
+    524                   !   Block 5. Import Duties    !
+    525                   !=============================!
+    526    
+    527   !Import Duties!
+    528   Coefficient (all,j,TMM)(all,i,MCOM)(all,r,REG)
+    529       IMD(j,i,r);
+    530   Formula (all,j,TMM)(all,i,MCOM)(all,r,REG)
+    531       IMD(j,i,r)
+    532           = VIMS_GT(COMMCOM(i),REGTMM(j),r)
+    533           - VIWS_GT(COMMCOM(i),REGTMM(j),r);
+    534    
+    535   !Aggregate Import Duties (5:1 in SAM)!
+    536   Coefficient (all,j,ATMM)(all,i,MCOM)(all,r,REG)
+    537       AIMD(j,i,r);
+    538   Formula (all,j,ATMM)(all,i,MCOM)(all,r,REG)
+    539       AIMD(j,i,r)=sum{k,TMM,IMD(k,i,r)};
+    540    
+    541                   !=============================!
+    542                   !   Block 6. Export Taxes     !
+    543                   !=============================!
+    544    
+    545   !Export Taxes!
+    546   Coefficient (all,j,TEE)(all,i,DCOM)(all,r,REG)
+    547       EXTAX(j,i,r);
+    548   Formula (all,j,TEE)(all,i,DCOM)(all,r,REG)
+    549       EXTAX(j,i,r) =VXWD_GT(COMDCOM(i),r,REGTEE(j))
+    550               -VXMD_GT(COMDCOM(i),r,REGTEE(j));
+    551    
+    552   !Aggregate Export Taxes (6:1 in SAM)!
+    553   Coefficient (all,j,ATEE)(all,i,DCOM)(all,r,REG)
+    554       AEXTAX(j,i,r);
+    555   Formula (all,j,ATEE)(all,i,DCOM)(all,r,REG)
+    556       AEXTAX(j,i,r)=sum{k,TEE,EXTAX(k,i,r)};
+    557    
+    558                   !================================!
+    559                   !   Block 7. Import Sales Taxes  !
+    560                   !================================!
+    561   !Import Sales Taxes on Intermediates Imports (7:3 in SAM)!
+    562   Coefficient (all,i,TSSM)(all,j,ACT)(all,r,REG)
+    563       TSSMA(i,j,r);
+    564   Formula (all,i,TSSM)(all,j,ACT)(all,r,REG)
+    565       TSSMA(i,j,r)= VIFA_GT(COMTSSM(i),ACTCOM(j),r)
+    566              -VIFM_GT(COMTSSM(i),ACTCOM(j),r);
+    567   !Import Sales Taxes on Foreign Investment (7:18 in SAM)!
+    568   Coefficient (all,i,TSSM)(all,j,CGDS_COMM)(all,r,REG)
+    569       TSSMK(i,j,r);
+    570   Formula (all,i,TSSM)(all,j,CGDS_COMM)(all,r,REG)
+    571       TSSMK(i,j,r)= VIFA_GT(COMTSSM(i),j,r)-VIFM_GT(COMTSSM(i),j,r);
+    572   !Import Sales Taxes on Private Consumption (7:14 in SAM)!
+    573   Coefficient (all,i,TSSM)(all,j,PRIV)(all,r,REG)
+    574       TSSMH(i,j,r);
+    575   Formula (all,i,TSSM)(all,j,PRIV)(all,r,REG)
+    576       TSSMH(i,j,r)= VIPA_GT(COMTSSM(i),j,r)-VIPM_GT(COMTSSM(i),j,r);
+    577   !Import Sales Taxes on Governmnet Consumption (7:17 in SAM)!
+    578   Coefficient (all,i,TSSM)(all,j,GOVT)(all,r,REG)
+    579       TSSMG(i,j,r);
+    580   Formula (all,i,TSSM)(all,j,GOVT)(all,r,REG)
+    581       TSSMG(i,j,r)= VIGA_GT(COMTSSM(i),r)-VIGM_GT(COMTSSM(i),r);
+    582    
+    583                   !================================!
+    584                   ! Block 8. Domestic Sales Taxes  !
+    585                   !================================!
+    586   !Domestic Sales Taxes on Intermediates (8:3 in SAM)!
+    587   Coefficient (all,i,TSSD)(all,j,ACT)(all,r,REG)
+    588       TSSDA(i,j,r);
+    589   Formula (all,i,TSSD)(all,j,ACT)(all,r,REG)
+    590       TSSDA(i,j,r)= VDFA_GT(COMTSSD(i),ACTCOM(j),r)
+    591                     -VDFM_GT(COMTSSD(i),ACTCOM(j),r);
+    592   !Domestic Sales Taxes on Investment (8:18 in SAM)!
+    593   Coefficient (all,i,TSSD)(all,j,CGDS_COMM)(all,r,REG)
+    594       TSSDK(i,j,r);
+    595   Formula (all,i,TSSD)(all,j,CGDS_COMM)(all,r,REG)
+    596       TSSDK(i,j,r)= VDFA_GT(COMTSSD(i),j,r)
+    597                   - VDFM_GT(COMTSSD(i),j,r);
+    598   !Domestic Sales Taxes on Private Consumption (8:14 in SAM)!
+    599   Coefficient (all,i,TSSD)(all,j,PRIV)(all,r,REG)
+    600       TSSDH(i,j,r);
+    601   Formula (all,i,TSSD)(all,j,PRIV)(all,r,REG)
+    602       TSSDH(i,j,r)= VDPA_GT(COMTSSD(i),j,r)-VDPM_GT(COMTSSD(i),j,r);
+    603   !Domestic Sale Taxes on Governmnet Consumption (8:17 in SAM)!
+    604   Coefficient (all,i,TSSD)(all,j,GOVT)(all,r,REG)
+    605       TSSDG(i,j,r)#Import Sale Taxes on Governmnet Consumption (7:16 in SAM)#;
+    606   Formula (all,i,TSSD)(all,j,GOVT)(all,r,REG)
+    607       TSSDG(i,j,r)= VDGA_GT(COMTSSD(i),r)-VDGM_GT(COMTSSD(i),r);
+    608    
+    609                   !================================!
+    610                   !   Block 9. Factor Taxes        !
+    611                   !================================!
+    612   !Factor Taxes (9:3 in SAM)!
+    613   Coefficient (all,i,TFF)(all,j,ACT)(all,r,REG)
+    614       TFFA(i,j,r)#Factor Taxes#;
+    615   Formula (all,i,TFF)(all,j,ACT)(all,r,REG)
+    616       TFFA(i,j,r)= EVFA_GT(FACTTFF(i),ACTCOM(j),r)
+    617                  -VFM_GT(FACTTFF(i),ACTCOM(j),r);
+    618    
+    619                   !================================!
+    620                   !   Block 10. Import Margins     !
+    621                   !================================!
+    622   !Import Margins!
+    623   Coefficient (all,i,MARG_COMM) (all,j,MCOM) (all,s,REG) (all,r,REG)
+    624       VTWR_GT1(i,j,s,r);
+    625   Formula (all,i,MARG_COMM) (all,j,MCOM) (all,s,REG) (all,r,REG)
+    626       VTWR_GT1(i,j,s,r)= VTWR_GT(i,COMMCOM(j),s,r);
+    627   Coefficient (all,j,TRMM) (all,i,MCOM) (all,r,REG)
+    628       VTWR(j,i,r);
+    629   Formula (all,j,TRMM) (all,i,MCOM) (all,r,REG)
+    630       VTWR(j,i,r)= VTWR_GT1(MARGTRMM(j),i,REGTRMM(j),r);
+    631    
+    632   !Aggregate Import Margins (10:1 in SAM)!
+    633   Coefficient (all,j,AMARG) (all,i,MCOM) (all,r,REG)
+    634       AVTWR(j,i,r);
+    635   Formula (all,j,AMARG) (all,i,MCOM) (all,r,REG)
+    636       AVTWR(j,i,r) = sum(s, REG, VTWR_GT1(MARGAMARG(j),i,s,r)) ;
+    637    
+    638    
+    639                   !================================!
+    640                   !   Block 11. Export Margins     !
+    641                   !================================!
+    642   !Export Margins!
+    643   Coefficient (all,i,TRXM) (all,s,REG) (all,r,REG)
+    644       VTWR_X(i,s,r);
+    645   Formula (all,i,TRXM) (all,s,REG) (all,r,REG)
+    646       VTWR_X(i,s,r)=sum{j,TRAD_COMM,VTWR_GT(MARGTRXM(i),j,s,r)};
+    647   Coefficient (all,i,TRXM)(all,j,TRMM)(all,r,reg)
+    648       VTWR_EX(i,j,r);
+    649   Formula (all,i,TRXM)(all,j,TRMM)(all,r,reg)
+    650       VTWR_EX(i,j,r)=0;
+    651   Formula (all,i,TRXM)(all,j,TRMM)(all,r,reg: MARGTRXM(i)=MARGTRMM(j))
+    652       VTWR_EX(i,j,r) = VTWR_X(i,REGTRMM(j),r);
+    653    
+    654   !Aggregate Export Margins (11:10 in SAM)!
+    655   Coefficient (all,i,TRXM)(all,j,AMARG)(all,r,reg)
+    656       AVTWR_EX(i,j,r);
+    657   Formula (all,i,TRXM)(all,j,AMARG)(all,r,reg)
+    658       AVTWR_EX(i,j,r)=sum {k,TRMM: MARGTRMM(k)=MARGAMARG(j), VTWR_EX(i,k,r)};
+    659    
+    660                   !================================!
+    661                   !   Block 12. Rest of World      !
+    662                   !================================!
+    663   !Rest of World (12:1 in SAM)!
+    664   Coefficient (all,j,WW) (all,i,MCOM) (all,r,REG)
+    665       WWM(j,i,r);
+    666   Formula (all,j,WW) (all,i,MCOM) (all,r,REG)
+    667       WWM(j,i,r)= VIWS_GT(COMMCOM(i),REGWW(j),r)
+    668          -sum{l,MARG_COMM ,VTWR_GT(l,COMMCOM(i),REGWW(j),r)};
+    669    
+    670   !Aggregate Rest of World (12:1 in SAM)!
+    671   Coefficient (all,j,AWW)(all,i,MCOM)(all,r,REG)
+    672       AWWM(j,i,r);
+    673   Formula (all,j,AWW)(all,i,MCOM)(all,r,REG)
+    674       AWWM(j,i,r)=sum{k,WW,WWM(k,i,r)};
+    675    
+    676    
+    677                   !================================!
+    678                   !   Block 18. Capital            !
+    679                   !================================!
+    680   !Capital: Value of Depreciation (18:4 in SAM)!
+    681   Coefficient (all,i,CGDS_COMM)(all,j,ENDW_COMM)(all,r,REG)
+    682       VDEP(i,j,r);
+    683   Formula (all,i,CGDS_COMM)(all,j,ENDW_COMM)(all,r,REG)
+    684       VDEP(i,j,r)=0;
+    685   Formula (all,i,CGDS_COMM)(all,j,FACTDEP)(all,r,REG)
+    686       VDEP(i,j,r)=sum(h, HHLD, VDEP_GT(j,h,r));
+    687   !Capital: Saving (18:13 in SAM)!
+    688   Coefficient (all,i,CGDS_COMM)(all,j,PRIV)(all,r,REG)
+    689       SAVEH(i,j,r);
+    690   Formula (all,i,CGDS_COMM)(all,j,PRIV)(all,r,REG)
+    691       SAVEH(i,j,r) = SAVEH_GT(i,j,r);
+    692    
+    693   Coefficient (all,i,CGDS_COMM)(all,j,GOVT)(all,r,REG)
+    694       SAVEG(i,j,r);
+    695   Formula (all,i,CGDS_COMM)(all,j,GOVT)(all,r,REG)
+    696       SAVEG(i,j,r)=SAVEG_GT(i,j,r);
+    697   !Capital:Transportation (18:11 in SAM)!
+    698   Coefficient (all,i,CGDS_COMM)(all,j,TRXM)(all,r,REG)
+    699       CAPTR(i,j,r);
+    700   Formula (all,i,CGDS_COMM)(all,j,TRXM)(all,r,REG)
+    701       CAPTR(i,j,r)=sum{c,TRAD_COMM,sum{s,REG,
+    702                    VTWR_GT(MARGTRXM(j),c,s,r)}}-
+    703                    sum{d,DCOM,VST(d,j,r)};
+    704   !Capital:Rest of World!
+    705   Coefficient (all,i,CGDS_COMM)(all,j,WW)(all,r,REG)
+    706       CAPWW(i,j,r);
+    707   Formula (all,i,CGDS_COMM)(all,j,WW)(all,r,REG)
+    708       CAPWW(i,j,r)=sum{k,TRAD_COMM,VIWS_GT(k,REGWW(j),r)}
+    709               -sum{m,MARG_COMM,sum{c,TRAD_COMM,
+    710              VTWR_GT(m,c,REGWW(j),r)}}
+    711               -sum{d,DCOM,VXWD(d,j,r)} ;
+    712    
+    713   Coefficient  (all,j,AWW) (all,i,PRIV) (all,r,REG)
+    714       FINCI(i,j,r)#Regional Household: Factors#;
+    715   Formula (all,j,AWW) (all,i,PRIV) (all,r,REG)
+    716       FINCI(i,j,r)= FYI_GT(i,r) + REMI_GT(i,r);
+    717    
+    718   Coefficient  (all,i,AWW) (all,j,PRIV) (all,r,REG)
+    719       FINCO(i,j,r)#Regional Household: Factors#;
+    720   Formula (all,i,AWW) (all,j,PRIV) (all,r,REG)
+    721       FINCO(i,j,r)= FYO_GT(j,r) + REMO_GT(j,r);
+    722    
+    723   Coefficient  (all,j,AWW) (all,i,GOVT) (all,r,REG)
+    724       AIDI(i,j,r)#Regional Household: Factors#;
+    725   Formula (all,j,AWW) (all,i,GOVT) (all,r,REG)
+    726       AIDI(i,j,r)= AIDI_GT(r);
+    727    
+    728   Coefficient  (all,i,AWW) (all,j,GOVT) (all,r,REG)
+    729       AIDO(i,j,r)#Regional Household: Factors#;
+    730   Formula (all,i,AWW) (all,j,GOVT) (all,r,REG)
+    731       AIDO(i,j,r)= AIDO_GT(r);
+    732    
+    733   Coefficient (all,i,CGDS_COMM)(all,j,AWW)(all,r,REG)
+    734       ACAPWW1(i,j,r);
+    735   Formula (all,i,CGDS_COMM)(all,j,AWW)(all,r,REG)
+    736       ACAPWW1(i,j,r)= sum(h, HHLD, FINCO(j,h,r)) - sum(h, HHLD, FINCI(h,j,r))
+    737              + sum(g, GOVT, AIDO(j,g,r)) - sum(g, GOVT, AIDI(g,j,r)) ;
+    738    
+    739   !Capital:Aggregate Rest of World (18:12 in SAM)!
+    740   Coefficient (all,i,CGDS_COMM)(all,j,AWW)(all,r,REG)
+    741       ACAPWW(i,j,r);
+    742   Formula (all,i,CGDS_COMM)(all,j,AWW)(all,r,REG)
+    743       ACAPWW(i,j,r)=sum{k,WW,CAPWW(i,k,r)} + ACAPWW1(i,j,r);
+    744    
+    745                   !================================!
+    746                   !   Block 15. Production Taxes   !
+    747                   !================================!
+    748   !Production Tax on Activities (15:3 in SAM)!
+    749   Coefficient (all,i,PRODTAX) (all,j,ACT) (all,r,REG)
+    750       PTAXACT(i,j,r);
+    751   Formula (all,i,PRODTAX) (all,j,ACT) (all,r,REG)
+    752       PTAXACT(i,j,r)=sum{d,DCOM,VOM(j,d,r)}-
+    753                   [sum{m,MCOM,VIAM(m,j,r)}+sum{c,DCOM,VDAM(c,j,r)}
+    754                   +sum{k,ENDW_COMM,VFM(k,j,r)}
+    755                   +sum{t,TSSM,TSSMA(t,j,r)}+sum{s,TSSD,TSSDA(s,j,r)}
+    756                   +sum{f,TFF,TFFA(f,j,r)}];
+    757   !Production Tax on Investment (15:18 in SAM)!
+    758   Coefficient (all,i,PRODTAX) (all,j,CGDS_COMM) (all,r,REG)
+    759       PTAXINV(i,j,r);
+    760   Formula (all,i,PRODTAX) (all,j,CGDS_COMM) (all,r,REG)
+    761       PTAXINV(i,j,r)=sum{f,ENDW_COMM,VDEP(j,f,r)}+sum{h,PRIV,SAVEH(j,h,r)}
+    762                      +sum{h,GOVT,SAVEG(j,h,r)}
+    763                      +sum{t,TRXM,CAPTR(j,t,r)}+sum{w,WW,CAPWW(j,w,r)}
+    764                      +sum(w,AWW,ACAPWW1(j,w,r))-
+    765                      sum{c,MCOM,VIIM(c,j,r)}-sum{d,DCOM,VDIM(d,j,r)}-
+    766                      sum{m,TSSM,TSSMK(m,j,r)}-sum{s,TSSD,TSSDK(s,j,r)};
+    767    
+    768                   !================================!
+    769                   !   Block 13. Regional Household !
+    770                   !================================!
+    771    
+    772   !Private Household: Factors (13:4 in SAM)!
+    773   Coefficient  (all,i,PRIV) (all,j,ENDW_COMM) (all,r,REG)
+    774       HF(i,j,r)#Regional Household: Factors#;
+    775   Formula (all,i,PRIV) (all,j,ENDW_COMM) (all,r,REG)
+    776       HF(i,j,r)=EVOA_GT(j,i,r) ;
+    777   Formula (all,i,PRIV) (all,j,FACTDEP) (all,r,REG)
+    778       HF(i,j,r)=EVOA_GT(j,i,r)-VDEP_GT(j,i,r);
+    779    
+    780   Coefficient  (all,i,PRIV) (all,j,PRIV) (all,r,REG)
+    781       HTRANS(i,j,r)#Regional Household: Factors#;
+    782   Formula  (all,i,PRIV) (all,j,PRIV) (all,r,REG)
+    783       HTRANS(i,j,r)=TRANH_GT(j,i,r);
+    784    
+    785   Coefficient  (all,j,GOVT) (all,i,PRIV) (all,r,REG)
+    786       GTRANS(i,j,r)#Regional Household: Factors#;
+    787   Formula  (all,j,GOVT) (all,i,PRIV) (all,r,REG)
+    788       GTRANS(i,j,r)=TRANG_GT(i,r);
+    789    
+    790    
+    791                   !================================!
+    792                   !   Block 16. Direct Taxes       !
+    793                   !================================!
+    794   !Direct Tax on Factors (16:4 in SAM)!
+    795    
+    796   Coefficient (all,i,DIRTAX) (all,j,ENDW_COMM)(all,r,REG)
+    797       DTAX(i,j,r);
+    798   Formula (all,i,DIRTAX) (all,j,ENDW_COMM)(all,r,REG)
+    799       DTAX(i,j,r)=sum{a,ACT,VFM(j,a,r)}-sum{h,PRIV,HF(h,j,r)}
+    800       -sum{k,CGDS_COMM,VDEP(k,j,r)};
+    801    
+    802               !======================================!
+    803               !Block 13. Regional Household: Continue!
+    804               !======================================!
+    805    
+    806   !Regional Household: Import Duties (13:5 in SAM!
+    807   Coefficient  (all,i,GOVT) (all,j,TMM) (all,r,REG)
+    808       RHTMM(i,j,r)#Regional Household: Import Taxes#;
+    809   Formula (all,i,GOVT) (all,j,TMM) (all,r,REG)
+    810       RHTMM(i,j,r)=sum{k,MCOM,IMD(j,k,r)};
+    811   !Regional Household: Export Taxes (13:6 in SAM)!
+    812   Coefficient  (all,i,GOVT) (all,j,TEE) (all,r,REG)
+    813       RHTEE(i,j,r)#Regional Household: Import Taxes#;
+    814   Formula (all,i,GOVT) (all,j,TEE) (all,r,REG)
+    815       RHTEE(i,j,r)=sum{k,DCOM,EXTAX(j,k,r)};
+    816   !Regional Household: Import Sales Taxes (13:7 in SAM)!
+    817   !Regional Household: Import Duties (13:5 in SAM)!
+    818   Coefficient  (all,i,GOVT) (all,j,ATMM) (all,r,REG)
+    819       ARHTMM(i,j,r)#Regional Household: Aggregate Import Taxes#;
+    820   Formula (all,i,GOVT) (all,j,ATMM) (all,r,REG)
+    821       ARHTMM(i,j,r)=sum{k,MCOM,AIMD(j,k,r)};
+    822   !Regional Household: Export Taxes (13:6 in SAM)!
+    823   Coefficient  (all,i,GOVT) (all,j,ATEE) (all,r,REG)
+    824       ARHTEE(i,j,r)#Regional Household: Aggregate Export Taxes#;
+    825   Formula (all,i,GOVT) (all,j,ATEE) (all,r,REG)
+    826       ARHTEE(i,j,r)=sum{k,DCOM,AEXTAX(j,k,r)};
+    827   !Regional Household: Import Sales Taxes (13:7 in SAM)!
+    828   Coefficient  (all,i,GOVT) (all,j,TSSM) (all,r,REG)
+    829       RHTSSM(i,j,r)#Regional Household: Import Sales Taxes#;
+    830   Formula (all,i,GOVT) (all,j,TSSM) (all,r,REG)
+    831       RHTSSM(i,j,r)=sum{a,ACT,TSSMA(j,a,r)}+sum{g,GOVT,TSSMG(j,g,r)}+
+    832                   sum{s,PRIV,TSSMH(j,s,r)}+sum{k,CGDS_COMM,TSSMK(j,k,r)};
+    833   !Regional Household: Domestic Sales Taxes (13:8 in SAM)!
+    834   Coefficient  (all,i,GOVT) (all,j,TSSD) (all,r,REG)
+    835       RHTSSD(i,j,r)#Regional Household: Domestic Sales Taxes#;
+    836   Formula (all,i,GOVT) (all,j,TSSD) (all,r,REG)
+    837       RHTSSD(i,j,r)=sum{a,ACT,TSSDA(j,a,r)}+sum{g,GOVT,TSSDG(j,g,r)}+
+    838                   sum{s,PRIV,TSSDH(j,s,r)}+sum{k,CGDS_COMM,TSSDK(j,k,r)};
+    839   !Regional Household: Factor Taxes (13:9 in SAM)!
+    840   Coefficient  (all,i,GOVT) (all,j,TFF) (all,r,REG)
+    841       RHTFF(i,j,r)#Regional Household: Factor Taxes#;
+    842   Formula (all,i,GOVT) (all,j,TFF) (all,r,REG)
+    843       RHTFF(i,j,r)=sum{a,ACT,TFFA(j,a,r)};
+    844   !Regional Household: Production Taxes (13:15 in SAM)!
+    845   Coefficient  (all,i,GOVT) (all,j,PRODTAX) (all,r,REG)
+    846       RHTPT(i,j,r)#Regional Household: Production Taxes#;
+    847   Formula (all,i,GOVT) (all,j,PRODTAX) (all,r,REG)
+    848       RHTPT(i,j,r)=sum{a,ACT,PTAXACT(j,a,r)}+sum{k,CGDS_COMM,PTAXINV(j,k,r)};
+    849   !Regional Household: Direct Taxes (13:16 in SAM)!
+    850   Coefficient  (all,i,GOVT) (all,j,DIRTAX) (all,r,REG)
+    851       RHTDT(i,j,r)#Regional Household: Direct Taxes#;
+    852   Formula (all,i,GOVT) (all,j,DIRTAX) (all,r,REG)
+    853       RHTDT(i,j,r)=sum{f,ENDW_COMM,DTAX(j,f,r)};
+    854   !===================================================================!
+    855   !                         CONSTRUCTING SAM                          !
+    856   !===================================================================!
+    857   Coefficient (all,i,ASAMAC)(all,j,ASAMAC)(all,r,REG)
+    858       ASAM(i,j,r) # Aggregated Social Accounting Matrix #;
+    859   Formula (all,i,MCOM)(all,j,ASAMAC)(all,r,REG)
+    860       ASAM(i,j,r)=0;
+    861   !Block 1.Imported Commodities !
+    862   Formula (all,i,MCOM)(all,j,ACT)(all,r,REG)
+    863       ASAM(i,j,r)=VIAM(i,j,r);
+    864   Formula (all,i,MCOM)(all,j,PRIV)(all,r,REG)
+    865       ASAM(i,j,r)=VIPM(i,j,r);
+    866   Formula (all,i,MCOM)(all,j,GOVT)(all,r,REG)
+    867       ASAM(i,j,r)=VIGM(i,j,r);
+    868   Formula (all,i,MCOM)(all,j,CGDS_COMM)(all,r,REG)
+    869       ASAM(i,j,r)=VIIM(i,j,r);
+    870    
+    871   !Block 2. Domestic Commodities!
+    872   Formula (all,i,DCOM)(all,j,ACT)(all,r,REG)
+    873       ASAM(i,j,r)=VDAM(i,j,r);
+    874   Formula (all,i,DCOM)(all,j,PRIV)(all,r,REG)
+    875       ASAM(i,j,r)=VDPM(i,j,r);
+    876   Formula (all,i,DCOM)(all,j,GOVT)(all,r,REG)
+    877       ASAM(i,j,r)=VDGM(i,j,r);
+    878   Formula (all,i,DCOM)(all,j,CGDS_COMM)(all,r,REG)
+    879       ASAM(i,j,r)=VDIM(i,j,r);
+    880   Formula (all,i,DCOM)(all,j,TRXM)(all,r,REG)
+    881       ASAM(i,j,r)=VST(i,j,r);
+    882   Formula (all,i,DCOM)(all,j,AWW)(all,r,REG)
+    883       ASAM(i,j,r)=AVXWD(i,j,r);
+    884   !Block 3. Activities!
+    885   Formula (all,i,ACT)(all,j,DCOM)(all,r,REG)
+    886       ASAM(i,j,r)=VOM(i,j,r);
+    887   !Block 4. Factors!
+    888   Formula (all,i,ENDW_COMM)(all,j,ACT)(all,r,REG)
+    889       ASAM(i,j,r)=VFM(i,j,r);
+    890    
+    891   !Block 5. Aggregate Import Duties!
+    892   Formula (all,i,ATMM)(all,j,MCOM)(all,r,REG)
+    893       ASAM(i,j,r)=AIMD(i,j,r);
+    894    
+    895   !Block 6. Export Taxes!
+    896   Formula(all,i,ATEE)(all,j,DCOM)(all,r,REG)
+    897       ASAM(i,j,r)=AEXTAX(i,j,r);
+    898    
+    899   !Block 7. Import Sales Taxes!
+    900   Formula (all,i,TSSM)(all,j,ACT)(all,r,REG)
+    901       ASAM(i,j,r)=TSSMA(i,j,r);
+    902   Formula (all,i,TSSM)(all,j,PRIV)(all,r,REG)
+    903       ASAM(i,j,r)=TSSMH(i,j,r);
+    904   Formula (all,i,TSSM)(all,j,GOVT)(all,r,REG)
+    905       ASAM(i,j,r)=TSSMG(i,j,r);
+    906   Formula (all,i,TSSM)(all,j,CGDS_COMM)(all,r,REG)
+    907       ASAM(i,j,r)=TSSMK(i,j,r);
+    908    
+    909   !Block 8. Domestic Sales Taxes!
+    910   Formula (all,i,TSSD)(all,j,ACT)(all,r,REG)
+    911       ASAM(i,j,r)=TSSDA(i,j,r);
+    912   Formula (all,i,TSSD)(all,j,PRIV)(all,r,REG)
+    913       ASAM(i,j,r)=TSSDH(i,j,r);
+    914   Formula (all,i,TSSD)(all,j,GOVT)(all,r,REG)
+    915       ASAM(i,j,r)=TSSDG(i,j,r);
+    916   Formula (all,i,TSSD)(all,j,CGDS_COMM)(all,r,REG)
+    917       ASAM(i,j,r)=TSSDK(i,j,r);
+    918    
+    919   !Block 9. Factor Taxes!
+    920   Formula (all,i,TFF)(all,j,ACT)(all,r,REG)
+    921       ASAM(i,j,r)=TFFA(i,j,r);
+    922    
+    923   !Block 10. Import Margins!
+    924   Formula (all,j,AMARG) (all,i,MCOM) (all,r,REG)
+    925       ASAM(j,i,r)=AVTWR(j,i,r);
+    926    
+    927   !Block 11. Export Margins!
+    928   Formula (all,i,TRXM)(all,j,AMARG)(all,r,reg)
+    929       ASAM(i,j,r)=AVTWR_EX(i,j,r);
+    930    
+    931   !Block 12. Rest of World!
+    932   Formula(all,i,AWW)(all,j,MCOM)(all,r,reg)
+    933       ASAM(i,j,r)=AWWM(i,j,r);
+    934    
+    935   !Block 13. Regional Household!
+    936   Formula (all,i,PRIV)(all,j,ENDW_COMM)(all,r,REG)
+    937       ASAM(i,j,r)=HF(i,j,r);
+    938   Formula (all,i,PRIV)(all,j,PRIV)(all,r,REG)
+    939       ASAM(i,j,r)=HTRANS(i,j,r);
+    940   Formula (all,j,GOVT)(all,i,PRIV)(all,r,REG)
+    941       ASAM(i,j,r)=GTRANS(i,j,r);
+    942   Formula (all,i,GOVT)(all,j,ATMM)(all,r,REG)
+    943       ASAM(i,j,r)=ARHTMM(i,j,r);
+    944   Formula (all,i,GOVT)(all,j,ATEE)(all,r,REG)
+    945       ASAM(i,j,r)=ARHTEE(i,j,r);
+    946   Formula (all,i,GOVT)(all,j,TSSM)(all,r,REG)
+    947       ASAM(i,j,r)=RHTSSM(i,j,r);
+    948   Formula (all,i,GOVT)(all,j,TSSD)(all,r,REG)
+    949       ASAM(i,j,r)=RHTSSD(i,j,r);
+    950   Formula (all,i,GOVT)(all,j,TFF)(all,r,REG)
+    951       ASAM(i,j,r)=RHTFF(i,j,r);
+    952   Formula (all,i,GOVT)(all,j,PRODTAX)(all,r,REG)
+    953       ASAM(i,j,r)=RHTPT(i,j,r);
+    954   Formula (all,i,GOVT)(all,j,DIRTAX)(all,r,REG)
+    955       ASAM(i,j,r)=RHTDT(i,j,r);
+    956    
+    957   Formula (all,i,AWW)(all,j,PRIV)(all,r,REG)
+    958       ASAM(j,i,r)=FINCI(j,i,r);
+    959   Formula (all,i,AWW)(all,j,PRIV)(all,r,REG)
+    960       ASAM(i,j,r)=FINCO(i,j,r);
+    961   Formula (all,i,GOVT)(all,j,AWW)(all,r,REG)
+    962       ASAM(i,j,r)=AIDI(i,j,r);
+    963   Formula (all,j,GOVT)(all,i,AWW)(all,r,REG)
+    964       ASAM(i,j,r)=AIDO(i,j,r);
+    965    
+    966   !Block 15. Production Taxes!
+    967   Formula (all,i,PRODTAX)(all,j,ACT)(all,r,REG)
+    968       ASAM(i,j,r)=PTAXACT(i,j,r);
+    969   Formula (all,i,PRODTAX)(all,j,CGDS_COMM)(all,r,REG)
+    970       ASAM(i,j,r)=PTAXINV(i,j,r);
+    971    
+    972   !Block 16. Direct Taxes!
+    973   Formula (all,i,DIRTAX)(all,j,ENDW_COMM)(all,r,REG)
+    974       ASAM(i,j,r)=DTAX(i,j,r);
+    975    
+    976   !Block 18. Capital!
+    977   Formula (all,i,CGDS_COMM)(all,j,ENDW_COMM)(all,r,REG)
+    978       ASAM(i,j,r)=VDEP(i,j,r);
+    979   Formula (all,i,CGDS_COMM)(all,j,PRIV)(all,r,REG)
+    980       ASAM(i,j,r)=SAVEH(i,j,r);
+    981   Formula (all,i,CGDS_COMM)(all,j,GOVT)(all,r,REG)
+    982       ASAM(i,j,r)=SAVEG(i,j,r);
+    983   Formula (all,i,CGDS_COMM)(all,j,TRXM)(all,r,REG)
+    984       ASAM(i,j,r)=CAPTR(i,j,r);
+    985   Formula (all,i,CGDS_COMM)(all,j,AWW)(all,r,REG)
+    986       ASAM(i,j,r)=ACAPWW(i,j,r);
+    987    
+    988   Coefficient (all,i,SAMAC)(all,j,SAMAC)(all,r,REG)
+    989       SAM(i,j,r) # Social Accounting Matrix #;
+    990   Formula (all,i,MCOM)(all,j,SAMAC)(all,r,REG)
+    991       SAM(i,j,r)=0;
+    992   !Block 1.Imported Commodities !
+    993   Formula (all,i,MCOM)(all,j,ACT)(all,r,REG)
+    994       SAM(i,j,r)=VIAM(i,j,r);
+    995   Formula (all,i,MCOM)(all,j,PRIV)(all,r,REG)
+    996       SAM(i,j,r)=VIPM(i,j,r);
+    997   Formula (all,i,MCOM)(all,j,GOVT)(all,r,REG)
+    998       SAM(i,j,r)=VIGM(i,j,r);
+    999   Formula (all,i,MCOM)(all,j,CGDS_COMM)(all,r,REG)
+   1000       SAM(i,j,r)=VIIM(i,j,r);
+   1001    
+   1002   !Block 2. Domestic Commodities!
+   1003   Formula (all,i,DCOM)(all,j,ACT)(all,r,REG)
+   1004       SAM(i,j,r)=VDAM(i,j,r);
+   1005   Formula (all,i,DCOM)(all,j,PRIV)(all,r,REG)
+   1006       SAM(i,j,r)=VDPM(i,j,r);
+   1007   Formula (all,i,DCOM)(all,j,GOVT)(all,r,REG)
+   1008       SAM(i,j,r)=VDGM(i,j,r);
+   1009   Formula (all,i,DCOM)(all,j,CGDS_COMM)(all,r,REG)
+   1010       SAM(i,j,r)=VDIM(i,j,r);
+   1011   Formula (all,i,DCOM)(all,j,TRXM)(all,r,REG)
+   1012       SAM(i,j,r)=VST(i,j,r);
+   1013   Formula (all,i,DCOM)(all,j,WW)(all,r,REG)
+   1014       SAM(i,j,r)=VXWD(i,j,r);
+   1015   !Block 3. Activities!
+   1016   Formula (all,i,ACT)(all,j,DCOM)(all,r,REG)
+   1017       SAM(i,j,r)=VOM(i,j,r);
+   1018   !Block 4. Factors!
+   1019   Formula (all,i,ENDW_COMM)(all,j,ACT)(all,r,REG)
+   1020       SAM(i,j,r)=VFM(i,j,r);
+   1021    
+   1022   !Block 5. Aggregate Import Duties!
+   1023   Formula (all,i,TMM)(all,j,MCOM)(all,r,REG)
+   1024       SAM(i,j,r)=IMD(i,j,r);
+   1025    
+   1026   !Block 6. Export Taxes!
+   1027   Formula(all,i,TEE)(all,j,DCOM)(all,r,REG)
+   1028       SAM(i,j,r)=EXTAX(i,j,r);
+   1029    
+   1030   !Block 7. Import Sales Taxes!
+   1031   Formula (all,i,TSSM)(all,j,ACT)(all,r,REG)
+   1032       SAM(i,j,r)=TSSMA(i,j,r);
+   1033   Formula (all,i,TSSM)(all,j,PRIV)(all,r,REG)
+   1034       SAM(i,j,r)=TSSMH(i,j,r);
+   1035   Formula (all,i,TSSM)(all,j,GOVT)(all,r,REG)
+   1036       SAM(i,j,r)=TSSMG(i,j,r);
+   1037   Formula (all,i,TSSM)(all,j,CGDS_COMM)(all,r,REG)
+   1038       SAM(i,j,r)=TSSMK(i,j,r);
+   1039    
+   1040   !Block 8. Domestic Sales Taxes!
+   1041   Formula (all,i,TSSD)(all,j,ACT)(all,r,REG)
+   1042       SAM(i,j,r)=TSSDA(i,j,r);
+   1043   Formula (all,i,TSSD)(all,j,PRIV)(all,r,REG)
+   1044       SAM(i,j,r)=TSSDH(i,j,r);
+   1045   Formula (all,i,TSSD)(all,j,GOVT)(all,r,REG)
+   1046       SAM(i,j,r)=TSSDG(i,j,r);
+   1047   Formula (all,i,TSSD)(all,j,CGDS_COMM)(all,r,REG)
+   1048       SAM(i,j,r)=TSSDK(i,j,r);
+   1049    
+   1050   !Block 9. Factor Taxes!
+   1051   Formula (all,i,TFF)(all,j,ACT)(all,r,REG)
+   1052       SAM(i,j,r)=TFFA(i,j,r);
+   1053    
+   1054   !Block 10. Import Margins!
+   1055   Formula (all,j,TRMM) (all,i,MCOM) (all,r,REG)
+   1056       SAM(j,i,r)=VTWR(j,i,r);
+   1057    
+   1058   !Block 11. Export Margins!
+   1059   Formula (all,i,TRXM)(all,j,TRMM)(all,r,reg)
+   1060       SAM(i,j,r)=VTWR_EX(i,j,r);
+   1061    
+   1062   !Block 12. Rest of World!
+   1063   Formula(all,i,WW)(all,j,MCOM)(all,r,reg)
+   1064       SAM(i,j,r)=WWM(i,j,r);
+   1065    
+   1066   !Block 13. Regional Household!
+   1067   Formula (all,i,PRIV)(all,j,ENDW_COMM)(all,r,REG)
+   1068       SAM(i,j,r)=HF(i,j,r);
+   1069   Formula (all,i,PRIV)(all,j,PRIV)(all,r,REG)
+   1070       SAM(i,j,r)=HTRANS(i,j,r);
+   1071   Formula (all,i,GOVT)(all,j,PRIV)(all,r,REG)
+   1072       SAM(j,i,r)=GTRANS(j,i,r);
+   1073   Formula (all,i,GOVT)(all,j,TMM)(all,r,REG)
+   1074       SAM(i,j,r)=RHTMM(i,j,r);
+   1075   Formula (all,i,GOVT)(all,j,TEE)(all,r,REG)
+   1076       SAM(i,j,r)=RHTEE(i,j,r);
+   1077   Formula (all,i,GOVT)(all,j,TSSM)(all,r,REG)
+   1078       SAM(i,j,r)=RHTSSM(i,j,r);
+   1079   Formula (all,i,GOVT)(all,j,TSSD)(all,r,REG)
+   1080       SAM(i,j,r)=RHTSSD(i,j,r);
+   1081   Formula (all,i,GOVT)(all,j,TFF)(all,r,REG)
+   1082       SAM(i,j,r)=RHTFF(i,j,r);
+   1083   Formula (all,i,GOVT)(all,j,PRODTAX)(all,r,REG)
+   1084       SAM(i,j,r)=RHTPT(i,j,r);
+   1085   Formula (all,i,GOVT)(all,j,DIRTAX)(all,r,REG)
+   1086       SAM(i,j,r)=RHTDT(i,j,r);
+   1087    
+   1088   Formula (all,i,PRIV)(all,j,AWW)(all,r,REG)
+   1089       SAM(i,j,r)=FINCI(i,j,r);
+   1090   Formula (all,i,AWW)(all,j,PRIV)(all,r,REG)
+   1091       SAM(i,j,r)=FINCO(i,j,r);
+   1092   Formula (all,i,GOVT)(all,j,AWW)(all,r,REG)
+   1093       SAM(i,j,r)=AIDI(i,j,r);
+   1094   Formula (all,i,AWW)(all,j,GOVT)(all,r,REG)
+   1095       SAM(i,j,r)=AIDO(i,j,r);
+   1096    
+   1097   !Block 15. Production Taxes!
+   1098   Formula (all,i,PRODTAX)(all,j,ACT)(all,r,REG)
+   1099       SAM(i,j,r)=PTAXACT(i,j,r);
+   1100   Formula (all,i,PRODTAX)(all,j,CGDS_COMM)(all,r,REG)
+   1101       SAM(i,j,r)=PTAXINV(i,j,r);
+   1102    
+   1103   !Block 16. Direct Taxes!
+   1104   Formula (all,i,DIRTAX)(all,j,ENDW_COMM)(all,r,REG)
+   1105       SAM(i,j,r)=DTAX(i,j,r);
+   1106    
+   1107   !Block 18. Capital!
+   1108   Formula (all,i,CGDS_COMM)(all,j,ENDW_COMM)(all,r,REG)
+   1109       SAM(i,j,r)=VDEP(i,j,r);
+   1110   Formula (all,i,CGDS_COMM)(all,j,PRIV)(all,r,REG)
+   1111       SAM(i,j,r)=SAVEH(i,j,r);
+   1112   Formula (all,i,CGDS_COMM)(all,j,GOVT)(all,r,REG)
+   1113       SAM(i,j,r)=SAVEG(i,j,r);
+   1114   Formula (all,i,CGDS_COMM)(all,j,TRXM)(all,r,REG)
+   1115       SAM(i,j,r)=CAPTR(i,j,r);
+   1116   Formula (all,i,CGDS_COMM)(all,j,WW)(all,r,REG)
+   1117       SAM(i,j,r)=CAPWW(i,j,r);
+   1118   Formula (all,i,CGDS_COMM)(all,j,AWW)(all,r,REG)
+   1119       SAM(i,j,r)=ACAPWW1(i,j,r);
+   1120    
+   1121   !Writing Data to the Output File!
+   1122   Write
+   1123    ASAM to file GTAPSAM header "ASAM";
+   1124    SAM to file GTAPSAM header "SAM";
+   1125    (set) SAMAC to file GTAPSAM header "SSET";
+   1126    (set) ASAMAC to file GTAPSAM header "ASET";
+   1127    (set) LABELS to file GTAPSAM header "LAB";
+   1128    (set) LONGLABEL to file GTAPSAM header "LABL";
+   1129    (set) ACT to file GTAPSAM header "ACT";
+   1130    (set) AMARG to file GTAPSAM header "AMRG";
+   1131    (set) ATEE to file GTAPSAM header "ATEE";
+   1132    (set) ATMM to file GTAPSAM header "ATMM";
+   1133    (set) AWW to file GTAPSAM header "AWW";
+   1134    (set) TEE to file GTAPSAM header "TEE";
+   1135    (set) TFF to file GTAPSAM header "TFF";
+   1136    (set) TMM to file GTAPSAM header "TMM";
+   1137    (set) TRMM to file GTAPSAM header "TRMM";
+   1138    (set) TRXM to file GTAPSAM header "TRXM";
+   1139    (set) TSSD to file GTAPSAM header "TSSD";
+   1140    (set) TSSM to file GTAPSAM header "TSSM";
+   1141    (set) WW to file GTAPSAM header "WW";
+   1142   Transfer unwritten from file GTAPSETS to file GTAPSAM;
+   1143    
+
+
+
+
+ ========================
+ ++ INPUT STATEMENT TABLE
+ ========================
+
+          Starts   Syntax  Semantic
+  Number  at line  Error?   Error?            Description
+  ------------------------------------------------------------
+     1        35     no       no      FILE 'GTAPDATA            '             
+     2        37     no       no      FILE 'GTAPSETS            '             
+     3        38     no       no      FILE 'GTAPPARM            '             
+     4        39     no       no      FILE 'GTAPSAM             '             
+     5        47     no       no      SET 'REG         '                      
+     6        50     no       no      SET 'HHLD        '                      
+     7        52     no       no      SET 'TRAD_COMM   '                      
+     8        54     no       no      SET 'MARG_COMM   '                      
+     9        56     no       no      SUBSET 'MARG_COMM   ' of 'TRAD_COMM   ' 
+    10        58     no       no      SET 'ENDW_COMM   '                      
+    11        60     no       no      SET 'CGDS_COMM   '                      
+    12        61     no       no      SET 'PROD_COMM   '                      
+    13        61     no       no      SUBSET 'TRAD_COMM   ' of 'PROD_COMM   ' 
+    14        61     no       no      SUBSET 'CGDS_COMM   ' of 'PROD_COMM   ' 
+    15        62     no       no      SET 'ENDWC_COMM  '                      
+    16        63     no       no      SET 'ENDWL_COMM  '                      
+    17        65     no       no      SUBSET 'ENDWC_COMM  ' of 'ENDW_COMM   ' 
+    18        66     no       no      SUBSET 'ENDWL_COMM  ' of 'ENDW_COMM   ' 
+    19        70     no       no      SET 'FACTDEP     '                      
+    20        72     no       no      SUBSET 'FACTDEP     ' of 'ENDW_COMM   ' 
+    21        75     no       no      SET 'PRIV        '                      
+    22        75     no       no      SUBSET 'HHLD        ' of 'PRIV        ' 
+    23        75     no       no      SUBSET 'PRIV        ' of 'HHLD        ' 
+    24        77     no       no      SET 'PRODTAX     '                      
+    25        78     no       no      SET 'DIRTAX      '                      
+    26        79     no       no      SET 'GOVT        '                      
+    27        80     no       no      SET 'ROW         '                      
+    28        84     no       no      SET 'MLABL       '                      
+    29        86     no       no      SET 'DLABL       '                      
+    30        88     no       no      SET 'ALABL       '                      
+    31        90     no       no      SET 'LTMM        '                      
+    32        92     no       no      SET 'LTEE        '                      
+    33        94     no       no      SET 'LTSSM       '                      
+    34        96     no       no      SET 'LTSSD       '                      
+    35        98     no       no      SET 'LTFF        '                      
+    36       100     no       no      SET 'LTRXM       '                      
+    37       102     no       no      SET 'LWW         '                      
+    38       111     no       no      SET 'LABELS1     '                      
+    39       111     no       no      SUBSET 'MLABL       ' of 'LABELS1     ' 
+    40       111     no       no      SUBSET 'DLABL       ' of 'LABELS1     ' 
+    41       112     no       no      SET 'LABELS2     '                      
+    42       112     no       no      SUBSET 'ALABL       ' of 'LABELS2     ' 
+    43       112     no       no      SUBSET 'LTMM        ' of 'LABELS2     ' 
+    44       113     no       no      SET 'LABELS3     '                      
+    45       113     no       no      SUBSET 'LTEE        ' of 'LABELS3     ' 
+    46       113     no       no      SUBSET 'LTSSM       ' of 'LABELS3     ' 
+    47       114     no       no      SET 'LABELS4     '                      
+    48       114     no       no      SUBSET 'LTSSD       ' of 'LABELS4     ' 
+    49       114     no       no      SUBSET 'LTFF        ' of 'LABELS4     ' 
+    50       115     no       no      SET 'LABELS5     '                      
+    51       115     no       no      SUBSET 'LTRXM       ' of 'LABELS5     ' 
+    52       115     no       no      SUBSET 'LWW         ' of 'LABELS5     ' 
+    53       116     no       no      SET 'LABELS6     '                      
+    54       116     no       no      SUBSET 'FACTDEP     ' of 'LABELS6     ' 
+    55       116     no       no      SUBSET 'LABELS6     ' of 'FACTDEP     ' 
+    56       117     no       no      SET 'LABELS7     '                      
+    57       117     no       no      SUBSET 'PRIV        ' of 'LABELS7     ' 
+    58       117     no       no      SUBSET 'GOVT        ' of 'LABELS7     ' 
+    59       118     no       no      SET 'LABELS8     '                      
+    60       118     no       no      SUBSET 'DIRTAX      ' of 'LABELS8     ' 
+    61       118     no       no      SUBSET 'PRODTAX     ' of 'LABELS8     ' 
+    62       119     no       no      SET 'LABELS9     '                      
+    63       119     no       no      SUBSET 'ROW         ' of 'LABELS9     ' 
+    64       119     no       no      SUBSET 'LABELS9     ' of 'ROW         ' 
+    65       121     no       no      SET 'LABELS10    '                      
+    66       121     no       no      SUBSET 'LABELS1     ' of 'LABELS10    ' 
+    67       121     no       no      SUBSET 'LABELS2     ' of 'LABELS10    ' 
+    68       122     no       no      SET 'LABELS11    '                      
+    69       122     no       no      SUBSET 'LABELS10    ' of 'LABELS11    ' 
+    70       122     no       no      SUBSET 'LABELS3     ' of 'LABELS11    ' 
+    71       123     no       no      SET 'LABELS12    '                      
+    72       123     no       no      SUBSET 'LABELS11    ' of 'LABELS12    ' 
+    73       123     no       no      SUBSET 'LABELS4     ' of 'LABELS12    ' 
+    74       124     no       no      SET 'LABELS13    '                      
+    75       124     no       no      SUBSET 'LABELS12    ' of 'LABELS13    ' 
+    76       124     no       no      SUBSET 'LABELS5     ' of 'LABELS13    ' 
+    77       125     no       no      SET 'LABELS14    '                      
+    78       125     no       no      SUBSET 'LABELS13    ' of 'LABELS14    ' 
+    79       125     no       no      SUBSET 'LABELS6     ' of 'LABELS14    ' 
+    80       126     no       no      SET 'LABELS15    '                      
+    81       126     no       no      SUBSET 'LABELS14    ' of 'LABELS15    ' 
+    82       126     no       no      SUBSET 'LABELS7     ' of 'LABELS15    ' 
+    83       127     no       no      SET 'LABELS16    '                      
+    84       127     no       no      SUBSET 'LABELS15    ' of 'LABELS16    ' 
+    85       127     no       no      SUBSET 'LABELS8     ' of 'LABELS16    ' 
+    86       128     no       no      SET 'LABELS      '                      
+    87       128     no       no      SUBSET 'LABELS16    ' of 'LABELS      ' 
+    88       128     no       no      SUBSET 'LABELS9     ' of 'LABELS      ' 
+    89       131     no       no      SET 'LONGLABEL   '                      
+    90       139     no       no      SET 'MCOM        '                      
+    91       141     no       no      SET 'DCOM        '                      
+    92       145     no       no      COEFFICIENT 'ISMAR       '              
+    93       146     no       no      Formula for "ISMAR"                     
+    94       147     no       no      Formula for "ISMAR"                     
+    95       149     no       no      MAPPING 'COMDCOM     '                  
+    96       151     no       no      SET 'MARG_DCOM   '                      
+    97       151     no       no      Formula for Set "MARG_DCOM"             
+    98       151     no       no      SUBSET 'MARG_DCOM   ' of 'DCOM        ' 
+    99       155     no       no      MAPPING 'MARGCOM     '                  
+   100       156     no       no      Formula for "MARGCOM"                   
+   101       158     no       no      SET 'ACT         '                      
+   102       160     no       no      SET 'TMM         '                      
+   103       162     no       no      SET 'TEE         '                      
+   104       164     no       no      SET 'TSSM        '                      
+   105       166     no       no      SET 'TSSD        '                      
+   106       168     no       no      SET 'TFF         '                      
+   107       170     no       no      SET 'TRMM        '                      
+   108       172     no       no      SET 'TRXM        '                      
+   109       174     no       no      SET 'WW          '                      
+   110       183     no       no      SET 'ATMM        '                      
+   111       185     no       no      SET 'ATEE        '                      
+   112       187     no       no      SET 'AWW         '                      
+   113       189     no       no      SET 'AMARG       '                      
+   114       193     no       no      SET 'SAMAC1      '                      
+   115       193     no       no      SUBSET 'MCOM        ' of 'SAMAC1      ' 
+   116       193     no       no      SUBSET 'DCOM        ' of 'SAMAC1      ' 
+   117       194     no       no      SET 'SAMAC2      '                      
+   118       194     no       no      SUBSET 'ACT         ' of 'SAMAC2      ' 
+   119       194     no       no      SUBSET 'ENDW_COMM   ' of 'SAMAC2      ' 
+   120       195     no       no      SET 'SAMAC3      '                      
+   121       195     no       no      SUBSET 'TMM         ' of 'SAMAC3      ' 
+   122       195     no       no      SUBSET 'TEE         ' of 'SAMAC3      ' 
+   123       196     no       no      SET 'SAMAC4      '                      
+   124       196     no       no      SUBSET 'TSSM        ' of 'SAMAC4      ' 
+   125       196     no       no      SUBSET 'TSSD        ' of 'SAMAC4      ' 
+   126       197     no       no      SET 'SAMAC5      '                      
+   127       197     no       no      SUBSET 'TFF         ' of 'SAMAC5      ' 
+   128       197     no       no      SUBSET 'TRMM        ' of 'SAMAC5      ' 
+   129       198     no       no      SET 'SAMAC6      '                      
+   130       198     no       no      SUBSET 'TRXM        ' of 'SAMAC6      ' 
+   131       198     no       no      SUBSET 'WW          ' of 'SAMAC6      ' 
+   132       199     no       no      SET 'SAMAC7      '                      
+   133       199     no       no      SUBSET 'AWW         ' of 'SAMAC7      ' 
+   134       199     no       no      SUBSET 'PRIV        ' of 'SAMAC7      ' 
+   135       200     no       no      SET 'SAMAC8      '                      
+   136       200     no       no      SUBSET 'PRODTAX     ' of 'SAMAC8      ' 
+   137       200     no       no      SUBSET 'DIRTAX      ' of 'SAMAC8      ' 
+   138       201     no       no      SET 'SAMAC9      '                      
+   139       201     no       no      SUBSET 'GOVT        ' of 'SAMAC9      ' 
+   140       201     no       no      SUBSET 'CGDS_COMM   ' of 'SAMAC9      ' 
+   141       203     no       no      SET 'SAMAC10     '                      
+   142       203     no       no      SUBSET 'SAMAC1      ' of 'SAMAC10     ' 
+   143       203     no       no      SUBSET 'SAMAC2      ' of 'SAMAC10     ' 
+   144       204     no       no      SET 'SAMAC11     '                      
+   145       204     no       no      SUBSET 'SAMAC10     ' of 'SAMAC11     ' 
+   146       204     no       no      SUBSET 'SAMAC3      ' of 'SAMAC11     ' 
+   147       205     no       no      SET 'SAMAC12     '                      
+   148       205     no       no      SUBSET 'SAMAC11     ' of 'SAMAC12     ' 
+   149       205     no       no      SUBSET 'SAMAC4      ' of 'SAMAC12     ' 
+   150       206     no       no      SET 'SAMAC13     '                      
+   151       206     no       no      SUBSET 'SAMAC12     ' of 'SAMAC13     ' 
+   152       206     no       no      SUBSET 'SAMAC5      ' of 'SAMAC13     ' 
+   153       207     no       no      SET 'SAMAC14     '                      
+   154       207     no       no      SUBSET 'SAMAC13     ' of 'SAMAC14     ' 
+   155       207     no       no      SUBSET 'SAMAC6      ' of 'SAMAC14     ' 
+   156       208     no       no      SET 'SAMAC15     '                      
+   157       208     no       no      SUBSET 'SAMAC14     ' of 'SAMAC15     ' 
+   158       208     no       no      SUBSET 'SAMAC7      ' of 'SAMAC15     ' 
+   159       209     no       no      SET 'SAMAC16     '                      
+   160       209     no       no      SUBSET 'SAMAC15     ' of 'SAMAC16     ' 
+   161       209     no       no      SUBSET 'SAMAC8      ' of 'SAMAC16     ' 
+   162       210     no       no      SET 'SAMAC       '                      
+   163       210     no       no      SUBSET 'SAMAC16     ' of 'SAMAC       ' 
+   164       210     no       no      SUBSET 'SAMAC9      ' of 'SAMAC       ' 
+   165       220     no       no      SET 'ASAMAC1     '                      
+   166       220     no       no      SUBSET 'MCOM        ' of 'ASAMAC1     ' 
+   167       220     no       no      SUBSET 'DCOM        ' of 'ASAMAC1     ' 
+   168       221     no       no      SET 'ASAMAC2     '                      
+   169       221     no       no      SUBSET 'ACT         ' of 'ASAMAC2     ' 
+   170       221     no       no      SUBSET 'ENDW_COMM   ' of 'ASAMAC2     ' 
+   171       222     no       no      SET 'ASAMAC3     '                      
+   172       222     no       no      SUBSET 'ATMM        ' of 'ASAMAC3     ' 
+   173       222     no       no      SUBSET 'ATEE        ' of 'ASAMAC3     ' 
+   174       223     no       no      SET 'ASAMAC4     '                      
+   175       223     no       no      SUBSET 'TSSM        ' of 'ASAMAC4     ' 
+   176       223     no       no      SUBSET 'TSSD        ' of 'ASAMAC4     ' 
+   177       224     no       no      SET 'ASAMAC5     '                      
+   178       224     no       no      SUBSET 'TFF         ' of 'ASAMAC5     ' 
+   179       224     no       no      SUBSET 'AMARG       ' of 'ASAMAC5     ' 
+   180       225     no       no      SET 'ASAMAC6     '                      
+   181       225     no       no      SUBSET 'TRXM        ' of 'ASAMAC6     ' 
+   182       225     no       no      SUBSET 'AWW         ' of 'ASAMAC6     ' 
+   183       226     no       no      SET 'ASAMAC7     '                      
+   184       226     no       no      SUBSET 'PRIV        ' of 'ASAMAC7     ' 
+   185       226     no       no      SUBSET 'ASAMAC7     ' of 'PRIV        ' 
+   186       227     no       no      SET 'ASAMAC8     '                      
+   187       227     no       no      SUBSET 'PRODTAX     ' of 'ASAMAC8     ' 
+   188       227     no       no      SUBSET 'DIRTAX      ' of 'ASAMAC8     ' 
+   189       228     no       no      SET 'ASAMAC9     '                      
+   190       228     no       no      SUBSET 'GOVT        ' of 'ASAMAC9     ' 
+   191       228     no       no      SUBSET 'CGDS_COMM   ' of 'ASAMAC9     ' 
+   192       230     no       no      SET 'ASAMAC10    '                      
+   193       230     no       no      SUBSET 'ASAMAC1     ' of 'ASAMAC10    ' 
+   194       230     no       no      SUBSET 'ASAMAC2     ' of 'ASAMAC10    ' 
+   195       231     no       no      SET 'ASAMAC11    '                      
+   196       231     no       no      SUBSET 'ASAMAC10    ' of 'ASAMAC11    ' 
+   197       231     no       no      SUBSET 'ASAMAC3     ' of 'ASAMAC11    ' 
+   198       232     no       no      SET 'ASAMAC12    '                      
+   199       232     no       no      SUBSET 'ASAMAC11    ' of 'ASAMAC12    ' 
+   200       232     no       no      SUBSET 'ASAMAC4     ' of 'ASAMAC12    ' 
+   201       233     no       no      SET 'ASAMAC13    '                      
+   202       233     no       no      SUBSET 'ASAMAC12    ' of 'ASAMAC13    ' 
+   203       233     no       no      SUBSET 'ASAMAC5     ' of 'ASAMAC13    ' 
+   204       234     no       no      SET 'ASAMAC14    '                      
+   205       234     no       no      SUBSET 'ASAMAC13    ' of 'ASAMAC14    ' 
+   206       234     no       no      SUBSET 'ASAMAC6     ' of 'ASAMAC14    ' 
+   207       235     no       no      SET 'ASAMAC15    '                      
+   208       235     no       no      SUBSET 'ASAMAC14    ' of 'ASAMAC15    ' 
+   209       235     no       no      SUBSET 'ASAMAC7     ' of 'ASAMAC15    ' 
+   210       236     no       no      SET 'ASAMAC16    '                      
+   211       236     no       no      SUBSET 'ASAMAC15    ' of 'ASAMAC16    ' 
+   212       236     no       no      SUBSET 'ASAMAC8     ' of 'ASAMAC16    ' 
+   213       237     no       no      SET 'ASAMAC      '                      
+   214       237     no       no      SUBSET 'ASAMAC16    ' of 'ASAMAC      ' 
+   215       237     no       no      SUBSET 'ASAMAC9     ' of 'ASAMAC      ' 
+   216       245     no       no      MAPPING 'REGTMM      '                  
+   217       246     no       no      MAPPING 'REGTEE      '                  
+   218       247     no       no      MAPPING 'REGWW       '                  
+   219       248     no       no      MAPPING 'ACTCOM      '                  
+   220       249     no       no      MAPPING 'COMMCOM     '                  
+   221       250     no       no      MAPPING 'MARGTRXM    '                  
+   222       251     no       no      MAPPING 'COMTSSM     '                  
+   223       252     no       no      MAPPING 'COMTSSD     '                  
+   224       253     no       no      MAPPING 'FACTTFF     '                  
+   225       254     no       no      MAPPING 'MARGTRMM    '                  
+   226       255     no       no      MAPPING 'REGTRMM     '                  
+   227       256     no       no      MAPPING 'MARGAMARG   '                  
+   228       264     no       no      COEFFICIENT 'VIFM_GT     '              
+   229       266     no       no      READ into 'VIFM_GT     '                
+   230       269     no       no      COEFFICIENT 'VIPM_GT     '              
+   231       271     no       no      READ into 'VIPM_GT     '                
+   232       274     no       no      COEFFICIENT 'VIGM_GT     '              
+   233       276     no       no      READ into 'VIGM_GT     '                
+   234       278     no       no      COEFFICIENT 'VIFA_GT     '              
+   235       280     no       no      READ into 'VIFA_GT     '                
+   236       283     no       no      COEFFICIENT 'VIPA_GT     '              
+   237       285     no       no      READ into 'VIPA_GT     '                
+   238       288     no       no      COEFFICIENT 'VIGA_GT     '              
+   239       290     no       no      READ into 'VIGA_GT     '                
+   240       294     no       no      COEFFICIENT 'VDFM_GT     '              
+   241       296     no       no      READ into 'VDFM_GT     '                
+   242       299     no       no      COEFFICIENT 'VDPM_GT     '              
+   243       301     no       no      READ into 'VDPM_GT     '                
+   244       304     no       no      COEFFICIENT 'VDGM_GT     '              
+   245       306     no       no      READ into 'VDGM_GT     '                
+   246       309     no       no      COEFFICIENT 'VST_GT      '              
+   247       311     no       no      READ into 'VST_GT      '                
+   248       313     no       no      COEFFICIENT 'VXWD_GT     '              
+   249       315     no       no      READ into 'VXWD_GT     '                
+   250       317     no       no      COEFFICIENT 'VXMD_GT     '              
+   251       319     no       no      READ into 'VXMD_GT     '                
+   252       322     no       no      COEFFICIENT 'VDFA_GT     '              
+   253       324     no       no      READ into 'VDFA_GT     '                
+   254       327     no       no      COEFFICIENT 'VDPA_GT     '              
+   255       329     no       no      READ into 'VDPA_GT     '                
+   256       332     no       no      COEFFICIENT 'VDGA_GT     '              
+   257       334     no       no      READ into 'VDGA_GT     '                
+   258       338     no       no      COEFFICIENT 'VFM_GT      '              
+   259       340     no       no      READ into 'VFM_GT      '                
+   260       342     no       no      COEFFICIENT 'EVFA_GT     '              
+   261       344     no       no      READ into 'EVFA_GT     '                
+   262       346     no       no      COEFFICIENT 'EVOA_GT     '              
+   263       348     no       no      READ into 'EVOA_GT     '                
+   264       350     no       no      COEFFICIENT 'VDEP_GT     '              
+   265       352     no       no      READ into 'VDEP_GT     '                
+   266       356     no       no      COEFFICIENT 'VIMS_GT     '              
+   267       358     no       no      READ into 'VIMS_GT     '                
+   268       361     no       no      COEFFICIENT 'VIWS_GT     '              
+   269       363     no       no      READ into 'VIWS_GT     '                
+   270       366     no       no      COEFFICIENT 'VTWR_GT     '              
+   271       368     no       no      READ into 'VTWR_GT     '                
+   272       370     no       no      COEFFICIENT 'SAVEH_GT    '              
+   273       372     no       no      READ into 'SAVEH_GT    '                
+   274       374     no       no      COEFFICIENT 'SAVEG_GT    '              
+   275       376     no       no      READ into 'SAVEG_GT    '                
+   276       380     no       no      COEFFICIENT 'REMI_GT     '              
+   277       382     no       no      READ into 'REMI_GT     '                
+   278       384     no       no      COEFFICIENT 'REMO_GT     '              
+   279       386     no       no      READ into 'REMO_GT     '                
+   280       388     no       no      COEFFICIENT 'FYI_GT      '              
+   281       390     no       no      READ into 'FYI_GT      '                
+   282       392     no       no      COEFFICIENT 'FYO_GT      '              
+   283       394     no       no      READ into 'FYO_GT      '                
+   284       396     no       no      COEFFICIENT 'AIDI_GT     '              
+   285       398     no       no      READ into 'AIDI_GT     '                
+   286       400     no       no      COEFFICIENT 'AIDO_GT     '              
+   287       402     no       no      READ into 'AIDO_GT     '                
+   288       404     no       no      COEFFICIENT 'TRANG_GT    '              
+   289       406     no       no      READ into 'TRANG_GT    '                
+   290       408     no       no      COEFFICIENT 'TRANH_GT    '              
+   291       410     no       no      READ into 'TRANH_GT    '                
+   292       421     no       no      COEFFICIENT 'VIAM        '              
+   293       423     no       no      Formula for "VIAM"                      
+   294       426     no       no      COEFFICIENT 'VIPM        '              
+   295       428     no       no      Formula for "VIPM"                      
+   296       431     no       no      COEFFICIENT 'VIGM        '              
+   297       433     no       no      Formula for "VIGM"                      
+   298       436     no       no      COEFFICIENT 'VIIM        '              
+   299       438     no       no      Formula for "VIIM"                      
+   300       445     no       no      COEFFICIENT 'VDAM        '              
+   301       447     no       no      Formula for "VDAM"                      
+   302       452     no       no      COEFFICIENT 'VDPM        '              
+   303       454     no       no      Formula for "VDPM"                      
+   304       458     no       no      COEFFICIENT 'VDGM        '              
+   305       460     no       no      Formula for "VDGM"                      
+   306       463     no       no      COEFFICIENT 'VDIM        '              
+   307       465     no       no      Formula for "VDIM"                      
+   308       468     no       no      COEFFICIENT 'VST_GT1     '              
+   309       470     no       no      Formula for "VST_GT1"                   
+   310       472     no       no      COEFFICIENT 'VST         '              
+   311       474     no       no      Formula for "VST"                       
+   312       476     no       no      Formula for "VST"                       
+   313       479     no       no      COEFFICIENT 'VXWD        '              
+   314       481     no       no      Formula for "VXWD"                      
+   315       484     no       no      COEFFICIENT 'AVXWD       '              
+   316       486     no       no      Formula for "AVXWD"                     
+   317       494     no       no      COEFFICIENT 'VOM_GT      '              
+   318       496     no       no      Formula for "VOM_GT"                    
+   319       500     no       no      Formula for "VOM_GT"                    
+   320       504     no       no      COEFFICIENT 'VOM_GT1     '              
+   321       506     no       no      Formula for "VOM_GT1"                   
+   322       508     no       no      COEFFICIENT 'VOM         '              
+   323       510     no       no      Formula for "VOM"                       
+   324       518     no       no      COEFFICIENT 'VFM         '              
+   325       520     no       no      Formula for "VFM"                       
+   326       528     no       no      COEFFICIENT 'IMD         '              
+   327       530     no       no      Formula for "IMD"                       
+   328       536     no       no      COEFFICIENT 'AIMD        '              
+   329       538     no       no      Formula for "AIMD"                      
+   330       546     no       no      COEFFICIENT 'EXTAX       '              
+   331       548     no       no      Formula for "EXTAX"                     
+   332       553     no       no      COEFFICIENT 'AEXTAX      '              
+   333       555     no       no      Formula for "AEXTAX"                    
+   334       562     no       no      COEFFICIENT 'TSSMA       '              
+   335       564     no       no      Formula for "TSSMA"                     
+   336       568     no       no      COEFFICIENT 'TSSMK       '              
+   337       570     no       no      Formula for "TSSMK"                     
+   338       573     no       no      COEFFICIENT 'TSSMH       '              
+   339       575     no       no      Formula for "TSSMH"                     
+   340       578     no       no      COEFFICIENT 'TSSMG       '              
+   341       580     no       no      Formula for "TSSMG"                     
+   342       587     no       no      COEFFICIENT 'TSSDA       '              
+   343       589     no       no      Formula for "TSSDA"                     
+   344       593     no       no      COEFFICIENT 'TSSDK       '              
+   345       595     no       no      Formula for "TSSDK"                     
+   346       599     no       no      COEFFICIENT 'TSSDH       '              
+   347       601     no       no      Formula for "TSSDH"                     
+   348       604     no       no      COEFFICIENT 'TSSDG       '              
+   349       606     no       no      Formula for "TSSDG"                     
+   350       613     no       no      COEFFICIENT 'TFFA        '              
+   351       615     no       no      Formula for "TFFA"                      
+   352       623     no       no      COEFFICIENT 'VTWR_GT1    '              
+   353       625     no       no      Formula for "VTWR_GT1"                  
+   354       627     no       no      COEFFICIENT 'VTWR        '              
+   355       629     no       no      Formula for "VTWR"                      
+   356       633     no       no      COEFFICIENT 'AVTWR       '              
+   357       635     no       no      Formula for "AVTWR"                     
+   358       643     no       no      COEFFICIENT 'VTWR_X      '              
+   359       645     no       no      Formula for "VTWR_X"                    
+   360       647     no       no      COEFFICIENT 'VTWR_EX     '              
+   361       649     no       no      Formula for "VTWR_EX"                   
+   362       651     no       no      Formula for "VTWR_EX"                   
+   363       655     no       no      COEFFICIENT 'AVTWR_EX    '              
+   364       657     no       no      Formula for "AVTWR_EX"                  
+   365       664     no       no      COEFFICIENT 'WWM         '              
+   366       666     no       no      Formula for "WWM"                       
+   367       671     no       no      COEFFICIENT 'AWWM        '              
+   368       673     no       no      Formula for "AWWM"                      
+   369       681     no       no      COEFFICIENT 'VDEP        '              
+   370       683     no       no      Formula for "VDEP"                      
+   371       685     no       no      Formula for "VDEP"                      
+   372       688     no       no      COEFFICIENT 'SAVEH       '              
+   373       690     no       no      Formula for "SAVEH"                     
+   374       693     no       no      COEFFICIENT 'SAVEG       '              
+   375       695     no       no      Formula for "SAVEG"                     
+   376       698     no       no      COEFFICIENT 'CAPTR       '              
+   377       700     no       no      Formula for "CAPTR"                     
+   378       705     no       no      COEFFICIENT 'CAPWW       '              
+   379       707     no       no      Formula for "CAPWW"                     
+   380       713     no       no      COEFFICIENT 'FINCI       '              
+   381       715     no       no      Formula for "FINCI"                     
+   382       718     no       no      COEFFICIENT 'FINCO       '              
+   383       720     no       no      Formula for "FINCO"                     
+   384       723     no       no      COEFFICIENT 'AIDI        '              
+   385       725     no       no      Formula for "AIDI"                      
+   386       728     no       no      COEFFICIENT 'AIDO        '              
+   387       730     no       no      Formula for "AIDO"                      
+   388       733     no       no      COEFFICIENT 'ACAPWW1     '              
+   389       735     no       no      Formula for "ACAPWW1"                   
+   390       740     no       no      COEFFICIENT 'ACAPWW      '              
+   391       742     no       no      Formula for "ACAPWW"                    
+   392       749     no       no      COEFFICIENT 'PTAXACT     '              
+   393       751     no       no      Formula for "PTAXACT"                   
+   394       758     no       no      COEFFICIENT 'PTAXINV     '              
+   395       760     no       no      Formula for "PTAXINV"                   
+   396       773     no       no      COEFFICIENT 'HF          '              
+   397       775     no       no      Formula for "HF"                        
+   398       777     no       no      Formula for "HF"                        
+   399       780     no       no      COEFFICIENT 'HTRANS      '              
+   400       782     no       no      Formula for "HTRANS"                    
+   401       785     no       no      COEFFICIENT 'GTRANS      '              
+   402       787     no       no      Formula for "GTRANS"                    
+   403       796     no       no      COEFFICIENT 'DTAX        '              
+   404       798     no       no      Formula for "DTAX"                      
+   405       807     no       no      COEFFICIENT 'RHTMM       '              
+   406       809     no       no      Formula for "RHTMM"                     
+   407       812     no       no      COEFFICIENT 'RHTEE       '              
+   408       814     no       no      Formula for "RHTEE"                     
+   409       818     no       no      COEFFICIENT 'ARHTMM      '              
+   410       820     no       no      Formula for "ARHTMM"                    
+   411       823     no       no      COEFFICIENT 'ARHTEE      '              
+   412       825     no       no      Formula for "ARHTEE"                    
+   413       828     no       no      COEFFICIENT 'RHTSSM      '              
+   414       830     no       no      Formula for "RHTSSM"                    
+   415       834     no       no      COEFFICIENT 'RHTSSD      '              
+   416       836     no       no      Formula for "RHTSSD"                    
+   417       840     no       no      COEFFICIENT 'RHTFF       '              
+   418       842     no       no      Formula for "RHTFF"                     
+   419       845     no       no      COEFFICIENT 'RHTPT       '              
+   420       847     no       no      Formula for "RHTPT"                     
+   421       850     no       no      COEFFICIENT 'RHTDT       '              
+   422       852     no       no      Formula for "RHTDT"                     
+   423       857     no       no      COEFFICIENT 'ASAM        '              
+   424       859     no       no      Formula for "ASAM"                      
+   425       862     no       no      Formula for "ASAM"                      
+   426       864     no       no      Formula for "ASAM"                      
+   427       866     no       no      Formula for "ASAM"                      
+   428       868     no       no      Formula for "ASAM"                      
+   429       872     no       no      Formula for "ASAM"                      
+   430       874     no       no      Formula for "ASAM"                      
+   431       876     no       no      Formula for "ASAM"                      
+   432       878     no       no      Formula for "ASAM"                      
+   433       880     no       no      Formula for "ASAM"                      
+   434       882     no       no      Formula for "ASAM"                      
+   435       885     no       no      Formula for "ASAM"                      
+   436       888     no       no      Formula for "ASAM"                      
+   437       892     no       no      Formula for "ASAM"                      
+   438       896     no       no      Formula for "ASAM"                      
+   439       900     no       no      Formula for "ASAM"                      
+   440       902     no       no      Formula for "ASAM"                      
+   441       904     no       no      Formula for "ASAM"                      
+   442       906     no       no      Formula for "ASAM"                      
+   443       910     no       no      Formula for "ASAM"                      
+   444       912     no       no      Formula for "ASAM"                      
+   445       914     no       no      Formula for "ASAM"                      
+   446       916     no       no      Formula for "ASAM"                      
+   447       920     no       no      Formula for "ASAM"                      
+   448       924     no       no      Formula for "ASAM"                      
+   449       928     no       no      Formula for "ASAM"                      
+   450       932     no       no      Formula for "ASAM"                      
+   451       936     no       no      Formula for "ASAM"                      
+   452       938     no       no      Formula for "ASAM"                      
+   453       940     no       no      Formula for "ASAM"                      
+   454       942     no       no      Formula for "ASAM"                      
+   455       944     no       no      Formula for "ASAM"                      
+   456       946     no       no      Formula for "ASAM"                      
+   457       948     no       no      Formula for "ASAM"                      
+   458       950     no       no      Formula for "ASAM"                      
+   459       952     no       no      Formula for "ASAM"                      
+   460       954     no       no      Formula for "ASAM"                      
+   461       957     no       no      Formula for "ASAM"                      
+   462       959     no       no      Formula for "ASAM"                      
+   463       961     no       no      Formula for "ASAM"                      
+   464       963     no       no      Formula for "ASAM"                      
+   465       967     no       no      Formula for "ASAM"                      
+   466       969     no       no      Formula for "ASAM"                      
+   467       973     no       no      Formula for "ASAM"                      
+   468       977     no       no      Formula for "ASAM"                      
+   469       979     no       no      Formula for "ASAM"                      
+   470       981     no       no      Formula for "ASAM"                      
+   471       983     no       no      Formula for "ASAM"                      
+   472       985     no       no      Formula for "ASAM"                      
+   473       988     no       no      COEFFICIENT 'SAM         '              
+   474       990     no       no      Formula for "SAM"                       
+   475       993     no       no      Formula for "SAM"                       
+   476       995     no       no      Formula for "SAM"                       
+   477       997     no       no      Formula for "SAM"                       
+   478       999     no       no      Formula for "SAM"                       
+   479      1003     no       no      Formula for "SAM"                       
+   480      1005     no       no      Formula for "SAM"                       
+   481      1007     no       no      Formula for "SAM"                       
+   482      1009     no       no      Formula for "SAM"                       
+   483      1011     no       no      Formula for "SAM"                       
+   484      1013     no       no      Formula for "SAM"                       
+   485      1016     no       no      Formula for "SAM"                       
+   486      1019     no       no      Formula for "SAM"                       
+   487      1023     no       no      Formula for "SAM"                       
+   488      1027     no       no      Formula for "SAM"                       
+   489      1031     no       no      Formula for "SAM"                       
+   490      1033     no       no      Formula for "SAM"                       
+   491      1035     no       no      Formula for "SAM"                       
+   492      1037     no       no      Formula for "SAM"                       
+   493      1041     no       no      Formula for "SAM"                       
+   494      1043     no       no      Formula for "SAM"                       
+   495      1045     no       no      Formula for "SAM"                       
+   496      1047     no       no      Formula for "SAM"                       
+   497      1051     no       no      Formula for "SAM"                       
+   498      1055     no       no      Formula for "SAM"                       
+   499      1059     no       no      Formula for "SAM"                       
+   500      1063     no       no      Formula for "SAM"                       
+   501      1067     no       no      Formula for "SAM"                       
+   502      1069     no       no      Formula for "SAM"                       
+   503      1071     no       no      Formula for "SAM"                       
+   504      1073     no       no      Formula for "SAM"                       
+   505      1075     no       no      Formula for "SAM"                       
+   506      1077     no       no      Formula for "SAM"                       
+   507      1079     no       no      Formula for "SAM"                       
+   508      1081     no       no      Formula for "SAM"                       
+   509      1083     no       no      Formula for "SAM"                       
+   510      1085     no       no      Formula for "SAM"                       
+   511      1088     no       no      Formula for "SAM"                       
+   512      1090     no       no      Formula for "SAM"                       
+   513      1092     no       no      Formula for "SAM"                       
+   514      1094     no       no      Formula for "SAM"                       
+   515      1098     no       no      Formula for "SAM"                       
+   516      1100     no       no      Formula for "SAM"                       
+   517      1104     no       no      Formula for "SAM"                       
+   518      1108     no       no      Formula for "SAM"                       
+   519      1110     no       no      Formula for "SAM"                       
+   520      1112     no       no      Formula for "SAM"                       
+   521      1114     no       no      Formula for "SAM"                       
+   522      1116     no       no      Formula for "SAM"                       
+   523      1118     no       no      Formula for "SAM"                       
+   524      1122     no       no      WRITE from 'ASAM        '               
+   525      1124     no       no      WRITE from 'SAM         '               
+   526      1125     no       no      WRITE of set 'SAMAC       '             
+   527      1126     no       no      WRITE of set 'ASAMAC      '             
+   528      1127     no       no      WRITE of set 'LABELS      '             
+   529      1128     no       no      WRITE of set 'LONGLABEL   '             
+   530      1129     no       no      WRITE of set 'ACT         '             
+   531      1130     no       no      WRITE of set 'AMARG       '             
+   532      1131     no       no      WRITE of set 'ATEE        '             
+   533      1132     no       no      WRITE of set 'ATMM        '             
+   534      1133     no       no      WRITE of set 'AWW         '             
+   535      1134     no       no      WRITE of set 'TEE         '             
+   536      1135     no       no      WRITE of set 'TFF         '             
+   537      1136     no       no      WRITE of set 'TMM         '             
+   538      1137     no       no      WRITE of set 'TRMM        '             
+   539      1138     no       no      WRITE of set 'TRXM        '             
+   540      1139     no       no      WRITE of set 'TSSD        '             
+   541      1140     no       no      WRITE of set 'TSSM        '             
+   542      1141     no       no      WRITE of set 'WW          '             
+   543      1142     no       no                                              
+
+
+
+
+ ============
+ ++ SET TABLE
+ ============
+
+                    Defined   [Max] Inter             Set numbers this
+  Number    Name    at line    Size temp? Elements    is subset of
+  ---------------------------------------------------------------------
+     1  REG            47 [       0]  no   read 
+     2  HHLD           50 [       0]  no   read     11
+     3  TRAD_COMM      52 [       0]  no   read      7
+     4  MARG_COMM      54 [       0]  no   read      3
+     5  ENDW_COMM      58 [       0]  no   read     61    78
+     6  CGDS_COMM      60 [       0]  no   read      7    68    85
+     7  PROD_COMM      61 [       0]  no   other
+     8  ENDWC_COMM     62 [       0]  no   read      5
+     9  ENDWL_COMM     63 [       0]  no   read      5
+    10  FACTDEP        70         1   no   fixed     5    31
+    11  PRIV           75 [       0]  no   other     2    32    66    83
+
+    12  PRODTAX        77         1   no   fixed    33    67    84
+    13  DIRTAX         78         1   no   fixed    33    67    84
+    14  GOVT           79         1   no   fixed    32    68    85
+    15  ROW            80         1   no   fixed    34
+    16  MLABL          84         1   no   fixed    26
+    17  DLABL          86         1   no   fixed    26
+    18  ALABL          88         1   no   fixed    27
+    19  LTMM           90         1   no   fixed    27
+    20  LTEE           92         1   no   fixed    28
+    21  LTSSM          94         1   no   fixed    28
+    22  LTSSD          96         1   no   fixed    29
+    23  LTFF           98         1   no   fixed    29
+    24  LTRXM         100         1   no   fixed    30
+    25  LWW           102         1   no   fixed    30
+    26  LABELS1       111         2   no   fixed    35
+    27  LABELS2       112         2   no   fixed    35
+    28  LABELS3       113         2   no   fixed    36
+    29  LABELS4       114         2   no   fixed    37
+    30  LABELS5       115         2   no   fixed    38
+    31  LABELS6       116         1   no   fixed    10    39
+    32  LABELS7       117 [       0]  no   other    40
+    33  LABELS8       118         2   no   fixed    41
+    34  LABELS9       119         1   no   fixed    15    42
+    35  LABELS10      121         4   no   fixed    36
+    36  LABELS11      122         6   no   fixed    37
+    37  LABELS12      123         8   no   fixed    38
+    38  LABELS13      124        10   no   fixed    39
+    39  LABELS14      125        11   no   fixed    40
+    40  LABELS15      126 [       0]  no   other    41
+    41  LABELS16      127 [       0]  no   other    42
+    42  LABELS        128 [       0]  no   other
+    43  LONGLABEL     131        17   no   fixed
+    44  MCOM          139 [       0]  no   other    60    77
+    45  DCOM          141 [       0]  no   other    60    77
+    46  MARG_DCOM     151 [       0]  no   other    45
+    47  ACT           158 [       0]  no   other    61    78
+    48  TMM           160 [       0]  no   other    62
+    49  TEE           162 [       0]  no   other    62
+    50  TSSM          164 [       0]  no   other    63    80
+    51  TSSD          166 [       0]  no   other    63    80
+    52  TFF           168 [       0]  no   other    64    81
+    53  TRMM          170 [       0]  no   other    64
+    54  TRXM          172 [       0]  no   other    65    82
+    55  WW            174 [       0]  no   other    65
+    56  ATMM          183 [       1]  no   fixed    79
+    57  ATEE          185 [       1]  no   fixed    79
+    58  AWW           187 [       1]  no   fixed    66    82
+    59  AMARG         189 [       0]  no   other    81
+    60  SAMAC1        193 [       0]  no   other    69
+    61  SAMAC2        194 [       0]  no   other    69
+    62  SAMAC3        195 [       0]  no   other    70
+    63  SAMAC4        196 [       0]  no   other    71
+    64  SAMAC5        197 [       0]  no   other    72
+    65  SAMAC6        198 [       0]  no   other    73
+    66  SAMAC7        199 [       0]  no   other    74
+    67  SAMAC8        200         2   no   fixed    75
+    68  SAMAC9        201 [       0]  no   other    76
+    69  SAMAC10       203 [       0]  no   other    70
+    70  SAMAC11       204 [       0]  no   other    71
+    71  SAMAC12       205 [       0]  no   other    72
+    72  SAMAC13       206 [       0]  no   other    73
+    73  SAMAC14       207 [       0]  no   other    74
+    74  SAMAC15       208 [       0]  no   other    75
+    75  SAMAC16       209 [       0]  no   other    76
+    76  SAMAC         210 [       0]  no   other
+    77  ASAMAC1       220 [       0]  no   other    86
+    78  ASAMAC2       221 [       0]  no   other    86
+    79  ASAMAC3       222         2   no   fixed    87
+    80  ASAMAC4       223 [       0]  no   other    88
+    81  ASAMAC5       224 [       0]  no   other    89
+    82  ASAMAC6       225 [       0]  no   other    90
+    83  ASAMAC7       226 [       0]  no   other    11    91
+    84  ASAMAC8       227         2   no   fixed    92
+    85  ASAMAC9       228 [       0]  no   other    93
+    86  ASAMAC10      230 [       0]  no   other    87
+    87  ASAMAC11      231 [       0]  no   other    88
+    88  ASAMAC12      232 [       0]  no   other    89
+    89  ASAMAC13      233 [       0]  no   other    90
+    90  ASAMAC14      234 [       0]  no   other    91
+    91  ASAMAC15      235 [       0]  no   other    92
+    92  ASAMAC16      236 [       0]  no   other    93
+    93  ASAMAC        237 [       0]  no   other
+
+
+
+
+ ===============
+ ++ SUBSET TABLE
+ ===============
+ 
+SSNO=1. Set 4 "MARG_COMM" is subset of set 3 "TRAD_COMM"
+SSNO=2. Set 3 "TRAD_COMM" is subset of set 7 "PROD_COMM"
+SSNO=3. Set 6 "CGDS_COMM" is subset of set 7 "PROD_COMM"
+SSNO=4. Set 8 "ENDWC_COMM" is subset of set 5 "ENDW_COMM"
+SSNO=5. Set 9 "ENDWL_COMM" is subset of set 5 "ENDW_COMM"
+SSNO=6. Set 10 "FACTDEP" is subset of set 5 "ENDW_COMM"
+SSNO=7. Set 2 "HHLD" is subset of set 11 "PRIV"
+SSNO=8. Set 11 "PRIV" is subset of set 2 "HHLD"
+SSNO=9. Set 16 "MLABL" is subset of set 26 "LABELS1"
+SSNO=10. Set 17 "DLABL" is subset of set 26 "LABELS1"
+SSNO=11. Set 18 "ALABL" is subset of set 27 "LABELS2"
+SSNO=12. Set 19 "LTMM" is subset of set 27 "LABELS2"
+SSNO=13. Set 20 "LTEE" is subset of set 28 "LABELS3"
+SSNO=14. Set 21 "LTSSM" is subset of set 28 "LABELS3"
+SSNO=15. Set 22 "LTSSD" is subset of set 29 "LABELS4"
+SSNO=16. Set 23 "LTFF" is subset of set 29 "LABELS4"
+SSNO=17. Set 24 "LTRXM" is subset of set 30 "LABELS5"
+SSNO=18. Set 25 "LWW" is subset of set 30 "LABELS5"
+SSNO=19. Set 10 "FACTDEP" is subset of set 31 "LABELS6"
+SSNO=20. Set 31 "LABELS6" is subset of set 10 "FACTDEP"
+SSNO=21. Set 11 "PRIV" is subset of set 32 "LABELS7"
+SSNO=22. Set 14 "GOVT" is subset of set 32 "LABELS7"
+SSNO=23. Set 13 "DIRTAX" is subset of set 33 "LABELS8"
+SSNO=24. Set 12 "PRODTAX" is subset of set 33 "LABELS8"
+SSNO=25. Set 15 "ROW" is subset of set 34 "LABELS9"
+SSNO=26. Set 34 "LABELS9" is subset of set 15 "ROW"
+SSNO=27. Set 26 "LABELS1" is subset of set 35 "LABELS10"
+SSNO=28. Set 27 "LABELS2" is subset of set 35 "LABELS10"
+SSNO=29. Set 35 "LABELS10" is subset of set 36 "LABELS11"
+SSNO=30. Set 28 "LABELS3" is subset of set 36 "LABELS11"
+SSNO=31. Set 36 "LABELS11" is subset of set 37 "LABELS12"
+SSNO=32. Set 29 "LABELS4" is subset of set 37 "LABELS12"
+SSNO=33. Set 37 "LABELS12" is subset of set 38 "LABELS13"
+SSNO=34. Set 30 "LABELS5" is subset of set 38 "LABELS13"
+SSNO=35. Set 38 "LABELS13" is subset of set 39 "LABELS14"
+SSNO=36. Set 31 "LABELS6" is subset of set 39 "LABELS14"
+SSNO=37. Set 39 "LABELS14" is subset of set 40 "LABELS15"
+SSNO=38. Set 32 "LABELS7" is subset of set 40 "LABELS15"
+SSNO=39. Set 40 "LABELS15" is subset of set 41 "LABELS16"
+SSNO=40. Set 33 "LABELS8" is subset of set 41 "LABELS16"
+SSNO=41. Set 41 "LABELS16" is subset of set 42 "LABELS"
+SSNO=42. Set 34 "LABELS9" is subset of set 42 "LABELS"
+SSNO=43. Set 46 "MARG_DCOM" is subset of set 45 "DCOM"
+SSNO=44. Set 44 "MCOM" is subset of set 60 "SAMAC1"
+SSNO=45. Set 45 "DCOM" is subset of set 60 "SAMAC1"
+SSNO=46. Set 47 "ACT" is subset of set 61 "SAMAC2"
+SSNO=47. Set 5 "ENDW_COMM" is subset of set 61 "SAMAC2"
+SSNO=48. Set 48 "TMM" is subset of set 62 "SAMAC3"
+SSNO=49. Set 49 "TEE" is subset of set 62 "SAMAC3"
+SSNO=50. Set 50 "TSSM" is subset of set 63 "SAMAC4"
+SSNO=51. Set 51 "TSSD" is subset of set 63 "SAMAC4"
+SSNO=52. Set 52 "TFF" is subset of set 64 "SAMAC5"
+SSNO=53. Set 53 "TRMM" is subset of set 64 "SAMAC5"
+SSNO=54. Set 54 "TRXM" is subset of set 65 "SAMAC6"
+SSNO=55. Set 55 "WW" is subset of set 65 "SAMAC6"
+SSNO=56. Set 58 "AWW" is subset of set 66 "SAMAC7"
+SSNO=57. Set 11 "PRIV" is subset of set 66 "SAMAC7"
+SSNO=58. Set 12 "PRODTAX" is subset of set 67 "SAMAC8"
+SSNO=59. Set 13 "DIRTAX" is subset of set 67 "SAMAC8"
+SSNO=60. Set 14 "GOVT" is subset of set 68 "SAMAC9"
+SSNO=61. Set 6 "CGDS_COMM" is subset of set 68 "SAMAC9"
+SSNO=62. Set 60 "SAMAC1" is subset of set 69 "SAMAC10"
+SSNO=63. Set 61 "SAMAC2" is subset of set 69 "SAMAC10"
+SSNO=64. Set 69 "SAMAC10" is subset of set 70 "SAMAC11"
+SSNO=65. Set 62 "SAMAC3" is subset of set 70 "SAMAC11"
+SSNO=66. Set 70 "SAMAC11" is subset of set 71 "SAMAC12"
+SSNO=67. Set 63 "SAMAC4" is subset of set 71 "SAMAC12"
+SSNO=68. Set 71 "SAMAC12" is subset of set 72 "SAMAC13"
+SSNO=69. Set 64 "SAMAC5" is subset of set 72 "SAMAC13"
+SSNO=70. Set 72 "SAMAC13" is subset of set 73 "SAMAC14"
+SSNO=71. Set 65 "SAMAC6" is subset of set 73 "SAMAC14"
+SSNO=72. Set 73 "SAMAC14" is subset of set 74 "SAMAC15"
+SSNO=73. Set 66 "SAMAC7" is subset of set 74 "SAMAC15"
+SSNO=74. Set 74 "SAMAC15" is subset of set 75 "SAMAC16"
+SSNO=75. Set 67 "SAMAC8" is subset of set 75 "SAMAC16"
+SSNO=76. Set 75 "SAMAC16" is subset of set 76 "SAMAC"
+SSNO=77. Set 68 "SAMAC9" is subset of set 76 "SAMAC"
+SSNO=78. Set 44 "MCOM" is subset of set 77 "ASAMAC1"
+SSNO=79. Set 45 "DCOM" is subset of set 77 "ASAMAC1"
+SSNO=80. Set 47 "ACT" is subset of set 78 "ASAMAC2"
+SSNO=81. Set 5 "ENDW_COMM" is subset of set 78 "ASAMAC2"
+SSNO=82. Set 56 "ATMM" is subset of set 79 "ASAMAC3"
+SSNO=83. Set 57 "ATEE" is subset of set 79 "ASAMAC3"
+SSNO=84. Set 50 "TSSM" is subset of set 80 "ASAMAC4"
+SSNO=85. Set 51 "TSSD" is subset of set 80 "ASAMAC4"
+SSNO=86. Set 52 "TFF" is subset of set 81 "ASAMAC5"
+SSNO=87. Set 59 "AMARG" is subset of set 81 "ASAMAC5"
+SSNO=88. Set 54 "TRXM" is subset of set 82 "ASAMAC6"
+SSNO=89. Set 58 "AWW" is subset of set 82 "ASAMAC6"
+SSNO=90. Set 11 "PRIV" is subset of set 83 "ASAMAC7"
+SSNO=91. Set 83 "ASAMAC7" is subset of set 11 "PRIV"
+SSNO=92. Set 12 "PRODTAX" is subset of set 84 "ASAMAC8"
+SSNO=93. Set 13 "DIRTAX" is subset of set 84 "ASAMAC8"
+SSNO=94. Set 14 "GOVT" is subset of set 85 "ASAMAC9"
+SSNO=95. Set 6 "CGDS_COMM" is subset of set 85 "ASAMAC9"
+SSNO=96. Set 77 "ASAMAC1" is subset of set 86 "ASAMAC10"
+SSNO=97. Set 78 "ASAMAC2" is subset of set 86 "ASAMAC10"
+SSNO=98. Set 86 "ASAMAC10" is subset of set 87 "ASAMAC11"
+SSNO=99. Set 79 "ASAMAC3" is subset of set 87 "ASAMAC11"
+SSNO=100. Set 87 "ASAMAC11" is subset of set 88 "ASAMAC12"
+SSNO=101. Set 80 "ASAMAC4" is subset of set 88 "ASAMAC12"
+SSNO=102. Set 88 "ASAMAC12" is subset of set 89 "ASAMAC13"
+SSNO=103. Set 81 "ASAMAC5" is subset of set 89 "ASAMAC13"
+SSNO=104. Set 89 "ASAMAC13" is subset of set 90 "ASAMAC14"
+SSNO=105. Set 82 "ASAMAC6" is subset of set 90 "ASAMAC14"
+SSNO=106. Set 90 "ASAMAC14" is subset of set 91 "ASAMAC15"
+SSNO=107. Set 83 "ASAMAC7" is subset of set 91 "ASAMAC15"
+SSNO=108. Set 91 "ASAMAC15" is subset of set 92 "ASAMAC16"
+SSNO=109. Set 84 "ASAMAC8" is subset of set 92 "ASAMAC16"
+SSNO=110. Set 92 "ASAMAC16" is subset of set 93 "ASAMAC"
+SSNO=111. Set 85 "ASAMAC9" is subset of set 93 "ASAMAC"
+
+
+
+
+ =============
+ ++ FILE TABLE
+ =============
+
+         Logical            Defined  File  File
+  Number  Name              at line  Type  Form  Actual name (if given)
+  --------------------------------------------------------------------
+     1  GTAPDATA                35    old  head
+     2  GTAPSETS                37    old  head
+     3  GTAPPARM                38    old  head
+     4  GTAPSAM                 39    new  head
+
+
+
+
+ ====================
+ ++ COEFFICIENT TABLE
+ ====================
+
+                        Defined  No            Arguments range
+  Number    Name        at line  Args Type     over sets numbered
+  ------------------------------------------------------------
+     1    ISMAR            145     1  real       3
+     2    COMDCOM          149     1  int       45
+     3    MARGCOM          155     1  int       46
+     4    REGTMM           245     1  int       48
+     5    REGTEE           246     1  int       49
+     6    REGWW            247     1  int       55
+     7    ACTCOM           248     1  int       47
+     8    COMMCOM          249     1  int       44
+     9    MARGTRXM         250     1  int       54
+    10    COMTSSM          251     1  int       50
+    11    COMTSSD          252     1  int       51
+    12    FACTTFF          253     1  int       52
+    13    MARGTRMM         254     1  int       53
+    14    REGTRMM          255     1  int       53
+    15    MARGAMARG        256     1  int       59
+    16    VIFM_GT          264     3  real       3     7     1
+    17    VIPM_GT          269     3  real       3     2     1
+    18    VIGM_GT          274     2  real       3     1
+    19    VIFA_GT          278     3  real       3     7     1
+    20    VIPA_GT          283     3  real       3     2     1
+    21    VIGA_GT          288     2  real       3     1
+    22    VDFM_GT          294     3  real       3     7     1
+    23    VDPM_GT          299     3  real       3     2     1
+    24    VDGM_GT          304     2  real       3     1
+    25    VST_GT           309     2  real       4     1
+    26    VXWD_GT          313     3  real       3     1     1
+    27    VXMD_GT          317     3  real       3     1     1
+    28    VDFA_GT          322     3  real       3     7     1
+    29    VDPA_GT          327     3  real       3     2     1
+    30    VDGA_GT          332     2  real       3     1
+    31    VFM_GT           338     3  real       5     7     1
+    32    EVFA_GT          342     3  real       5     7     1
+    33    EVOA_GT          346     3  real       5     2     1
+    34    VDEP_GT          350     3  real      10     2     1
+    35    VIMS_GT          356     3  real       3     1     1
+    36    VIWS_GT          361     3  real       3     1     1
+    37    VTWR_GT          366     4  real       4     3     1     1
+    38    SAVEH_GT         370     3  real       6     2     1
+    39    SAVEG_GT         374     3  real       6    14     1
+    40    REMI_GT          380     2  real       2     1
+    41    REMO_GT          384     2  real       2     1
+    42    FYI_GT           388     2  real       2     1
+    43    FYO_GT           392     2  real       2     1
+    44    AIDI_GT          396     1  real       1
+    45    AIDO_GT          400     1  real       1
+    46    TRANG_GT         404     2  real       2     1
+    47    TRANH_GT         408     3  real       2     2     1
+    48    VIAM             421     3  real      44    47     1
+    49    VIPM             426     3  real      44    11     1
+    50    VIGM             431     3  real      44    14     1
+    51    VIIM             436     3  real      44     6     1
+    52    VDAM             445     3  real      45    47     1
+    53    VDPM             452     3  real      45    11     1
+    54    VDGM             458     3  real      45    14     1
+    55    VDIM             463     3  real      45     6     1
+    56    VST_GT1          468     3  real       4     4     1
+    57    VST              472     3  real      45    54     1
+    58    VXWD             479     3  real      45    55     1
+    59    AVXWD            484     3  real      45    58     1
+    60    VOM_GT           494     2  real       3     1
+    61    VOM_GT1          504     3  real       3     3     1
+    62    VOM              508     3  real      47    45     1
+    63    VFM              518     3  real       5    47     1
+    64    IMD              528     3  real      48    44     1
+    65    AIMD             536     3  real      56    44     1
+    66    EXTAX            546     3  real      49    45     1
+    67    AEXTAX           553     3  real      57    45     1
+    68    TSSMA            562     3  real      50    47     1
+    69    TSSMK            568     3  real      50     6     1
+    70    TSSMH            573     3  real      50    11     1
+    71    TSSMG            578     3  real      50    14     1
+    72    TSSDA            587     3  real      51    47     1
+    73    TSSDK            593     3  real      51     6     1
+    74    TSSDH            599     3  real      51    11     1
+    75    TSSDG            604     3  real      51    14     1
+    76    TFFA             613     3  real      52    47     1
+    77    VTWR_GT1         623     4  real       4    44     1     1
+    78    VTWR             627     3  real      53    44     1
+    79    AVTWR            633     3  real      59    44     1
+    80    VTWR_X           643     3  real      54     1     1
+    81    VTWR_EX          647     3  real      54    53     1
+    82    AVTWR_EX         655     3  real      54    59     1
+    83    WWM              664     3  real      55    44     1
+    84    AWWM             671     3  real      58    44     1
+    85    VDEP             681     3  real       6     5     1
+    86    SAVEH            688     3  real       6    11     1
+    87    SAVEG            693     3  real       6    14     1
+    88    CAPTR            698     3  real       6    54     1
+    89    CAPWW            705     3  real       6    55     1
+    90    FINCI            713     3  real      11    58     1
+    91    FINCO            718     3  real      58    11     1
+    92    AIDI             723     3  real      14    58     1
+    93    AIDO             728     3  real      58    14     1
+    94    ACAPWW1          733     3  real       6    58     1
+    95    ACAPWW           740     3  real       6    58     1
+    96    PTAXACT          749     3  real      12    47     1
+    97    PTAXINV          758     3  real      12     6     1
+    98    HF               773     3  real      11     5     1
+    99    HTRANS           780     3  real      11    11     1
+   100    GTRANS           785     3  real      11    14     1
+   101    DTAX             796     3  real      13     5     1
+   102    RHTMM            807     3  real      14    48     1
+   103    RHTEE            812     3  real      14    49     1
+   104    ARHTMM           818     3  real      14    56     1
+   105    ARHTEE           823     3  real      14    57     1
+   106    RHTSSM           828     3  real      14    50     1
+   107    RHTSSD           834     3  real      14    51     1
+   108    RHTFF            840     3  real      14    52     1
+   109    RHTPT            845     3  real      14    12     1
+   110    RHTDT            850     3  real      14    13     1
+   111    ASAM             857     3  real      93    93     1
+   112    SAM              988     3  real      76    76     1
+
+
+
+
+ ================
+ ++ FORMULA TABLE
+ ================
+
+           Defined   Semantic      LHS                RHS
+  Number   at line    Error?    coefficient       coefficient numbers
+  -------------------------------------------------------------------
+     1         146     no      ISMAR       
+     2         147     no      ISMAR       
+     3         151     no      Fm for Set         1     2
+     4         156     no      MARGCOM     
+     5         423     no      VIAM              16     8     7
+     6         428     no      VIPM              17     8
+     7         433     no      VIGM              18     8
+     8         438     no      VIIM              16     8
+     9         447     no      VDAM              22     2     7
+    10         454     no      VDPM              23     2
+    11         460     no      VDGM              24     2
+    12         465     no      VDIM              22     2
+    13         470     no      VST_GT1           25
+    14         474     no      VST         
+    15         476     no      VST               56     3     9
+    16         481     no      VXWD              26     2     6
+    17         486     no      AVXWD             58
+    18         496     no      VOM_GT            22    23    24    27
+    19         500     no      VOM_GT            22    23    24    27    25
+
+    20         506     no      VOM_GT1           60
+    21         510     no      VOM               61     7     2
+    22         520     no      VFM               31     7
+    23         530     no      IMD               35     8     4    36
+    24         538     no      AIMD              64
+    25         548     no      EXTAX             26     2     5    27
+    26         555     no      AEXTAX            66
+    27         564     no      TSSMA             19    10     7    16
+    28         570     no      TSSMK             19    10    16
+    29         575     no      TSSMH             20    10    17
+    30         580     no      TSSMG             21    10    18
+    31         589     no      TSSDA             28    11     7    22
+    32         595     no      TSSDK             28    11    22
+    33         601     no      TSSDH             29    11    23
+    34         606     no      TSSDG             30    11    24
+    35         615     no      TFFA              32    12     7    31
+    36         625     no      VTWR_GT1          37     8
+    37         629     no      VTWR              77    13    14
+    38         635     no      AVTWR             77    15
+    39         645     no      VTWR_X            37     9
+    40         649     no      VTWR_EX     
+    41         651     no      VTWR_EX            9    13    80    14
+    42         657     no      AVTWR_EX          13    15    81
+    43         666     no      WWM               36     8     6    37
+    44         673     no      AWWM              83
+    45         683     no      VDEP        
+    46         685     no      VDEP              34
+    47         690     no      SAVEH             38
+    48         695     no      SAVEG             39
+    49         700     no      CAPTR             37     9    57
+    50         707     no      CAPWW             36     6    37    58
+    51         715     no      FINCI             42    40
+    52         720     no      FINCO             43    41
+    53         725     no      AIDI              44
+    54         730     no      AIDO              45
+    55         735     no      ACAPWW1           91    90    93    92
+    56         742     no      ACAPWW            89    94
+    57         751     no      PTAXACT           62    48    52    63    68
+                                                 72    76
+    58         760     no      PTAXINV           85    86    87    88    89
+                                                 94    51    55    69    73
+
+    59         775     no      HF                33
+    60         777     no      HF                33    34
+    61         782     no      HTRANS            47
+    62         787     no      GTRANS            46
+    63         798     no      DTAX              63    98    85
+    64         809     no      RHTMM             64
+    65         814     no      RHTEE             66
+    66         820     no      ARHTMM            65
+    67         825     no      ARHTEE            67
+    68         830     no      RHTSSM            68    71    70    69
+    69         836     no      RHTSSD            72    75    74    73
+    70         842     no      RHTFF             76
+    71         847     no      RHTPT             96    97
+    72         852     no      RHTDT            101
+    73         859     no      ASAM        
+    74         862     no      ASAM              48
+    75         864     no      ASAM              49
+    76         866     no      ASAM              50
+    77         868     no      ASAM              51
+    78         872     no      ASAM              52
+    79         874     no      ASAM              53
+    80         876     no      ASAM              54
+    81         878     no      ASAM              55
+    82         880     no      ASAM              57
+    83         882     no      ASAM              59
+    84         885     no      ASAM              62
+    85         888     no      ASAM              63
+    86         892     no      ASAM              65
+    87         896     no      ASAM              67
+    88         900     no      ASAM              68
+    89         902     no      ASAM              70
+    90         904     no      ASAM              71
+    91         906     no      ASAM              69
+    92         910     no      ASAM              72
+    93         912     no      ASAM              74
+    94         914     no      ASAM              75
+    95         916     no      ASAM              73
+    96         920     no      ASAM              76
+    97         924     no      ASAM              79
+    98         928     no      ASAM              82
+    99         932     no      ASAM              84
+   100         936     no      ASAM              98
+   101         938     no      ASAM              99
+   102         940     no      ASAM             100
+   103         942     no      ASAM             104
+   104         944     no      ASAM             105
+   105         946     no      ASAM             106
+   106         948     no      ASAM             107
+   107         950     no      ASAM             108
+   108         952     no      ASAM             109
+   109         954     no      ASAM             110
+   110         957     no      ASAM              90
+   111         959     no      ASAM              91
+   112         961     no      ASAM              92
+   113         963     no      ASAM              93
+   114         967     no      ASAM              96
+   115         969     no      ASAM              97
+   116         973     no      ASAM             101
+   117         977     no      ASAM              85
+   118         979     no      ASAM              86
+   119         981     no      ASAM              87
+   120         983     no      ASAM              88
+   121         985     no      ASAM              95
+   122         990     no      SAM         
+   123         993     no      SAM               48
+   124         995     no      SAM               49
+   125         997     no      SAM               50
+   126         999     no      SAM               51
+   127        1003     no      SAM               52
+   128        1005     no      SAM               53
+   129        1007     no      SAM               54
+   130        1009     no      SAM               55
+   131        1011     no      SAM               57
+   132        1013     no      SAM               58
+   133        1016     no      SAM               62
+   134        1019     no      SAM               63
+   135        1023     no      SAM               64
+   136        1027     no      SAM               66
+   137        1031     no      SAM               68
+   138        1033     no      SAM               70
+   139        1035     no      SAM               71
+   140        1037     no      SAM               69
+   141        1041     no      SAM               72
+   142        1043     no      SAM               74
+   143        1045     no      SAM               75
+   144        1047     no      SAM               73
+   145        1051     no      SAM               76
+   146        1055     no      SAM               78
+   147        1059     no      SAM               81
+   148        1063     no      SAM               83
+   149        1067     no      SAM               98
+   150        1069     no      SAM               99
+   151        1071     no      SAM              100
+   152        1073     no      SAM              102
+   153        1075     no      SAM              103
+   154        1077     no      SAM              106
+   155        1079     no      SAM              107
+   156        1081     no      SAM              108
+   157        1083     no      SAM              109
+   158        1085     no      SAM              110
+   159        1088     no      SAM               90
+   160        1090     no      SAM               91
+   161        1092     no      SAM               92
+   162        1094     no      SAM               93
+   163        1098     no      SAM               96
+   164        1100     no      SAM               97
+   165        1104     no      SAM              101
+   166        1108     no      SAM               85
+   167        1110     no      SAM               86
+   168        1112     no      SAM               87
+   169        1114     no      SAM               88
+   170        1116     no      SAM               89
+   171        1118     no      SAM               94
+
+
+
+
+ =============
+ ++ READ TABLE
+ =============
+
+           Defined    Semantic  Coefficient   File number
+  Number   at line     Error?    read into     read from   Header
+  ---------------------------------------------------------------
+     1        266       no      VIFM_GT             1       VIFM
+     2        271       no      VIPM_GT             1       VIPM
+     3        276       no      VIGM_GT             1       VIGM
+     4        280       no      VIFA_GT             1       VIFA
+     5        285       no      VIPA_GT             1       VIPA
+     6        290       no      VIGA_GT             1       VIGA
+     7        296       no      VDFM_GT             1       VDFM
+     8        301       no      VDPM_GT             1       VDPM
+     9        306       no      VDGM_GT             1       VDGM
+    10        311       no      VST_GT              1       VST 
+    11        315       no      VXWD_GT             1       VXWD
+    12        319       no      VXMD_GT             1       VXMD
+    13        324       no      VDFA_GT             1       VDFA
+    14        329       no      VDPA_GT             1       VDPA
+    15        334       no      VDGA_GT             1       VDGA
+    16        340       no      VFM_GT              1       VFM 
+    17        344       no      EVFA_GT             1       EVFA
+    18        348       no      EVOA_GT             1       EVOA
+    19        352       no      VDEP_GT             1       VDEP
+    20        358       no      VIMS_GT             1       VIMS
+    21        363       no      VIWS_GT             1       VIWS
+    22        368       no      VTWR_GT             1       VTWR
+    23        372       no      SAVEH_GT            1       SHLD
+    24        376       no      SAVEG_GT            1       SGOV
+    25        382       no      REMI_GT             1       REMI
+    26        386       no      REMO_GT             1       REMO
+    27        390       no      FYI_GT              1       FYI 
+    28        394       no      FYO_GT              1       FYO 
+    29        398       no      AIDI_GT             1       AIDI
+    30        402       no      AIDO_GT             1       AIDO
+    31        406       no      TRANG_GT            1       TRNG
+    32        410       no      TRANH_GT            1       TRNH
+
+
+
+
+ ==============
+ ++ WRITE TABLE
+ ==============
+
+        Defined   Sem      Coeff        Write
+ Number at line  Error?   written       file   Header     Long Name
+ --------------------------------------------------------------------------------
+     1     1122   no      ASAM              4  ASAM    Not defined by the user
+     2     1124   no      SAM               4  SAM     Not defined by the user
+     3     1125   no      SAMAC             4  SSET    Not defined by the user
+     4     1126   no      ASAMAC            4  ASET    Not defined by the user
+     5     1127   no      LABELS            4  LAB     Not defined by the user
+     6     1128   no      LONGLABEL         4  LABL    Not defined by the user
+     7     1129   no      ACT               4  ACT     Not defined by the user
+     8     1130   no      AMARG             4  AMRG    Not defined by the user
+     9     1131   no      ATEE              4  ATEE    Not defined by the user
+    10     1132   no      ATMM              4  ATMM    Not defined by the user
+    11     1133   no      AWW               4  AWW     Not defined by the user
+    12     1134   no      TEE               4  TEE     Not defined by the user
+    13     1135   no      TFF               4  TFF     Not defined by the user
+    14     1136   no      TMM               4  TMM     Not defined by the user
+    15     1137   no      TRMM              4  TRMM    Not defined by the user
+    16     1138   no      TRXM              4  TRXM    Not defined by the user
+    17     1139   no      TSSD              4  TSSD    Not defined by the user
+    18     1140   no      TSSM              4  TSSM    Not defined by the user
+    19     1141   no      WW                4  WW      Not defined by the user
+
+
+   
+ ======================
+ ++ INPUT CHECK SUMMARY
+ ======================
+ 
+ Total number of statements is 543.
+ There are NO syntax errors or semantic problems.
+
+
+ ******************************************************************************
+ -3-
+ -->                     Starting CODE GENERATION
+
+ ******************************************************************************
+
+
+
+  CODE OPTIONS CHOSEN
+  -------------------
+ 
+ 
+                         TABLO PORTABLE
+               CODE OPTIONS   ( --> indicates those in effect )
+ 
+      NEQ Do no equations           PGS Prepare output for GEMSIM
+      NDS Do no displays        --> WFP Write a Fortran Program
+      NWR Do no writes                    (i.e. a TABLO-generated program)
+                                --> FC5 Fast Compile TG-prog under LF95
+      ACC All comment lines in      DMS Allow simulations even
+             code                         though are no UPDATEs
+                                --> CIN Code file name same as
+                                          Information file name
+                                    CDM Old option. Has no effect.
+                                    NRZ No run-time reports re use of
+                                           ZERODIVIDE default values
+                                    NXS No "extra" statements allowed
+ 
+  Select an option   :  <opt>      Deselect an option      : -<opt>
+  Help for an option : ?<opt>      Help on all options     : ??
+  Redisplay options  : /           Finish option selection : Carriage return
+
+  END OF CODE OPTIONS CHOSEN
+  --------------------------
+  
+ ! ( Program is
+ ! 'D:\Projects\v10Tools\MyGTAP\to public\single\rungtapsh32\samview.for'.)
+ (Total number of lines of code is 19617.)
+ 
+ This program
+     o can carry out 19 WRITEs
+     o can carry out 1 TRANSFERs
+ 
+ MXGSRS = 0, MXGSIS = 0.
+ MXGSLG = 0, MXGSIC = 0.
+ 
+ MXGSOP = 0, MXGSIN = 0.
+ MXGSRC = 0, MXGSNS=0.
+ ! (Model Information file is
+ ! 'D:\Projects\v10Tools\MyGTAP\to public\single\rungtapsh32\samview.min'.)
+ 
+ (Total number of programs written is 1.)
+ 
+ *******************************************************************
+ Successful completion of TABLO.
+ The program is
+   'samview.for'.
+ 
+ This program
+     o can carry out 19 WRITEs
+     o can carry out 1 TRANSFERs
+ 
+ *******************************************************************

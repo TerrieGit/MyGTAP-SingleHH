@@ -1,0 +1,2548 @@
+
+    TTTTTTTTTT  AAAAAAAAAA   BBBBBBB      LLLL        OOOOOOOOOO
+    TTTTTTTTTT  AAA    AAA   BBBBBBBBB    LLLL        OOOOOOOOOO
+       TTT      AAA    AAA   BBB    BBB   LLLL        OOO    OOO
+       TTT      AAA    AAA   BBB  BBB     LLLL        OOO    OOO
+       TTT      AAAAAAAAAA   BBBBBBB      LLLL        OOO    OOO
+       TTT      AAAAAAAAAA   BBB  BBB     LLLL        OOO    OOO
+       TTT      AAA    AAA   BBB    BBB   LLLL        OOO    OOO
+       TTT      AAA    AAA   BBBBBBBBB    LLLLLLLLL   OOOOOOOOOO
+       TTT      AAA    AAA   BBBBBBB      LLLLLLLLL   OOOOOOOOOO
+
+ <TABLO  Version 6.4   April 2012>                                     
+
+
+
+
+
+                     GEMPACK SOFTWARE
+     << COPYRIGHT 1987-2010:  The Impact Project and KPSOFT >>
+   
+   
+
+    +++  INFORMATION ABOUT THIS PRINT FILE  +++
+   
+ 
+ ! This file was created at 17:38:16 on 23-FEB-2020 by the program
+ !  <TABLO  Version 6.4   April 2012>
+ ! which accesses some of the routines in the GEMPACK software release
+ !  <GEMPACK Release 11.3.001   May 2014>
+ 
+ !     -------------------------------------------------------                
+ !    !            GEMPACK Software System Licence            !               
+ !    !  Source Code Licence for the GEMPACK Software System  !               
+ !    !                 Licence No.  GFM-1140                 !               
+ !    !          Licence for Release 11.0 of GEMPACK          !               
+ !    !                     Peter J Minor                     !               
+ !    !                      Boulder CO                       !               
+ !    !                          USA                          !               
+ !     -------------------------------------------------------                
+    
+
+    +++  END OF INFORMATION ABOUT THIS PRINT FILE  +++
+
+ ======================================================
+           TABLO PORTABLE   
+ ++> TABLO OPTIONS   ( --> indicates those in effect )
+ ======================================================
+
+
+
+      -----------                   ----------
+  --> F1 CHECK                      L1 CHECK
+      F2 CONDENSATION               L2 CONDENSATION
+      F3 CODE GENERATION        --> L3 CODE GENERATION
+      Mode
+      ----
+      INTERACTIVE
+      BATCH
+  --> UNSPECIFIED
+ 
+
+ ==================================================
+ ++> TABLO Input file is 'decompmy.tab'
+ ++> This Information file is 'decompmy'
+ ==================================================
+
+
+
+ ******************************************************************************
+ -1-
+ -->                     Starting CHECK stage
+
+ ******************************************************************************
+
+
+      1   !<
+      2       ==========================================
+      3       ImpactECON MyGTAP Model auxillary programs
+      4       May 2016
+      5    
+      6       Welfare decomposition
+      7    
+      8       ImpactECON LLC, Boulder, Colorado
+      9       https://impactecon.com/
+     10    
+     11       ==========================================
+     12    
+     13   Adapted from:
+     14    
+     15       GTAP DECOMP.tab file by Tom Hertel and Wusheng Yu
+     16    
+     17       Purpose: TAB file for displaying interesting welfare decomposition results via
+     18       viewhar
+     19    
+     20       -------------------
+     21       History of the File
+     22       -------------------
+     23    
+     24       April 2016: revised by Terrie Walmsley for MyGTAP
+     25       September 2003: revised by Robert McDougall
+     26           - extended CNTalldemd from TRAD_COMM to DEMD_COMM
+     27           - new longnames
+     28           - module structure cleanups
+     29           - format cleanups
+     30       May 2000: revised by Ken Itakura
+     31           - added MARG_COMM and NMRG_COMM as in the version 5 of GTAP
+     32           - added Module structure
+     33           - added decomposition feature for I-S components
+     34       January 2000: revised by Tom Hertel
+     35           - changed trade volume definition to correspond to GTAP TAB file
+     36             (VXMD)
+     37           - removed endowment commodities from A2
+     38           - added full decomposition of endowment commodity tax effects (A3)
+     39           - added depreciation contribution to decomposition
+     40           - added contribution import-augmenting technical change
+     41           - removed non-homotheticity effect which is now subsumed in scale
+     42             factor
+     43           - fixed transport and terms of trade effects to correspond to the new
+     44             TAB file
+     45           - changed denominator for output and export taxes so that correspond
+     46             to same rates used elsewhere in GTAP
+     47           - added term for impact of change in preferences on EV
+     48       September 1998:
+     49           - added missing terms to the header for decomposition by tax type and
+     50             eliminated unnecessary sets.
+     51       June 1998:
+     52           - revised sets to fit with the GTAP.TAB file.
+     53           - added further resolution for the non-trade taxes.
+     54       December 1997: revised for the South Africa short course
+     55           - fixed a problem in the way trade volumes were computed
+     56       Summer 1997: revised for the 1997 GTAP short course
+     57       Early 1997: Inception
+     58    
+     59    
+     60       ------------------------------------
+     61       Overview of the DECOMP.TAB Structure
+     62       ------------------------------------
+     63    
+     64       FILES
+     65       SETS
+     66       READS for Common Coefficients
+     67       Modules
+     68   >!
+     69    
+     70    
+     71   !<
+     72       -----
+     73       FILES
+     74       -----
+     75   >!
+     76    
+     77   File
+     78       GTAPSETS # file with set specification #;
+     79   File
+     80       GTAPSOL # file containing all solution variables #;
+     81   File
+     82       GTAPBASE # file containing all base data #;
+     83   File
+     84       GTAPUPDATE # file containing all updated base data #;
+     85   File (new)
+     86       WELVIEW # file containing welfare decompositions #;
+     87    
+     88    
+     89   !<
+     90       ----
+     91       SETS
+     92       ----
+     93   >!
+     94    
+     95   Set
+     96       REG # regions in the model #
+     97       maximum size 10 read elements from file GTAPSETS header "H1";
+     98   Set
+     99       HHLD # Households in the model #
+    100       maximum size 10 read elements from file GTAPSETS header "HOU";
+    101   Set
+    102       TRAD_COMM # traded commodities #
+    103       maximum size 10 read elements from file GTAPSETS header "H2";
+    104   Set
+    105       MARG_COMM # margin commodities #
+    106       maximum size 10 read elements from file GTAPSETS header "MARG";
+    107   Subset
+    108       MARG_COMM is subset of TRAD_COMM;
+    109   Set
+    110       NMRG_COMM # non-margin commodities # = TRAD_COMM - MARG_COMM;
+    111   Set
+    112       CGDS_COMM # capital goods commodities #
+    113       maximum size 1 read elements from file GTAPSETS header "H9";
+    114   Set
+    115       ENDW_COMM # endowment commodities #
+    116       maximum size 5 read elements from file GTAPSETS header "H6";
+    117   Set
+    118       ENDWC_COMM # capital endowment commodity # (capital);
+    119   Set
+    120       PROD_COMM # produced commodities # = TRAD_COMM UNION CGDS_COMM;
+    121   Set
+    122       DEMD_COMM # demanded commodities # = ENDW_COMM UNION TRAD_COMM;
+    123   Set
+    124       NSAV_COMM # non-savings commodities # = DEMD_COMM UNION CGDS_COMM;
+    125   Subset
+    126       PROD_COMM is subset of NSAV_COMM;
+    127   Subset
+    128       ENDWC_COMM is subset of NSAV_COMM;
+    129    
+    130    
+    131   !<
+    132       The followings are new sets for DECOMP.TAB.  Supplementary sets for
+    133       "toggles" in VIEWHAR.
+    134   >!
+    135    
+    136   Set
+    137       CTAX(pfacttax,prodtax,inputtax,contax,govtax,xtax,mtax);
+    138   Set
+    139       TYPE(xtax,mtax);
+    140   Subset
+    141       TYPE is subset of CTAX;
+    142   Set
+    143       COLUMN(alloc_A1,endw_B1,tech_C1,pop_D1,tot_E1,IS_F1,pref_G1,finc_H1);
+    144   Set
+    145       TECHTYPE(output,primfac,v_added,ininput,transp,import);
+    146   Set
+    147       PRICES(pworld,pexport,pimport);
+    148   Set
+    149       DIR(imported,domestic);
+    150   Set
+    151       ACTIVITY(firm, private, govt);
+    152   Set
+    153       COL(welcnt, dvol, taxrateb, taxrateu);
+    154   Set
+    155       DIREC(import,export);
+    156   Set
+    157       FORM(percent,value);
+    158   Set
+    159       COLM(ISbal,p_cgds,p_save);
+    160   Set
+    161       FORINC(fky,rem,aid);
+    162    
+    163    
+    164   !<
+    165       -----------------------------
+    166       READS for Common Coefficients
+    167       -----------------------------
+    168    
+    169       Note: A common coefficient is the one used across several modules.
+    170   >!
+    171    
+    172   Coefficient (all,i,ENDW_COMM)(all,h,HHLD)(all,r,REG)
+    173       BEVOA(i,h,r) # value of output at agent's prices #;
+    174   Read
+    175       BEVOA from file GTAPBASE header "EVOA";
+    176   Coefficient (all,i,ENDW_COMM)(all,j,PROD_COMM)(all,r,REG)
+    177       BEVFA(i,j,r) # producer expenditure on i by industry j #;
+    178   Read
+    179       BEVFA from file GTAPBASE header "EVFA";
+    180   Coefficient (all,i,TRAD_COMM)(all,j,PROD_COMM)(all,r,REG)
+    181       BVIFA(i,j,r) # purchases of imported i r for use in j in region r #;
+    182   Read
+    183       BVIFA from file GTAPBASE header "VIFA";
+    184   Coefficient (all,i,TRAD_COMM)(all,j,PROD_COMM)(all,r,REG)
+    185       BVDFA(i,j,r) # purchases of domestic i r for use in j in region r #;
+    186   Read
+    187       BVDFA from file GTAPBASE header "VDFA";
+    188    
+    189   Coefficient (all,i,NSAV_COMM)(all,r,REG)
+    190       BVOA(i,r) # value of commodity i output in region r #;
+    191   Formula (all,i,ENDW_COMM)(all,r,REG)
+    192       BVOA(i,r) = sum(h, HHLD, BEVOA(i,h,r)) ;
+    193   Formula (all,i,PROD_COMM)(all,r,REG)
+    194       BVOA(i,r)
+    195           = sum(j,ENDW_COMM, BEVFA(j,i,r))
+    196           + sum(j,TRAD_COMM, BVIFA(j,i,r) + BVDFA(j,i,r));
+    197    
+    198    
+    199   !<
+    200       =======
+    201       Modules
+    202       =======
+    203    
+    204       A:  EV Decomposition: Summary
+    205       A1: Allocative Efficiency Effect: Commodity Summary
+    206       A2: Allocative Efficiency Effect: Tax Type Summary
+    207       AX: Decomposition of Allocative Effect, by Tax Type and Commodity
+    208       B1: Endowment Effect, Gross of Depreciation
+    209       B2: Endowment Effect: Depreciation
+    210       C1: Technical Change Effect
+    211       D1: Population Effect
+    212       E1: Terms of Trade Effect
+    213       F1: I-S Effect: Explanatory Factors
+    214   >!
+    215    
+    216    
+    217   !<
+    218       -----------------------------
+    219       A:  EV Decomposition: Summary
+    220       -----------------------------
+    221   >!
+    222    
+    223   Coefficient (all,r,REG)
+    224       CNTalleffr(r)
+    225       # total contribution to regional EV of allocative effects #;
+    226   Read
+    227       CNTalleffr from file GTAPSOL header "ALLR";
+    228    
+    229   Coefficient (all,r,REG)
+    230       CNTendwr(r)
+    231       # contribution to regional EV of changes in all ENDW_COMM #;
+    232   Read
+    233       CNTendwr from file GTAPSOL header "ENDR";
+    234    
+    235   Coefficient (all,r,REG)
+    236       CNTtechr(r)
+    237       # contribution to regional EV of all technical change #;
+    238   Read
+    239       CNTtechr from file GTAPSOL header "TECR";
+    240    
+    241   Coefficient (all,r,REG)
+    242       CNTpopr(r)
+    243       # contribution to regional EV of all technical change #;
+    244   Read
+    245       CNTpopr from file GTAPSOL header "POPR";
+    246    
+    247   Coefficient (all,r,REG)
+    248       CNTtotr(r)
+    249       # contribution to regional EV of changes in its terms of trade #;
+    250   Read
+    251       CNTtotr from file GTAPSOL header "TOTR";
+    252    
+    253   Coefficient (all,r,REG)
+    254       CNTcgdsr(r)
+    255       # contribution to regional EV of changes in the price of cgds #;
+    256   Read
+    257       CNTcgdsr from file GTAPSOL header "CGDS";
+    258    
+    259   Coefficient (all,r,REG)
+    260       CNTdpar(r)
+    261       # contribution to regional EV of changes in preferences #;
+    262   Read
+    263       CNTdpar from file GTAPSOL header "DPAR";
+    264    
+    265   Coefficient (all,r,REG)
+    266       CNTfyr(r)
+    267       # contribution to regional EV of all technical change #;
+    268   Read
+    269       CNTfyr from file GTAPSOL header "FY";
+    270    
+    271   Coefficient (all,r,REG)
+    272       CNTfkyr(r)
+    273       # contribution to regional EV of all technical change #;
+    274   Read
+    275       CNTfkyr from file GTAPSOL header "FKY";
+    276    
+    277   Coefficient (all,r,REG)
+    278       CNTremr(r)
+    279       # contribution to regional EV of all technical change #;
+    280   Read
+    281       CNTremr from file GTAPSOL header "REM";
+    282    
+    283   Coefficient (all,r,REG)
+    284       CNTaidr(r)
+    285       # contribution to regional EV of all technical change #;
+    286   Read
+    287       CNTaidr from file GTAPSOL header "AID";
+    288    
+    289   Coefficient (all,r,REG)(all,j,COLUMN)
+    290       WELFARE(r,j) # aggregate report of welfare change #;
+    291   Formula (all,r,REG)
+    292       WELFARE(r,"alloc_A1") = CNTalleffr(r);
+    293   Formula (all,r,REG)
+    294       WELFARE(r,"endw_B1") = CNTendwr(r);
+    295   Formula (all,r,REG)
+    296       WELFARE(r,"tech_C1") = CNTtechr(r);
+    297   Formula (all,r,REG)
+    298       WELFARE(r,"pop_D1") = CNTpopr(r);
+    299   Formula (all,r,REG)
+    300       WELFARE(r,"tot_E1") = CNTtotr(r);
+    301   Formula (all,r,REG)
+    302       WELFARE(r,"IS_F1") = CNTcgdsr(r);
+    303   Formula (all,r,REG)
+    304       WELFARE(r,"PREF_G1") = CNTdpar(r);
+    305   Formula (all,r,REG)
+    306       WELFARE(r,"finc_H1") = CNTfyr(r) ;
+    307    
+    308   Write
+    309       WELFARE to file WELVIEW header "A"
+    310       longname "EV Decomposition: Summary";
+    311    
+    312    
+    313   !<
+    314       ---------------------------------------------------
+    315       A1: Allocative Efficiency Effect: Commodity Summary
+    316       ---------------------------------------------------
+    317   >!
+    318    
+    319   Coefficient (all,i,DEMD_COMM)(all,r,REG)
+    320       CNTalleffir(i,r)
+    321       # total contribution to regional EV of allocative effects of i in r #;
+    322   Read
+    323       CNTalleffir from file GTAPSOL header "AEFI";
+    324    
+    325   Coefficient (all,r,REG)(all,i,DEMD_COMM)
+    326       CNTalldemd(r,i) # transpose of CNTalleffir(i,r) #;
+    327   Formula (all,r,REG)(all,i,DEMD_COMM)
+    328       CNTalldemd(r,i) = CNTalleffir(i,r);
+    329    
+    330   Write
+    331       CNTalldemd to file WELVIEW header "A1"
+    332       longname "Allocative Efficiency Effect: Commodity Summary";
+    333    
+    334    
+    335   !<
+    336       --------------------------------------------------
+    337       A2: Allocative Efficiency Effect: Tax Type Summary
+    338       --------------------------------------------------
+    339   >!
+    340    
+    341   Coefficient (all,r,REG)
+    342       CNTqor(r)
+    343       # contribution to WEV of changes in output of all NSAV_COMM from r #;
+    344   Read
+    345       CNTqor from file GTAPSOL header "QOR";
+    346    
+    347   Coefficient (all,r,REG)
+    348       CNTqfer(r)
+    349       # contribution to WEV of changes in use of all ENDW_COMM in all j in r #;
+    350   Read
+    351       CNTqfer from file GTAPSOL header "QFER";
+    352    
+    353   Coefficient (all,r,REG)
+    354       CNTqfmr(r)
+    355       # contribution to WEV of changes in use of imported int. in all j in r #;
+    356   Read
+    357       CNTqfmr from file GTAPSOL header "QFMR";
+    358   Coefficient (all,r,REG)
+    359       CNTqfdr(r)
+    360       # contribution to WEV of changes in use of domestic int. in all j in r #;
+    361   Read
+    362       CNTqfdr from file GTAPSOL header "QFDR";
+    363   Coefficient (all,r,REG)
+    364       CNTallir(r);
+    365   Formula (all,r,REG)
+    366       CNTallir(r) = CNTqfmr(r) + CNTqfdr(r);
+    367    
+    368   Coefficient (all,r,REG)
+    369       CNTqpmr(r)
+    370       # contribution to WEV of changes in consumption of imported goods in r #;
+    371   Read
+    372       CNTqpmr from file GTAPSOL header "QPMR";
+    373   Coefficient (all,r,REG)
+    374       CNTqpdr(r)
+    375       # contribution to WEV of changes in consumption of domestic goods in r #;
+    376   Read
+    377       CNTqpdr from file GTAPSOL header "QPDR";
+    378   Coefficient (all,r,REG)
+    379       CNTallpr(r);
+    380   Formula (all,r,REG)
+    381       CNTallpr(r) = CNTqpmr(r) + CNTqpdr(r);
+    382    
+    383   Coefficient (all,r,REG)
+    384       CNTqgmr(r)
+    385       # contribution to WEV of changes in gov't consumption of imports in r #;
+    386   Read
+    387       CNTqgmr from file GTAPSOL header "QGMR";
+    388   Coefficient (all,r,REG)
+    389       CNTqgdr(r)
+    390       # contrib. to WEV of changes in gov't consumption of domestics in r #;
+    391   Read
+    392       CNTqgdr from file GTAPSOL header "QGDR";
+    393   Coefficient (all,r,REG)
+    394       CNTallgr(r);
+    395   Formula (all,r,REG)
+    396       CNTallgr(r) = CNTqgmr(r) + CNTqgdr(r);
+    397    
+    398   Coefficient (all,r,REG)
+    399       CNTqxsr(r)
+    400       # cont. to WEV of changes in exports of all goods from srce r to all dest #;
+    401   Read
+    402       CNTqxsr from file GTAPSOL header "QXSR";
+    403    
+    404   Coefficient (all,r,REG)
+    405       CNTqimr(r)
+    406       # cont. to WEV of changes in imports of all goods from all srce to dest r #;
+    407   Read
+    408       CNTqimr from file GTAPSOL header "QIMR";
+    409    
+    410   Coefficient (all,r,REG)(all,k,CTAX)
+    411       CNTalleffkr(r,k);
+    412   Formula (all,r,REG)
+    413       CNTalleffkr(r,"pfacttax") = CNTqfer(r);
+    414   Formula (all,r,REG)
+    415       CNTalleffkr(r,"prodtax") = CNTqor(r);
+    416   Formula (all,r,REG)
+    417       CNTalleffkr(r,"inputtax") = CNTallir(r);
+    418   Formula (all,r,REG)
+    419       CNTalleffkr(r,"contax") = CNTallpr(r);
+    420   Formula (all,r,REG)
+    421       CNTalleffkr(r,"govtax") = CNTallgr(r);
+    422   Formula (all,r,REG)
+    423       CNTalleffkr(r,"xtax") = CNTqxsr(r);
+    424   Formula (all,r,REG)
+    425       CNTalleffkr(r,"mtax") = CNTqimr(r);
+    426    
+    427   Write
+    428       CNTalleffkr to file WELVIEW header "A2"
+    429       longname "Allocative Efficiency Effect: Tax Type Summary";
+    430    
+    431    
+    432   !<
+    433       -----------------------------------------------------------------
+    434       AX: Decomposition of Allocative Effect, by Tax Type and Commodity
+    435       -----------------------------------------------------------------
+    436    
+    437       AX0:  Preliminaries
+    438       A21:  Output Tax Effect
+    439       A22:  Domestic Tax Effect
+    440       A23:  Trade Tax Effect
+    441       A3:   Endowment Tax Effect
+    442   >!
+    443    
+    444    
+    445   !<
+    446       AX0:  Preliminaries
+    447       -------------------
+    448   >!
+    449    
+    450   Coefficient (all,i,TRAD_COMM)(all,h,HHLD)(all,r,REG)
+    451       BVDPM(i,h,r) # private household expenditure on domestic i in r #;
+    452   Read
+    453       BVDPM from file GTAPBASE header "VDPM";
+    454   Coefficient (all,i,TRAD_COMM)(all,r,REG)
+    455       BVDGM(i,r) # government household expenditure on domestic i in r #;
+    456   Read
+    457       BVDGM from file GTAPBASE header "VDGM";
+    458   Coefficient (all,i,TRAD_COMM)(all,j,PROD_COMM)(all,r,REG)
+    459       BVDFM(i,j,r) # purchases of domestic i r for use in j in region r #;
+    460   Read
+    461       BVDFM from file GTAPBASE header "VDFM";
+    462   Coefficient (all,i,TRAD_COMM)(all,h,HHLD)(all,r,REG)
+    463       UVDPM(i,h,r) # private household expenditure on domestic i in r #;
+    464   Read
+    465       UVDPM from file GTAPUPDATE header "VDPM";
+    466   Coefficient (all,i,TRAD_COMM)(all,r,REG)
+    467       UVDGM(i,r) # government household expenditure on domestic i in r #;
+    468   Read
+    469       UVDGM from file GTAPUPDATE header "VDGM";
+    470   Coefficient (all,i,TRAD_COMM)(all,j,PROD_COMM)(all,r,REG)
+    471       UVDFM(i,j,r) # purchases of domestic i r for use in j in region r #;
+    472   Read
+    473       UVDFM from file GTAPUPDATE header "VDFM";
+    474   Coefficient (all,i,TRAD_COMM)(all,j,PROD_COMM)(all,r,REG)
+    475       UVIFA(i,j,r) # purchases of imported i r for use in j in region r #;
+    476   Read
+    477       UVIFA from file GTAPUPDATE header "VIFA";
+    478   Coefficient (all,i,TRAD_COMM)(all,j,PROD_COMM)(all,r,REG)
+    479       UVDFA(i,j,r) # purchases of domestic i r for use in j in region r #;
+    480   Read
+    481       UVDFA from file GTAPUPDATE header "VDFA";
+    482   Coefficient (all,i,TRAD_COMM)(all,r,REG)(all,s,REG)
+    483       BVXMD(i,r,s)
+    484       # exports of i from r to s at market prices (tradeables only) #;
+    485   Read
+    486       BVXMD from file GTAPBASE header "VXMD";
+    487   Coefficient (all,i,TRAD_COMM)(all,r,REG)(all,s,REG)
+    488       UVXMD(i,r,s)
+    489       # exports of i from r to s at market prices (tradeables only) #;
+    490   Read
+    491       UVXMD from file GTAPUPDATE header "VXMD";
+    492    
+    493    
+    494   !<
+    495       A21:  Output Tax Effect
+    496       -----------------------
+    497    
+    498       A21:  Output Tax Effect
+    499       A211: Output Tax Effect: Explanatory Factors
+    500   >!
+    501    
+    502    
+    503   !<
+    504       A21:  Output Tax Effect
+    505       .......................
+    506   >!
+    507    
+    508   Coefficient (all,i,NSAV_COMM)(all,r,REG)
+    509       CNTqoir(i,r)
+    510       # contribution to WEV of changes in output of NSAV_COMM i in r #;
+    511   Read
+    512       CNTqoir from file GTAPSOL header "QOIR";
+    513    
+    514   Coefficient (all,i,NSAV_COMM)(all,r,REG)
+    515       OTAX(i,r);
+    516   Formula (all,i,NSAV_COMM)(all,r,REG)
+    517       OTAX(i,r) = CNTqoir(i,r);
+    518    
+    519   Write
+    520       OTAX to file WELVIEW header "A21"
+    521       longname "Output Tax Effect";
+    522    
+    523    
+    524   !<
+    525       A211: Output Tax Effect: Explanatory Factors
+    526       ............................................
+    527   >!
+    528    
+    529   Coefficient (all,i,ENDW_COMM)(all,j,PROD_COMM)(all,r,REG)
+    530       BVFM(i,j,r) # producer expenditure on i by j in r at market prices #;
+    531   Read
+    532       BVFM from file GTAPBASE header "VFM";
+    533    
+    534   Coefficient (all,i,TRAD_COMM)(all,r,REG)
+    535       BVDM(i,r) # domestic sales of i in r at market prices (tradeables only) #;
+    536   Formula (all,i,TRAD_COMM)(all,r,REG)
+    537       BVDM(i,r) = sum(h, HHLD, BVDPM(i,h,r))
+    538                 + BVDGM(i,r) + sum(j,PROD_COMM, BVDFM(i,j,r));
+    539    
+    540   Coefficient (all,m,MARG_COMM)(all,r,REG)
+    541       BVST(m,r)
+    542       # exports of m from r for int'l transport at mkt prices (tradeables only) #;
+    543   Read
+    544       BVST from file GTAPBASE header "VST";
+    545    
+    546   Coefficient (all,i,NSAV_COMM)(all,r,REG)
+    547       BVOM(i,r) # value of commodity i output in region r at mkt prices #;
+    548   Formula (all,i,ENDW_COMM)(all,r,REG)
+    549       BVOM(i,r) = sum(j,PROD_COMM, BVFM(i,j,r));
+    550   Formula (all,m,MARG_COMM)(all,r,REG)
+    551       BVOM(m,r) = BVDM(m,r) + sum(s,REG, BVXMD(m,r,s)) + BVST(m,r);
+    552   Formula (all,i,NMRG_COMM)(all,r,REG)
+    553       BVOM(i,r) = BVDM(i,r) + sum(s,REG, BVXMD(i,r,s));
+    554   Formula (all,h,CGDS_COMM)(all,r,REG)
+    555       BVOM(h,r) = BVOA(h,r);
+    556    
+    557   Coefficient (all,i,NSAV_COMM)(all,r,REG)
+    558       qo(i,r) # industry output of commodity i in region r #;
+    559   Read
+    560       qo from file GTAPSOL header "qo";
+    561    
+    562   Zerodivide (nonzero_by_zero) default 0;
+    563    
+    564   Coefficient (all,i,NSAV_COMM)(all,r,REG)
+    565       BOUTAX(i,r);
+    566   Formula (all,i,NSAV_COMM)(all,r,REG)
+    567       BOUTAX(i,r) = [BVOM(i,r) - BVOA(i,r)] / BVOM(i,r) * 100;
+    568    
+    569   Zerodivide (nonzero_by_zero) off;
+    570    
+    571   Coefficient (all,i,ENDW_COMM)(all,j,PROD_COMM)(all,r,REG)
+    572       UVFM(i,j,r) # producer expenditure on i by j in r at market prices #;
+    573   Read
+    574       UVFM from file GTAPUPDATE header "VFM";
+    575    
+    576   Coefficient (all,i,TRAD_COMM)(all,r,REG)
+    577       UVDM(i,r) # domestic sales of i in r at market prices (tradeables only) #;
+    578   Formula (all,i,TRAD_COMM)(all,r,REG)
+    579       UVDM(i,r) = sum(h, HHLD, UVDPM(i,h,r)) + UVDGM(i,r)
+    580                 + sum(j,PROD_COMM, UVDFM(i,j,r));
+    581    
+    582   Coefficient (all,m,MARG_COMM)(all,r,REG)
+    583       UVST(m,r)
+    584       # exports of m from r for int'l transport at mkt prices (tradeables only) #;
+    585   Read
+    586       UVST from file GTAPUPDATE header "VST";
+    587    
+    588   Coefficient (all,i,ENDW_COMM)(all,h,HHLD)(all,r,REG)
+    589       UEVOA(i,h,r) # value of output at agent's prices #;
+    590   Read
+    591       UEVOA from file GTAPUPDATE header "EVOA";
+    592    
+    593   Coefficient (all,i,ENDW_COMM)(all,j,PROD_COMM)(all,r,REG)
+    594       UEVFA(i,j,r) # producer expenditure on i by industry j #;
+    595   Read
+    596       UEVFA from file GTAPUPDATE header "EVFA";
+    597    
+    598   Coefficient (all,i,NSAV_COMM)(all,r,REG)
+    599       UVOA(i,r) # value of commodity i output in region r #;
+    600   Formula (all,i,ENDW_COMM)(all,r,REG)
+    601       UVOA(i,r) = sum(h, HHLD, UEVOA(i,h,r));
+    602   Formula (all,i,PROD_COMM)(all,r,REG)
+    603       UVOA(i,r)
+    604           = sum(j,ENDW_COMM, UEVFA(j,i,r))
+    605           + sum(j,TRAD_COMM, UVIFA(j,i,r) + UVDFA(j,i,r));
+    606    
+    607   Coefficient (all,i,NSAV_COMM)(all,r,REG)
+    608       UVOM(i,r) # value of commodity i output in region r at mkt prices #;
+    609   Formula (all,i,ENDW_COMM)(all,r,REG)
+    610       UVOM(i,r) = sum(j,PROD_COMM, UVFM(i,j,r));
+    611   Formula (all,m,MARG_COMM)(all,r,REG)
+    612       UVOM(m,r) = UVDM(m,r) + sum(s,REG, UVXMD(m,r,s)) + UVST(m,r);
+    613   Formula (all,i,NMRG_COMM)(all,r,REG)
+    614       UVOM(i,r) = UVDM(i,r) + sum(s,REG, UVXMD(i,r,s));
+    615   Formula (all,h,CGDS_COMM)(all,r,REG)
+    616       UVOM(h,r) = UVOA(h,r);
+    617    
+    618   Zerodivide (nonzero_by_zero) default 0;
+    619    
+    620   Coefficient (all,i,NSAV_COMM)(all,r,REG)
+    621       UOUTAX(i,r);
+    622   Formula (all,i,NSAV_COMM)(all,r,REG)
+    623       UOUTAX(i,r) = [UVOM(i,r) - UVOA(i,r)] / UVOM(i,r) * 100;
+    624    
+    625   Zerodivide (nonzero_by_zero) off;
+    626    
+    627   Coefficient (all,i,NSAV_COMM)(all,r,REG)(all,c,COL)
+    628       OUTPUT(i,r,c);
+    629   Formula (all,i,NSAV_COMM)(all,r,REG)
+    630       OUTPUT(i,r,"welcnt") = OTAX(i,r);
+    631   Formula (all,i,NSAV_COMM)(all,r,REG)
+    632       OUTPUT(i,r,"dvol") = BVOM(i,r) * qo(i,r) / 100;
+    633   Formula (all,i,NSAV_COMM)(all,r,REG)
+    634       OUTPUT(i,r,"taxrateb") = BOUTAX(i,r);
+    635   Formula (all,i,NSAV_COMM)(all,r,REG)
+    636       OUTPUT(i,r,"taxrateu") = UOUTAX(i,r);
+    637    
+    638   Write
+    639       OUTPUT to file WELVIEW header "A211"
+    640       longname "Output Tax Effect: Explanatory Factors";
+    641    
+    642    
+    643   !<
+    644       A22:  Domestic Tax Effect
+    645       -------------------------
+    646    
+    647       A22:  Domestic Tax Effect: Summary
+    648       A221: Intermed. Input Tax Effect
+    649       A22F: Intermed. Input Tax Effect: Explanatory Factors
+    650       A22P: Private Cons. Tax Effect: Explanatory Factors
+    651       A22G: Government Cons. Tax Effect: Explanatory Factors
+    652   >!
+    653    
+    654    
+    655   !<
+    656       A22: Domestic Tax Effect: Summary
+    657       .................................
+    658   >!
+    659    
+    660   Coefficient (all,i,TRAD_COMM)(all,r,REG)
+    661       CNTqfmir(i,r)
+    662       # contribution to WEV of changes in use of imported int. i in all j in r #;
+    663   Read
+    664       CNTqfmir from file GTAPSOL header "QFMI";
+    665    
+    666   Coefficient (all,i,TRAD_COMM)(all,r,REG)
+    667       CNTqpmir(i,r)
+    668       # contribution to WEV of changes in consumption of imported good i in r #;
+    669   Read
+    670       CNTqpmir from file GTAPSOL header "QPMI";
+    671    
+    672   Coefficient (all,i,TRAD_COMM)(all,r,REG)
+    673       CNTqgmir(i,r)
+    674       # contribution to WEV of changes in gov't consumption of import i in r #;
+    675   Read
+    676       CNTqgmir from file GTAPSOL header "QGMI";
+    677    
+    678   Coefficient (all,i,TRAD_COMM)(all,r,REG)
+    679       CNTqfdir(i,r)
+    680       # contribution to WEV of changes in use of domestic i in all j in r #;
+    681   Read
+    682       CNTqfdir from file GTAPSOL header "QFDI";
+    683    
+    684   Coefficient (all,i,TRAD_COMM)(all,r,REG)
+    685       CNTqpdir(i,r)
+    686       # contribution to WEV of changes in consumption of domestic good i in r #;
+    687   Read
+    688       CNTqpdir from file GTAPSOL header "QPDI";
+    689    
+    690   Coefficient (all,i,TRAD_COMM)(all,r,REG)
+    691       CNTqgdir(i,r)
+    692       # contribution to WEV of changes in gov't consumption of domestic i in r #;
+    693   Read
+    694       CNTqgdir from file GTAPSOL header "QGDI";
+    695    
+    696   Coefficient (all,i,TRAD_COMM)(all,j,ACTIVITY)(all,r,REG)(all,t,DIR)
+    697       ATAX(i,j,r,t);
+    698   Formula (all,i,TRAD_COMM)(all,r,REG)
+    699       ATAX(i,"firm",r,"imported") =  CNTqfmir(i,r);
+    700   Formula (all,i,TRAD_COMM)(all,r,REG)
+    701       ATAX(i,"private",r,"imported") = CNTqpmir(i,r);
+    702   Formula (all,i,TRAD_COMM)(all,r,REG)
+    703       ATAX(i,"govt",r,"imported") = CNTqgmir(i,r);
+    704   Formula (all,i,TRAD_COMM)(all,r,REG)
+    705       ATAX(i,"firm",r,"domestic") = CNTqfdir(i,r);
+    706   Formula (all,i,TRAD_COMM)(all,r,REG)
+    707       ATAX(i,"private",r,"domestic") = CNTqpdir(i,r);
+    708   Formula (all,i,TRAD_COMM)(all,r,REG)
+    709       ATAX(i,"govt",r,"domestic") = CNTqgdir(i,r);
+    710    
+    711   Write
+    712       ATAX to file WELVIEW header "A22"
+    713       longname "Domestic Tax Effect: Summary";
+    714    
+    715    
+    716   !<
+    717       A221: Intermed. Input Tax Effect
+    718       ................................
+    719   >!
+    720    
+    721   Coefficient (all,i,TRAD_COMM)(all,j,PROD_COMM)(all,r,REG)
+    722       CNTqfmijr(i,j,r)
+    723       # contribution to WEV of changes in use of improted int. i in j of r #;
+    724   Read
+    725       CNTqfmijr from file GTAPSOL header "QFMJ";
+    726    
+    727   Coefficient (all,i,TRAD_COMM)(all,j,PROD_COMM)(all,r,REG)
+    728       CNTqfdijr(i,j,r)
+    729       # contribution to WEV of changes in use of domestic int. i in j of r #;
+    730   Read
+    731       CNTqfdijr from file GTAPSOL header "QFDJ";
+    732    
+    733   Coefficient (all,i,TRAD_COMM)(all,j,PROD_COMM)(all,r,REG)(all,t,DIR)
+    734       STAX(i,j,r,t);
+    735   Formula (all,i,TRAD_COMM)(all,j,PROD_COMM)(all,r,REG)
+    736       STAX(i,j,r,"imported") = CNTqfmijr(i,j,r);
+    737   Formula (all,i,TRAD_COMM)(all,j,PROD_COMM)(all,r,REG)
+    738       STAX(i,j,r,"domestic") = CNTqfdijr(i,j,r);
+    739    
+    740   Write
+    741       STAX to file WELVIEW header "A221"
+    742       longname "Intermed. Input Tax Effect";
+    743    
+    744    
+    745   !<
+    746       A22F: Intermed. Input Tax Effect: Explanatory Factors
+    747       .....................................................
+    748   >!
+    749    
+    750   Coefficient (all,i,TRAD_COMM)(all,j,PROD_COMM)(all,r,REG)
+    751       BVIFM(i,j,r) # purchases of imports i for use in j in region r #;
+    752   Read
+    753       BVIFM from file GTAPBASE header "VIFM";
+    754    
+    755   Coefficient (all,i,TRAD_COMM)(all,j,PROD_COMM)(all,r,REG)
+    756       qfm(i,j,r) # industry demands for aggregate imports #;
+    757   Read
+    758       qfm from file GTAPSOL header "qfm";
+    759    
+    760   Coefficient (all,i,TRAD_COMM)(all,j,PROD_COMM)(all,r,REG)
+    761       qfd(i,j,r) # industry demands for domestic goods #;
+    762   Read
+    763       qfd from file GTAPSOL header "qfd";
+    764    
+    765   Coefficient (all,i,TRAD_COMM)(all,j,PROD_COMM)(all,r,REG)
+    766       UVIFM(i,j,r) # purchases of imports i for use in j in region r #;
+    767   Read
+    768       UVIFM from file GTAPUPDATE header "VIFM";
+    769    
+    770   Zerodivide (nonzero_by_zero) default 0;
+    771    
+    772   Coefficient (all,i,TRAD_COMM)(all,j,PROD_COMM)(all,r,REG)
+    773       (all,t,DIR)(all,c,COL)
+    774       FIRM(i,j,r,t,c);
+    775   Formula (all,i,TRAD_COMM)(all,j,PROD_COMM)(all,r,REG)(all,t,DIR)
+    776       FIRM(i,j,r,t,"welcnt") = STAX(i,j,r,t);
+    777   Formula (all,i,TRAD_COMM)(all,j,PROD_COMM)(all,r,REG)
+    778       FIRM(i,j,r,"imported","dvol") = [BVIFM(i,j,r) * qfm(i,j,r)] / 100;
+    779   Formula (all,i,TRAD_COMM)(all,j,PROD_COMM)(all,r,REG)
+    780       FIRM(i,j,r,"domestic","dvol") = [BVDFM(i,j,r) * qfd(i,j,r)] / 100;
+    781   Formula (all,i,TRAD_COMM)(all,j,PROD_COMM)(all,r,REG)
+    782       FIRM(i,j,r,"imported","taxrateb")
+    783           = 100 * [BVIFA(i,j,r) - BVIFM(i,j,r)] / BVIFM(i,j,r);
+    784   Formula (all,i,TRAD_COMM)(all,j,PROD_COMM)(all,r,REG)
+    785       FIRM(i,j,r,"imported","taxrateu")
+    786           = 100 * [UVIFA(i,j,r) - UVIFM(i,j,r)] / UVIFM(i,j,r);
+    787   Formula (all,i,TRAD_COMM)(all,j,PROD_COMM)(all,r,REG)
+    788       FIRM(i,j,r,"domestic","taxrateb")
+    789           = 100 * [BVDFA(i,j,r) - BVDFM(i,j,r)] / BVDFM(i,j,r);
+    790   Formula (all,i,TRAD_COMM)(all,j,PROD_COMM)(all,r,REG)
+    791       FIRM(i,j,r,"domestic","taxrateu")
+    792           = 100 * [UVDFA(i,j,r) - UVDFM(i,j,r)] / UVDFM(i,j,r);
+    793    
+    794   Zerodivide (nonzero_by_zero) off;
+    795    
+    796   Write
+    797       FIRM to file WELVIEW header "A22F"
+    798       longname "Intermed. Input Tax Effect: Explanatory Factors";
+    799    
+    800    
+    801   !<
+    802       A22P: Private Cons. Tax Effect: Explanatory Factors
+    803       ...................................................
+    804   >!
+    805    
+    806   Coefficient (all,i,TRAD_COMM)(all,h,HHLD)(all,r,REG)
+    807       BVIPM(i,h,r) # private household expenditure on i in r #;
+    808   Read
+    809       BVIPM from file GTAPBASE header "VIPM";
+    810    
+    811   Coefficient (all,i,TRAD_COMM)(all,r,REG)
+    812       qpm(i,r) # private hhld demand for imports of i in region r #;
+    813   Read
+    814       qpm from file GTAPSOL header "qpm";
+    815    
+    816   Coefficient (all,i,TRAD_COMM)(all,r,REG)
+    817       qpd(i,r) # private hhld demand for domestic i in region r #;
+    818   Read
+    819       qpd from file GTAPSOL header "qpd";
+    820    
+    821   Coefficient (all,i,TRAD_COMM)(all,h,HHLD)(all,r,REG)
+    822       BVIPA(i,h,r) # private household expenditure on imported i #;
+    823   Read
+    824       BVIPA from file GTAPBASE header "VIPA";
+    825    
+    826   Coefficient (all,i,TRAD_COMM)(all,h,HHLD)(all,r,REG)
+    827       UVIPA(i,h,r) # private household expenditure on imported i #;
+    828   Read
+    829       UVIPA from file GTAPUPDATE header "VIPA";
+    830    
+    831   Coefficient (all,i,TRAD_COMM)(all,h,HHLD)(all,r,REG)
+    832       UVIPM(i,h,r) # private household expenditure on i in r #;
+    833   Read
+    834       UVIPM from file GTAPUPDATE header "VIPM";
+    835    
+    836   Coefficient (all,i,TRAD_COMM)(all,h,HHLD)(all,r,REG)
+    837       BVDPA(i,h,r) # private household expenditure on domestic i in r #;
+    838   Read
+    839       BVDPA from file GTAPBASE header "VDPA";
+    840    
+    841   Coefficient (all,i,TRAD_COMM)(all,h,HHLD)(all,r,REG)
+    842       UVDPA(i,h,r) # private household expenditure on domestic i in r #;
+    843   Read
+    844       UVDPA from file GTAPUPDATE header "VDPA";
+    845    
+    846   Zerodivide (nonzero_by_zero) default 0;
+    847    
+    848   Coefficient (all,i,TRAD_COMM)(all,r,REG)(all,t,DIR)(all,c,COL)
+    849       PRIVATE(i,r,t,c);
+    850   Formula (all,i,TRAD_COMM)(all,r,REG)(all,t,DIR)
+    851       PRIVATE(i,r,t,"welcnt") = ATAX(i,"private",r,t);
+    852   Formula (all,i,TRAD_COMM)(all,r,REG)
+    853       PRIVATE(i,r,"imported","dvol") = [sum(h, HHLD, BVIPM(i,h,r))
+    854                                      * qpm(i,r)] / 100;
+    855   Formula (all,i,TRAD_COMM)(all,r,REG)
+    856       PRIVATE(i,r,"domestic","dvol") = [sum(h, HHLD, BVDPM(i,h,r))
+    857                                      * qpd(i,r)] / 100;
+    858   Formula (all,i,TRAD_COMM)(all,r,REG)
+    859       PRIVATE(i,r,"imported","taxrateb")
+    860           = 100 * [sum(h, HHLD, BVIPA(i,h,r) - BVIPM(i,h,r))]
+    861           / sum(h, HHLD, BVIPM(i,h,r));
+    862   Formula (all,i,TRAD_COMM)(all,r,REG)
+    863       PRIVATE(i,r,"imported","taxrateu")
+    864           = 100 * [sum(h, HHLD, UVIPA(i,h,r) - UVIPM(i,h,r))]
+    865           / sum(h, HHLD, UVIPM(i,h,r));
+    866   Formula (all,i,TRAD_COMM)(all,r,REG)
+    867       PRIVATE(i,r,"domestic","taxrateb")
+    868           = 100 * [sum(h,HHLD, BVDPA(i,h,r) - BVDPM(i,h,r))]
+    869             / sum(h, HHLD, BVDPM(i,h,r));
+    870   Formula (all,i,TRAD_COMM)(all,r,REG)
+    871       PRIVATE(i,r,"domestic","taxrateu")
+    872           = 100 * [sum(h, HHLD, UVDPA(i,h,r) - UVDPM(i,h,r))]
+    873           / sum(h, HHLD, UVDPM(i,h,r));
+    874    
+    875   Zerodivide (nonzero_by_zero) off;
+    876    
+    877   Write
+    878       PRIVATE to file WELVIEW header "A22P"
+    879       longname "Private Cons. Tax Effect: Explanatory Factors";
+    880    
+    881    
+    882   !<
+    883       A22G: Government Cons. Tax Effect: Explanatory Factors
+    884       ......................................................
+    885   >!
+    886    
+    887   Coefficient (all,i,TRAD_COMM)(all,r,REG)
+    888       BVIGM(i,r) # gov't household expenditure on i in r #;
+    889   Read
+    890       BVIGM from file GTAPBASE header "VIGM";
+    891    
+    892   Coefficient (all,i,TRAD_COMM)(all,r,REG)
+    893       qgm(i,r) # government hhld demand for imports of i in region r #;
+    894   Read
+    895       qgm from file GTAPSOL header "qgm";
+    896    
+    897   Coefficient (all,i,TRAD_COMM)(all,r,REG)
+    898       qgd(i,r) # government hhld demand for domestic i in region r #;
+    899   Read
+    900       qgd from file GTAPSOL header "qgd";
+    901    
+    902   Coefficient (all,i,TRAD_COMM)(all,r,REG)
+    903       BVIGA(i,r) # government household expenditure on imported i #;
+    904   Read
+    905       BVIGA from file GTAPBASE header "VIGA";
+    906    
+    907   Coefficient (all,i,TRAD_COMM)(all,r,REG)
+    908       UVIGA(i,r) # government household expenditure on imported i #;
+    909   Read
+    910       UVIGA from file GTAPUPDATE header "VIGA";
+    911    
+    912   Coefficient (all,i,TRAD_COMM)(all,r,REG)
+    913       UVIGM(i,r) # gov't household expenditure on i in r #;
+    914   Read
+    915       UVIGM from file GTAPUPDATE header "VIGM";
+    916    
+    917   Coefficient (all,i,TRAD_COMM)(all,r,REG)
+    918       BVDGA(i,r) # government household expenditure on domestic i in r #;
+    919   Read
+    920       BVDGA from file GTAPBASE header "VDGA";
+    921    
+    922   Coefficient (all,i,TRAD_COMM)(all,r,REG)
+    923       UVDGA(i,r) # government household expenditure on domestic i in r #;
+    924   Read
+    925       UVDGA from file GTAPUPDATE header "VDGA";
+    926    
+    927   Zerodivide (nonzero_by_zero) default 0;
+    928    
+    929   Coefficient (all,i,TRAD_COMM)(all,r,REG)(all,t,DIR)(all,c,COL)
+    930       GOVT(i,r,t,c);
+    931   Formula (all,i,TRAD_COMM)(all,r,REG)(all,t,DIR)
+    932       GOVT(i,r,t,"welcnt") = ATAX(i,"govt",r,t);
+    933   Formula (all,i,TRAD_COMM)(all,r,REG)
+    934       GOVT(i,r,"imported","dvol") = [BVIGM(i,r) * qgm(i,r)] / 100;
+    935   Formula (all,i,TRAD_COMM)(all,r,REG)
+    936       GOVT(i,r,"domestic","dvol") = [BVDGM(i,r) * qgd(i,r)] / 100;
+    937   Formula (all,i,TRAD_COMM)(all,r,REG)
+    938       GOVT(i,r,"imported","taxrateb")
+    939           = 100 * [BVIGA(i,r) - BVIGM(i,r)] / BVIGM(i,r);
+    940   Formula (all,i,TRAD_COMM)(all,r,REG)
+    941       GOVT(i,r,"imported","taxrateu")
+    942           = 100 * [UVIGA(i,r) - UVIGM(i,r)] / UVIGM(i,r);
+    943   Formula (all,i,TRAD_COMM)(all,r,REG)
+    944       GOVT(i,r,"domestic","taxrateb")
+    945           = 100 * [BVDGA(i,r) - BVDGM(i,r)] / BVDGM(i,r);
+    946   Formula (all,i,TRAD_COMM)(all,r,REG)
+    947       GOVT(i,r,"domestic","taxrateu")
+    948           = 100 * [UVDGA(i,r) - UVDGM(i,r)] / UVDGM(i,r);
+    949    
+    950   Zerodivide (nonzero_by_zero) off;
+    951    
+    952   Write
+    953       GOVT to file WELVIEW header "A22G"
+    954       longname "Government Cons. Tax Effect: Explanatory Factors";
+    955    
+    956    
+    957   !<
+    958       A23:  Trade Tax Effect
+    959       ----------------------
+    960    
+    961       A23:  Trade Tax Effect
+    962       A231: Trade Tax Effect: Explanatory Factors
+    963   >!
+    964    
+    965    
+    966   !<
+    967       A23:  Trade Tax Effect
+    968       ......................
+    969   >!
+    970    
+    971   Coefficient (all,i,TRAD_COMM)(all,r,REG)(all,s,REG)
+    972       CNTqxsirs(i,r,s)
+    973       # contrib. to WEV of changes in exports of i from srce r to dest s #;
+    974   Read
+    975       CNTqxsirs from file GTAPSOL header "QXSS";
+    976    
+    977   Coefficient (all,i,TRAD_COMM)(all,s,REG)(all,r,REG)
+    978       CNTqimisr(i,s,r)
+    979       # contrib. to WEV of changes in imports of i from srce s to dest r #;
+    980   Read
+    981       CNTqimisr from file GTAPSOL header "QIMS";
+    982    
+    983   Coefficient (all,i,TRAD_COMM)(all,r,REG)(all,s,REG)(all,k,TYPE)
+    984       TTAX(i,r,s,k);
+    985   Formula (all,i,TRAD_COMM)(all,r,REG)(all,s,REG)
+    986       TTAX(i,r,s,"xtax") = CNTqxsirs(i,r,s);
+    987   Formula (all,i,TRAD_COMM)(all,r,REG)(all,s,REG)
+    988       TTAX(i,r,s,"mtax") = CNTqimisr(i,r,s);
+    989    
+    990   Write
+    991       TTAX to file WELVIEW header "A23"
+    992       longname "Trade Tax Effect";
+    993    
+    994    
+    995   !<
+    996       A231: Trade Tax Effect: Explanatory Factors
+    997       ...........................................
+    998   >!
+    999    
+   1000   Coefficient (all,i,TRAD_COMM)(all,r,REG)(all,s,REG)
+   1001       BVIMS(i,r,s) # imports of i from r to s at domestic market prices #;
+   1002   Read
+   1003       BVIMS from file GTAPBASE header "VIMS";
+   1004    
+   1005   Coefficient (all,i,TRAD_COMM)(all,r,REG)(all,s,REG)
+   1006       BVIWS(i,r,s) # imports of i from r to s valued cif (tradeables only) #;
+   1007   Read
+   1008       BVIWS from file GTAPBASE header "VIWS";
+   1009    
+   1010   Coefficient (all,i,TRAD_COMM)(all,r,REG)(all,s,REG)
+   1011       BIMTAX(i,r,s);
+   1012   Formula (all,i,TRAD_COMM)(all,r,REG)(all,s,REG)
+   1013       BIMTAX(i,r,s) = [BVIMS(i,r,s) - BVIWS(i,r,s)] / BVIWS(i,r,s) * 100;
+   1014    
+   1015   Coefficient (all,i,TRAD_COMM)(all,r,REG)(all,s,REG)
+   1016       BVXWD(i,r,s) # exports of i from r to s valued fob (tradeables only) #;
+   1017   Read
+   1018       BVXWD from file GTAPBASE header "VXWD";
+   1019    
+   1020   Coefficient (all,i,TRAD_COMM)(all,r,REG)(all,s,REG)
+   1021       BEXTAX(i,r,s);
+   1022   Formula (all,i,TRAD_COMM)(all,r,REG)(all,s,REG)
+   1023       BEXTAX(i,r,s) = [BVXWD(i,r,s) - BVXMD(i,r,s)] / BVXWD(i,r,s) * 100;
+   1024    
+   1025   Coefficient (all,i,TRAD_COMM)(all,r,REG)(all,s,REG)
+   1026       UVIMS(i,r,s) # imports of i from r to s at domestic market prices #;
+   1027   Read
+   1028       UVIMS from file GTAPUPDATE header "VIMS";
+   1029    
+   1030   Coefficient (all,i,TRAD_COMM)(all,r,REG)(all,s,REG)
+   1031       UVIWS(i,r,s) # imports of i from r to s valued cif (tradeables only) #;
+   1032   Read
+   1033       UVIWS from file GTAPUPDATE header "VIWS";
+   1034    
+   1035   Coefficient (all,i,TRAD_COMM)(all,r,REG)(all,s,REG)
+   1036       UIMTAX(i,r,s);
+   1037   Formula (all,i,TRAD_COMM)(all,r,REG)(all,s,REG)
+   1038       UIMTAX(i,r,s) = [UVIMS(i,r,s) - UVIWS(i,r,s)] / UVIWS(i,r,s) * 100;
+   1039    
+   1040   Coefficient (all,i,TRAD_COMM)(all,r,REG)(all,s,REG)
+   1041       UVXWD(i,r,s) # exports of i from r to s valued fob (tradeables only) #;
+   1042   Read
+   1043       UVXWD from file GTAPUPDATE header "VXWD";
+   1044    
+   1045   Coefficient (all,i,TRAD_COMM)(all,r,REG)(all,s,REG)
+   1046       UEXTAX(i,r,s);
+   1047   Formula (all,i,TRAD_COMM)(all,r,REG)(all,s,REG)
+   1048       UEXTAX(i,r,s) = [UVXWD(i,r,s) - UVXMD(i,r,s)] / UVXWD(i,r,s) * 100;
+   1049    
+   1050   Coefficient (all,i,TRAD_COMM)(all,r,REG)(all,s,REG)
+   1051       qxs(i,r,s) # export sales of commodity i from r to region s #;
+   1052   Read
+   1053       qxs from file GTAPSOL header "qxs";
+   1054    
+   1055   Coefficient (all,i,TRAD_COMM)(all,r,REG)(all,s,REG)(all,c,COL)(all,d,DIREC)
+   1056       TRADE(i,r,s,c,d);
+   1057   Formula (all,i,TRAD_COMM)(all,r,REG)(all,s,REG)
+   1058       TRADE(i,r,s,"welcnt","import") = TTAX(i,r,s,"mtax");
+   1059   Formula (all,i,TRAD_COMM)(all,r,REG)(all,s,REG)
+   1060       TRADE(i,r,s,"welcnt","export") = TTAX(i,r,s,"xtax");
+   1061   Formula (all,i,TRAD_COMM)(all,r,REG)(all,s,REG)
+   1062       TRADE(i,r,s,"dvol","import") = BVXMD(i,r,s) * qxs(i,r,s) / 100;
+   1063   Formula (all,i,TRAD_COMM)(all,r,REG)(all,s,REG)
+   1064       TRADE(i,r,s,"dvol","export") = BVXMD(i,r,s) * qxs(i,r,s) / 100;
+   1065   Formula (all,i,TRAD_COMM)(all,r,REG)(all,s,REG)
+   1066       TRADE(i,r,s,"taxrateb","import") = BIMTAX(i,r,s);
+   1067   Formula (all,i,TRAD_COMM)(all,r,REG)(all,s,REG)
+   1068       TRADE(i,r,s,"taxrateu","import") = UIMTAX(i,r,s);
+   1069   Formula (all,i,TRAD_COMM)(all,r,REG)(all,s,REG)
+   1070       TRADE(i,r,s,"taxrateb","export") = BEXTAX(i,r,s);
+   1071   Formula (all,i,TRAD_COMM)(all,r,REG)(all,s,REG)
+   1072       TRADE(i,r,s,"taxrateu","export") = UEXTAX(i,r,s);
+   1073    
+   1074   Write
+   1075       TRADE to file WELVIEW header "A231"
+   1076       longname "Trade Tax Effect: Explanatory Factors";
+   1077    
+   1078    
+   1079   !<
+   1080       A3:   Endowment Tax Effect
+   1081       --------------------------
+   1082   >!
+   1083    
+   1084   Coefficient (all,i,ENDW_COMM)(all,r,REG)
+   1085       CNTqfeir(i,r)
+   1086       # contribution to WEV of changes in use of all ENDW_COMM i in r #;
+   1087   Read
+   1088       CNTqfeir from file GTAPSOL header "QEIR";
+   1089    
+   1090   Write CNTqfeir to file WELVIEW header "A3"
+   1091       longname "Endowment Tax Effect";
+   1092    
+   1093   Coefficient (all,i,ENDW_COMM)(all,j,PROD_COMM)(all,r,REG)
+   1094       CNTqfeijr(i,j,r)
+   1095       # contribution to WEV of changes in use of all ENDW_COMM i in j of r #;
+   1096   Read
+   1097       CNTqfeijr from file GTAPSOL header "EIJR";
+   1098    
+   1099   Coefficient (all,i,ENDW_COMM)(all,j,PROD_COMM)(all,r,REG)
+   1100       BENDTAX(i,j,r);
+   1101   Formula (all,i,ENDW_COMM)(all,j,PROD_COMM)(all,r,REG)
+   1102       BENDTAX(i,j,r) = [BEVFA(i,j,r) - BVFM(i,j,r)] / bvfm(i,j,r) * 100;
+   1103    
+   1104   Coefficient (all,i,ENDW_COMM)(all,j,PROD_COMM)(all,r,REG)
+   1105       UENDTAX(i,j,r);
+   1106   Formula (all,i,ENDW_COMM)(all,j,PROD_COMM)(all,r,REG)
+   1107       UENDTAX(i,j,r) = [UEVFA(i,j,r) - UVFM(i,j,r)] / uvfm(i,j,r) * 100;
+   1108    
+   1109   Coefficient (all,i,ENDW_COMM)(all,j,PROD_COMM)(all,r,REG)
+   1110       qfe(i,j,r) # industry demands for endowment commodities #;
+   1111   Read
+   1112       qfe from file GTAPSOL header "qfe";
+   1113    
+   1114   Coefficient (all,i,ENDW_COMM)(all,j,PROD_COMM)(all,r,REG)(all,c,COL)
+   1115       PFACTOR(i,j,r,c);
+   1116   Formula (all,i,ENDW_COMM)(all,j,PROD_COMM)(all,r,REG)
+   1117       PFACTOR(i,j,r,"welcnt") = CNTqfeijr(i,j,r);
+   1118   Formula (all,i,ENDW_COMM)(all,j,PROD_COMM)(all,r,REG)
+   1119       PFACTOR(i,j,r,"dvol") = BVFM(i,j,r) * qfe(i,j,r) / 100;
+   1120   Formula (all,i,ENDW_COMM)(all,j,PROD_COMM)(all,r,REG)
+   1121       PFACTOR(i,j,r,"taxrateb") = BENDTAX(i,j,r);
+   1122   Formula (all,i,ENDW_COMM)(all,j,PROD_COMM)(all,r,REG)
+   1123       PFACTOR(i,j,r,"taxrateu") = UENDTAX(i,j,r);
+   1124    
+   1125   Write PFACTOR to file WELVIEW header "A31"
+   1126       longname "Endowment Tax Effect: Explanatory Factors";
+   1127    
+   1128    
+   1129   !<
+   1130       -------------------------------------------
+   1131       B1: Endowment Effect, Gross of Depreciation
+   1132       -------------------------------------------
+   1133   >!
+   1134    
+   1135   Coefficient (all,i,ENDW_COMM)(all,r,REG)
+   1136       CNTendwir(i,r) # contribution to regional EV of changes in ENDW_COMM i #;
+   1137   Read
+   1138       CNTendwir from file GTAPSOL header "ENDI";
+   1139    
+   1140   Coefficient (all,r,REG)(all,i,ENDW_COMM)
+   1141       CNTendw(r,i) # contribution to welfare by ENDW_COMM i in region r #;
+   1142   Formula (all,r,REG)(all,i,ENDW_COMM)
+   1143       CNTendw(r,i) = CNTendwir(i,r);
+   1144   Write
+   1145       CNTendw to file WELVIEW header "B1"
+   1146       longname "Endowment Effect, Gross of Depreciation";
+   1147    
+   1148    
+   1149   !<
+   1150       ----------------------------------
+   1151       B2: Endowment Effect: Depreciation
+   1152       ----------------------------------
+   1153   >!
+   1154    
+   1155   Coefficient (all,r,REG)
+   1156       CNTkbr(r) # contribution to regional EV of depreciation #;
+   1157   Read
+   1158       CNTkbr from file GTAPSOL header "CKBR";
+   1159   Write
+   1160       CNTkbr to file WELVIEW header "B2"
+   1161       longname "Endowment Effect: Depreciation";
+   1162    
+   1163    
+   1164   !<
+   1165       ---------------------------
+   1166       C1: Technical Change Effect
+   1167       ---------------------------
+   1168    
+   1169       C1:  Technical Change Effect: Summary
+   1170       C1X: Technical Change Effect: Further Decomposition
+   1171   >!
+   1172    
+   1173    
+   1174   !<
+   1175       C1:  Technical Change Effect: Summary
+   1176       -------------------------------------
+   1177   >!
+   1178    
+   1179   Coefficient (all,r,REG)
+   1180       CNTtech_aor(r)
+   1181       # contribution to regional EV of output augmenting technical change #;
+   1182   Read
+   1183       CNTtech_aor from file GTAPSOL header "AOR";
+   1184    
+   1185   Coefficient (all,r,REG)
+   1186       CNTtech_afer(r)
+   1187       # contribution to regional EV of primary factor augmenting tech change #;
+   1188   Read
+   1189       CNTtech_afer from file GTAPSOL header "AFER";
+   1190    
+   1191   Coefficient (all,r,REG)
+   1192       CNTtech_avar(r)
+   1193       # contribution to regional EV of value added augmenting tech change #;
+   1194   Read
+   1195       CNTtech_avar from file GTAPSOL header "AVAR";
+   1196    
+   1197   Coefficient (all,r,REG)
+   1198       CNTtech_afr(r)
+   1199       # cont. to regional EV of comp. int. input augmenting tech change #;
+   1200   Read
+   1201       CNTtech_afr from file GTAPSOL header "AFR";
+   1202    
+   1203   Coefficient (all,r,REG)
+   1204       CNTtech_atrr(r)
+   1205       # contribution to regional EV of technical change in transportation #;
+   1206   Read
+   1207       CNTtech_atrr from file GTAPSOL header "ATR";
+   1208    
+   1209   Coefficient (all,r,REG)
+   1210       CNTtech_amsr(r)
+   1211       # contribution to regional EV of import-augmenting technical change #;
+   1212   Read
+   1213       CNTtech_amsr from file GTAPSOL header "AMSR";
+   1214    
+   1215   Coefficient (all,r,REG)(all,i,TECHTYPE)
+   1216       CNTtech(r,i) # contribution to welfare change by tech #;
+   1217   Formula (all,r,REG)
+   1218       CNTtech(r,"output") = CNTtech_aor(r);
+   1219   Formula (all,r,REG)
+   1220       CNTtech(r,"primfac") = CNTtech_afer(r);
+   1221   Formula (all,r,REG)
+   1222       CNTtech(r,"v_added") = CNTtech_avar(r);
+   1223   Formula (all,r,REG)
+   1224       CNTtech(r,"ininput") = CNTtech_afr(r);
+   1225   Formula (all,r,REG)
+   1226       CNTtech(r,"transp") = CNTtech_atrr(r);
+   1227   Formula (all,r,REG)
+   1228       CNTtech(r,"import") = CNTtech_amsr(r);
+   1229    
+   1230   Write
+   1231       CNTtech to file WELVIEW header "C1"
+   1232       longname "Technical Change Effect: Summary";
+   1233    
+   1234    
+   1235   !<
+   1236       C1X: Technical Change Effect: Further Decomposition
+   1237       ---------------------------------------------------
+   1238   >!
+   1239    
+   1240   Coefficient (all,i,PROD_COMM)(all,r,REG)
+   1241       CNTtech_aoir(i,r);
+   1242   Read
+   1243       CNTtech_aoir from file GTAPSOL header "AOIR";
+   1244   Write
+   1245       CNTtech_aoir to file WELVIEW header "C11"
+   1246       longname "(ao) Output Augm. Tech. Change Effect";
+   1247    
+   1248   Coefficient (all,i,ENDW_COMM)(all,j,PROD_COMM)(all,r,REG)
+   1249       Ctech_afeijr(i,j,r);
+   1250   Read
+   1251       Ctech_afeijr from file GTAPSOL header "FEIJ";
+   1252   Write
+   1253       Ctech_afeijr to file WELVIEW header "C12"
+   1254       longname "(afe) Primary Factor Augm. Tech. Change Effect";
+   1255    
+   1256   Coefficient (all,j,PROD_COMM)(all,r,REG)
+   1257       Ctech_avajr(j,r);
+   1258   Read
+   1259       Ctech_avajr from file GTAPSOL header "AVJR";
+   1260   Write
+   1261       Ctech_avajr to file WELVIEW header "C13"
+   1262       longname "(ava) Value Added Augm. Tech. Change Effect";
+   1263    
+   1264   Coefficient (all,i,TRAD_COMM)(all,j,PROD_COMM)(all,r,REG)
+   1265       Ctech_afijr(i,j,r);
+   1266   Read
+   1267       Ctech_afijr from file GTAPSOL header "AFIJ";
+   1268   Write
+   1269       Ctech_afijr to file WELVIEW header "C14"
+   1270       longname "(af) Intermed. Input Augm. Tech. Change Effect";
+   1271    
+   1272   Coefficient (all,m,MARG_COMM)(all,i,TRAD_COMM)(all,r,REG)(all,s,REG)
+   1273       Ctech_mirs(m,i,r,s);
+   1274   Read
+   1275       Ctech_mirs from file GTAPSOL header "MIRS";
+   1276   Write
+   1277       Ctech_mirs to file WELVIEW header "C15"
+   1278       longname "(atmfsd) Internat. Margin Augm. Tech. Change Effect";
+   1279    
+   1280   Coefficient (all,i,TRAD_COMM)(all,r,REG)(all,s,REG)
+   1281       Ctech_amsirs(i,r,s);
+   1282   Read
+   1283       Ctech_amsirs from file GTAPSOL header "AMIR";
+   1284   Write
+   1285       Ctech_amsirs to file WELVIEW header "C16"
+   1286       longname "(ams) Bilateral Import Augm. Tech. Change Effect";
+   1287    
+   1288    
+   1289   !<
+   1290       ---------------------
+   1291       D1: Population Effect
+   1292       ---------------------
+   1293    
+   1294       No decomposition required here.
+   1295   >!
+   1296    
+   1297    
+   1298   !<
+   1299       -------------------------
+   1300       E1: Terms of Trade Effect
+   1301       -------------------------
+   1302   >!
+   1303    
+   1304   Coefficient (all,i,TRAD_COMM)(all,r,REG)
+   1305       c1_ir(i,r) # contribution of world price, px_i, to ToT #;
+   1306   Read
+   1307       c1_ir from file GTAPSOL header "C1IR";
+   1308    
+   1309   Coefficient (all,i,TRAD_COMM)(all,r,REG)
+   1310       c2_ir(i,r) # contribution of regional export price, px_ir, to ToT #;
+   1311   Read
+   1312       c2_ir from file GTAPSOL header "C2IR";
+   1313    
+   1314   Coefficient (all,i,TRAD_COMM)(all,r,REG)
+   1315       c3_ir(i,r) # contribution of regional import price, pm_ir, to ToT #;
+   1316   Read
+   1317       c3_ir from file GTAPSOL header "C3IR";
+   1318    
+   1319   Coefficient (all,i,TRAD_COMM)(all,r,REG)(all,t,PRICES)(all,s,FORM)
+   1320       TOT(i,r,t,s)
+   1321       # terms trade effects decomposed by effects of different prices #;
+   1322   Formula (all,i,TRAD_COMM)(all,r,REG)
+   1323       TOT(i,r,"pworld","percent") = c1_ir(i,r);
+   1324   Formula (all,i,TRAD_COMM)(all,r,REG)
+   1325       TOT(i,r,"pexport","percent") = c2_ir(i,r);
+   1326   Formula (all,i,TRAD_COMM)(all,r,REG)
+   1327       TOT(i,r,"pimport","percent") = -c3_ir(i,r);
+   1328   Formula (all,i,TRAD_COMM)(all,r,REG)
+   1329       TOT(i,r,"pworld","value")
+   1330           = CNTtotr(r) * c1_ir(i,r)
+   1331           / sum(j,TRAD_COMM, sum(t,PRICES, TOT(j,r,t,"percent")));
+   1332   Formula (all,i,TRAD_COMM)(all,r,REG)
+   1333       TOT(i,r,"pexport","value")
+   1334           = CNTtotr(r) * c2_ir(i,r)
+   1335           / sum(t,PRICES, sum(j,TRAD_COMM, TOT(j,r,t,"percent")));
+   1336   Formula (all,i,TRAD_COMM)(all,r,REG)
+   1337       TOT(i,r,"pimport","value")
+   1338           = -c3_ir(i,r) * CNTtotr(r)
+   1339           / sum(t,PRICES, sum(j,TRAD_COMM, TOT(j,r,t,"percent")));
+   1340    
+   1341   Write
+   1342       TOT to file WELVIEW header "E1"
+   1343       longname "Terms of Trade Effect";
+   1344    
+   1345    
+   1346   !<
+   1347       -----------------------------------
+   1348       F1: I-S Effect: Explanatory Factors
+   1349       -----------------------------------
+   1350   >!
+   1351    
+   1352   Coefficient (all,r,REG)
+   1353       BSAVE(r) # expenditure on NET savings in region r at agent's prices #;
+   1354   Read
+   1355       BSAVE from file GTAPBASE header "SAVE";
+   1356    
+   1357   Coefficient (ge 0)(all,h,HHLD)(all,r,REG)
+   1358       BVDEP(h,r) # value of capital depeciation in r (exogenous) #;
+   1359   Read
+   1360       BVDEP from file GTAPBASE header "VDEP";
+   1361    
+   1362   Coefficient (all,r,REG)
+   1363       NETINV(r) # regional net investment in region r #;
+   1364   Formula (all,r,REG)
+   1365       NETINV(r) = sum(k,CGDS_COMM, BVOA(k,r)) - sum(h, HHLD, BVDEP(h,r));
+   1366    
+   1367   Coefficient (all,r,REG)
+   1368       ISBAL(r) # I-S balance, NETINV(r) - SAVE(r) #;
+   1369   Formula (all,r,REG)
+   1370       ISBAL(r) = NETINV(r) - BSAVE(r);
+   1371    
+   1372   Coefficient (all,r,REG)
+   1373       pcgds(r) # price of investment goods = ps("cgds",r) #;
+   1374   Read
+   1375       pcgds from file GTAPSOL header "pcgd";
+   1376    
+   1377   Coefficient (all,r,REG)
+   1378       psave(r) # price of savings in region r #;
+   1379   Read
+   1380       psave from file GTAPSOL header "psav";
+   1381    
+   1382   Coefficient (all,r,REG)(all,j,COLM)
+   1383       CGDSCOMP(r,j) # components of cgds effect #;
+   1384   Formula (all,r,REG)
+   1385       CGDSCOMP(r,"ISbal") = ISBAL(r);
+   1386   Formula (all,r,REG)
+   1387       CGDSCOMP(r,"p_cgds") = pcgds(r);
+   1388   Formula (all,r,REG)
+   1389       CGDSCOMP(r,"p_save") = psave(r);
+   1390   Write
+   1391       CGDSCOMP to file WELVIEW header "F1"
+   1392       longname "I-S Effect: Explanatory Factors";
+   1393    
+   1394   !<
+   1395       --------------------------
+   1396       H1: Foreign income Effects
+   1397       --------------------------
+   1398   >!
+   1399    
+   1400   Coefficient (all,r,REG)(all,j,FORINC)
+   1401      FINCDCOMP(r,j) # components of cgds effect #;
+   1402   Formula (all,r,REG)
+   1403      FINCDCOMP(r,"FKY") = CNTfkyr(r);
+   1404   Formula (all,r,REG)
+   1405      FINCDCOMP(r,"REM") = CNTremr(r);
+   1406   Formula (all,r,REG)
+   1407      FINCDCOMP(r,"AID") = CNTaidr(r);
+   1408   Write
+   1409      FINCDCOMP to file WELVIEW header "H1"
+   1410       longname "Foreign income Effects: Explanatory Factors";
+   1411    
+   1412   !<
+   1413       -----------------
+   1414       END OF DECOMP.TAB
+   1415       -----------------
+   1416   >!
+
+
+
+
+ ========================
+ ++ INPUT STATEMENT TABLE
+ ========================
+
+          Starts   Syntax  Semantic
+  Number  at line  Error?   Error?            Description
+  ------------------------------------------------------------
+     1        77     no       no      FILE 'GTAPSETS            '             
+     2        79     no       no      FILE 'GTAPSOL             '             
+     3        81     no       no      FILE 'GTAPBASE            '             
+     4        83     no       no      FILE 'GTAPUPDATE          '             
+     5        85     no       no      FILE 'WELVIEW             '             
+     6        95     no       no      SET 'REG         '                      
+     7        98     no       no      SET 'HHLD        '                      
+     8       101     no       no      SET 'TRAD_COMM   '                      
+     9       104     no       no      SET 'MARG_COMM   '                      
+    10       107     no       no      SUBSET 'MARG_COMM   ' of 'TRAD_COMM   ' 
+    11       109     no       no      SET 'NMRG_COMM   '                      
+    12       109     no       no      SUBSET 'NMRG_COMM   ' of 'TRAD_COMM   ' 
+    13       111     no       no      SET 'CGDS_COMM   '                      
+    14       114     no       no      SET 'ENDW_COMM   '                      
+    15       117     no       no      SET 'ENDWC_COMM  '                      
+    16       119     no       no      SET 'PROD_COMM   '                      
+    17       119     no       no      SUBSET 'TRAD_COMM   ' of 'PROD_COMM   ' 
+    18       119     no       no      SUBSET 'CGDS_COMM   ' of 'PROD_COMM   ' 
+    19       121     no       no      SET 'DEMD_COMM   '                      
+    20       121     no       no      SUBSET 'ENDW_COMM   ' of 'DEMD_COMM   ' 
+    21       121     no       no      SUBSET 'TRAD_COMM   ' of 'DEMD_COMM   ' 
+    22       123     no       no      SET 'NSAV_COMM   '                      
+    23       123     no       no      SUBSET 'DEMD_COMM   ' of 'NSAV_COMM   ' 
+    24       123     no       no      SUBSET 'CGDS_COMM   ' of 'NSAV_COMM   ' 
+    25       125     no       no      SUBSET 'PROD_COMM   ' of 'NSAV_COMM   ' 
+    26       127     no       no      SUBSET 'ENDWC_COMM  ' of 'NSAV_COMM   ' 
+    27       136     no       no      SET 'CTAX        '                      
+    28       138     no       no      SET 'TYPE        '                      
+    29       140     no       no      SUBSET 'TYPE        ' of 'CTAX        ' 
+    30       142     no       no      SET 'COLUMN      '                      
+    31       144     no       no      SET 'TECHTYPE    '                      
+    32       146     no       no      SET 'PRICES      '                      
+    33       148     no       no      SET 'DIR         '                      
+    34       150     no       no      SET 'ACTIVITY    '                      
+    35       152     no       no      SET 'COL         '                      
+    36       154     no       no      SET 'DIREC       '                      
+    37       156     no       no      SET 'FORM        '                      
+    38       158     no       no      SET 'COLM        '                      
+    39       160     no       no      SET 'FORINC      '                      
+    40       172     no       no      COEFFICIENT 'BEVOA       '              
+    41       174     no       no      READ into 'BEVOA       '                
+    42       176     no       no      COEFFICIENT 'BEVFA       '              
+    43       178     no       no      READ into 'BEVFA       '                
+    44       180     no       no      COEFFICIENT 'BVIFA       '              
+    45       182     no       no      READ into 'BVIFA       '                
+    46       184     no       no      COEFFICIENT 'BVDFA       '              
+    47       186     no       no      READ into 'BVDFA       '                
+    48       189     no       no      COEFFICIENT 'BVOA        '              
+    49       191     no       no      Formula for "BVOA"                      
+    50       193     no       no      Formula for "BVOA"                      
+    51       223     no       no      COEFFICIENT 'CNTalleffr  '              
+    52       226     no       no      READ into 'CNTalleffr  '                
+    53       229     no       no      COEFFICIENT 'CNTendwr    '              
+    54       232     no       no      READ into 'CNTendwr    '                
+    55       235     no       no      COEFFICIENT 'CNTtechr    '              
+    56       238     no       no      READ into 'CNTtechr    '                
+    57       241     no       no      COEFFICIENT 'CNTpopr     '              
+    58       244     no       no      READ into 'CNTpopr     '                
+    59       247     no       no      COEFFICIENT 'CNTtotr     '              
+    60       250     no       no      READ into 'CNTtotr     '                
+    61       253     no       no      COEFFICIENT 'CNTcgdsr    '              
+    62       256     no       no      READ into 'CNTcgdsr    '                
+    63       259     no       no      COEFFICIENT 'CNTdpar     '              
+    64       262     no       no      READ into 'CNTdpar     '                
+    65       265     no       no      COEFFICIENT 'CNTfyr      '              
+    66       268     no       no      READ into 'CNTfyr      '                
+    67       271     no       no      COEFFICIENT 'CNTfkyr     '              
+    68       274     no       no      READ into 'CNTfkyr     '                
+    69       277     no       no      COEFFICIENT 'CNTremr     '              
+    70       280     no       no      READ into 'CNTremr     '                
+    71       283     no       no      COEFFICIENT 'CNTaidr     '              
+    72       286     no       no      READ into 'CNTaidr     '                
+    73       289     no       no      COEFFICIENT 'WELFARE     '              
+    74       291     no       no      Formula for "WELFARE"                   
+    75       293     no       no      Formula for "WELFARE"                   
+    76       295     no       no      Formula for "WELFARE"                   
+    77       297     no       no      Formula for "WELFARE"                   
+    78       299     no       no      Formula for "WELFARE"                   
+    79       301     no       no      Formula for "WELFARE"                   
+    80       303     no       no      Formula for "WELFARE"                   
+    81       305     no       no      Formula for "WELFARE"                   
+    82       308     no       no      WRITE from 'WELFARE     '               
+    83       319     no       no      COEFFICIENT 'CNTalleffir '              
+    84       322     no       no      READ into 'CNTalleffir '                
+    85       325     no       no      COEFFICIENT 'CNTalldemd  '              
+    86       327     no       no      Formula for "CNTalldemd"                
+    87       330     no       no      WRITE from 'CNTalldemd  '               
+    88       341     no       no      COEFFICIENT 'CNTqor      '              
+    89       344     no       no      READ into 'CNTqor      '                
+    90       347     no       no      COEFFICIENT 'CNTqfer     '              
+    91       350     no       no      READ into 'CNTqfer     '                
+    92       353     no       no      COEFFICIENT 'CNTqfmr     '              
+    93       356     no       no      READ into 'CNTqfmr     '                
+    94       358     no       no      COEFFICIENT 'CNTqfdr     '              
+    95       361     no       no      READ into 'CNTqfdr     '                
+    96       363     no       no      COEFFICIENT 'CNTallir    '              
+    97       365     no       no      Formula for "CNTallir"                  
+    98       368     no       no      COEFFICIENT 'CNTqpmr     '              
+    99       371     no       no      READ into 'CNTqpmr     '                
+   100       373     no       no      COEFFICIENT 'CNTqpdr     '              
+   101       376     no       no      READ into 'CNTqpdr     '                
+   102       378     no       no      COEFFICIENT 'CNTallpr    '              
+   103       380     no       no      Formula for "CNTallpr"                  
+   104       383     no       no      COEFFICIENT 'CNTqgmr     '              
+   105       386     no       no      READ into 'CNTqgmr     '                
+   106       388     no       no      COEFFICIENT 'CNTqgdr     '              
+   107       391     no       no      READ into 'CNTqgdr     '                
+   108       393     no       no      COEFFICIENT 'CNTallgr    '              
+   109       395     no       no      Formula for "CNTallgr"                  
+   110       398     no       no      COEFFICIENT 'CNTqxsr     '              
+   111       401     no       no      READ into 'CNTqxsr     '                
+   112       404     no       no      COEFFICIENT 'CNTqimr     '              
+   113       407     no       no      READ into 'CNTqimr     '                
+   114       410     no       no      COEFFICIENT 'CNTalleffkr '              
+   115       412     no       no      Formula for "CNTalleffkr"               
+   116       414     no       no      Formula for "CNTalleffkr"               
+   117       416     no       no      Formula for "CNTalleffkr"               
+   118       418     no       no      Formula for "CNTalleffkr"               
+   119       420     no       no      Formula for "CNTalleffkr"               
+   120       422     no       no      Formula for "CNTalleffkr"               
+   121       424     no       no      Formula for "CNTalleffkr"               
+   122       427     no       no      WRITE from 'CNTalleffkr '               
+   123       450     no       no      COEFFICIENT 'BVDPM       '              
+   124       452     no       no      READ into 'BVDPM       '                
+   125       454     no       no      COEFFICIENT 'BVDGM       '              
+   126       456     no       no      READ into 'BVDGM       '                
+   127       458     no       no      COEFFICIENT 'BVDFM       '              
+   128       460     no       no      READ into 'BVDFM       '                
+   129       462     no       no      COEFFICIENT 'UVDPM       '              
+   130       464     no       no      READ into 'UVDPM       '                
+   131       466     no       no      COEFFICIENT 'UVDGM       '              
+   132       468     no       no      READ into 'UVDGM       '                
+   133       470     no       no      COEFFICIENT 'UVDFM       '              
+   134       472     no       no      READ into 'UVDFM       '                
+   135       474     no       no      COEFFICIENT 'UVIFA       '              
+   136       476     no       no      READ into 'UVIFA       '                
+   137       478     no       no      COEFFICIENT 'UVDFA       '              
+   138       480     no       no      READ into 'UVDFA       '                
+   139       482     no       no      COEFFICIENT 'BVXMD       '              
+   140       485     no       no      READ into 'BVXMD       '                
+   141       487     no       no      COEFFICIENT 'UVXMD       '              
+   142       490     no       no      READ into 'UVXMD       '                
+   143       508     no       no      COEFFICIENT 'CNTqoir     '              
+   144       511     no       no      READ into 'CNTqoir     '                
+   145       514     no       no      COEFFICIENT 'OTAX        '              
+   146       516     no       no      Formula for "OTAX"                      
+   147       519     no       no      WRITE from 'OTAX        '               
+   148       529     no       no      COEFFICIENT 'BVFM        '              
+   149       531     no       no      READ into 'BVFM        '                
+   150       534     no       no      COEFFICIENT 'BVDM        '              
+   151       536     no       no      Formula for "BVDM"                      
+   152       540     no       no      COEFFICIENT 'BVST        '              
+   153       543     no       no      READ into 'BVST        '                
+   154       546     no       no      COEFFICIENT 'BVOM        '              
+   155       548     no       no      Formula for "BVOM"                      
+   156       550     no       no      Formula for "BVOM"                      
+   157       552     no       no      Formula for "BVOM"                      
+   158       554     no       no      Formula for "BVOM"                      
+   159       557     no       no      COEFFICIENT 'qo          '              
+   160       559     no       no      READ into 'qo          '                
+   161       562     no       no      ZERODIVIDE instruction                  
+   162       564     no       no      COEFFICIENT 'BOUTAX      '              
+   163       566     no       no      Formula for "BOUTAX"                    
+   164       569     no       no      ZERODIVIDE instruction                  
+   165       571     no       no      COEFFICIENT 'UVFM        '              
+   166       573     no       no      READ into 'UVFM        '                
+   167       576     no       no      COEFFICIENT 'UVDM        '              
+   168       578     no       no      Formula for "UVDM"                      
+   169       582     no       no      COEFFICIENT 'UVST        '              
+   170       585     no       no      READ into 'UVST        '                
+   171       588     no       no      COEFFICIENT 'UEVOA       '              
+   172       590     no       no      READ into 'UEVOA       '                
+   173       593     no       no      COEFFICIENT 'UEVFA       '              
+   174       595     no       no      READ into 'UEVFA       '                
+   175       598     no       no      COEFFICIENT 'UVOA        '              
+   176       600     no       no      Formula for "UVOA"                      
+   177       602     no       no      Formula for "UVOA"                      
+   178       607     no       no      COEFFICIENT 'UVOM        '              
+   179       609     no       no      Formula for "UVOM"                      
+   180       611     no       no      Formula for "UVOM"                      
+   181       613     no       no      Formula for "UVOM"                      
+   182       615     no       no      Formula for "UVOM"                      
+   183       618     no       no      ZERODIVIDE instruction                  
+   184       620     no       no      COEFFICIENT 'UOUTAX      '              
+   185       622     no       no      Formula for "UOUTAX"                    
+   186       625     no       no      ZERODIVIDE instruction                  
+   187       627     no       no      COEFFICIENT 'OUTPUT      '              
+   188       629     no       no      Formula for "OUTPUT"                    
+   189       631     no       no      Formula for "OUTPUT"                    
+   190       633     no       no      Formula for "OUTPUT"                    
+   191       635     no       no      Formula for "OUTPUT"                    
+   192       638     no       no      WRITE from 'OUTPUT      '               
+   193       660     no       no      COEFFICIENT 'CNTqfmir    '              
+   194       663     no       no      READ into 'CNTqfmir    '                
+   195       666     no       no      COEFFICIENT 'CNTqpmir    '              
+   196       669     no       no      READ into 'CNTqpmir    '                
+   197       672     no       no      COEFFICIENT 'CNTqgmir    '              
+   198       675     no       no      READ into 'CNTqgmir    '                
+   199       678     no       no      COEFFICIENT 'CNTqfdir    '              
+   200       681     no       no      READ into 'CNTqfdir    '                
+   201       684     no       no      COEFFICIENT 'CNTqpdir    '              
+   202       687     no       no      READ into 'CNTqpdir    '                
+   203       690     no       no      COEFFICIENT 'CNTqgdir    '              
+   204       693     no       no      READ into 'CNTqgdir    '                
+   205       696     no       no      COEFFICIENT 'ATAX        '              
+   206       698     no       no      Formula for "ATAX"                      
+   207       700     no       no      Formula for "ATAX"                      
+   208       702     no       no      Formula for "ATAX"                      
+   209       704     no       no      Formula for "ATAX"                      
+   210       706     no       no      Formula for "ATAX"                      
+   211       708     no       no      Formula for "ATAX"                      
+   212       711     no       no      WRITE from 'ATAX        '               
+   213       721     no       no      COEFFICIENT 'CNTqfmijr   '              
+   214       724     no       no      READ into 'CNTqfmijr   '                
+   215       727     no       no      COEFFICIENT 'CNTqfdijr   '              
+   216       730     no       no      READ into 'CNTqfdijr   '                
+   217       733     no       no      COEFFICIENT 'STAX        '              
+   218       735     no       no      Formula for "STAX"                      
+   219       737     no       no      Formula for "STAX"                      
+   220       740     no       no      WRITE from 'STAX        '               
+   221       750     no       no      COEFFICIENT 'BVIFM       '              
+   222       752     no       no      READ into 'BVIFM       '                
+   223       755     no       no      COEFFICIENT 'qfm         '              
+   224       757     no       no      READ into 'qfm         '                
+   225       760     no       no      COEFFICIENT 'qfd         '              
+   226       762     no       no      READ into 'qfd         '                
+   227       765     no       no      COEFFICIENT 'UVIFM       '              
+   228       767     no       no      READ into 'UVIFM       '                
+   229       770     no       no      ZERODIVIDE instruction                  
+   230       772     no       no      COEFFICIENT 'FIRM        '              
+   231       775     no       no      Formula for "FIRM"                      
+   232       777     no       no      Formula for "FIRM"                      
+   233       779     no       no      Formula for "FIRM"                      
+   234       781     no       no      Formula for "FIRM"                      
+   235       784     no       no      Formula for "FIRM"                      
+   236       787     no       no      Formula for "FIRM"                      
+   237       790     no       no      Formula for "FIRM"                      
+   238       794     no       no      ZERODIVIDE instruction                  
+   239       796     no       no      WRITE from 'FIRM        '               
+   240       806     no       no      COEFFICIENT 'BVIPM       '              
+   241       808     no       no      READ into 'BVIPM       '                
+   242       811     no       no      COEFFICIENT 'qpm         '              
+   243       813     no       no      READ into 'qpm         '                
+   244       816     no       no      COEFFICIENT 'qpd         '              
+   245       818     no       no      READ into 'qpd         '                
+   246       821     no       no      COEFFICIENT 'BVIPA       '              
+   247       823     no       no      READ into 'BVIPA       '                
+   248       826     no       no      COEFFICIENT 'UVIPA       '              
+   249       828     no       no      READ into 'UVIPA       '                
+   250       831     no       no      COEFFICIENT 'UVIPM       '              
+   251       833     no       no      READ into 'UVIPM       '                
+   252       836     no       no      COEFFICIENT 'BVDPA       '              
+   253       838     no       no      READ into 'BVDPA       '                
+   254       841     no       no      COEFFICIENT 'UVDPA       '              
+   255       843     no       no      READ into 'UVDPA       '                
+   256       846     no       no      ZERODIVIDE instruction                  
+   257       848     no       no      COEFFICIENT 'PRIVATE     '              
+   258       850     no       no      Formula for "PRIVATE"                   
+   259       852     no       no      Formula for "PRIVATE"                   
+   260       855     no       no      Formula for "PRIVATE"                   
+   261       858     no       no      Formula for "PRIVATE"                   
+   262       862     no       no      Formula for "PRIVATE"                   
+   263       866     no       no      Formula for "PRIVATE"                   
+   264       870     no       no      Formula for "PRIVATE"                   
+   265       875     no       no      ZERODIVIDE instruction                  
+   266       877     no       no      WRITE from 'PRIVATE     '               
+   267       887     no       no      COEFFICIENT 'BVIGM       '              
+   268       889     no       no      READ into 'BVIGM       '                
+   269       892     no       no      COEFFICIENT 'qgm         '              
+   270       894     no       no      READ into 'qgm         '                
+   271       897     no       no      COEFFICIENT 'qgd         '              
+   272       899     no       no      READ into 'qgd         '                
+   273       902     no       no      COEFFICIENT 'BVIGA       '              
+   274       904     no       no      READ into 'BVIGA       '                
+   275       907     no       no      COEFFICIENT 'UVIGA       '              
+   276       909     no       no      READ into 'UVIGA       '                
+   277       912     no       no      COEFFICIENT 'UVIGM       '              
+   278       914     no       no      READ into 'UVIGM       '                
+   279       917     no       no      COEFFICIENT 'BVDGA       '              
+   280       919     no       no      READ into 'BVDGA       '                
+   281       922     no       no      COEFFICIENT 'UVDGA       '              
+   282       924     no       no      READ into 'UVDGA       '                
+   283       927     no       no      ZERODIVIDE instruction                  
+   284       929     no       no      COEFFICIENT 'GOVT        '              
+   285       931     no       no      Formula for "GOVT"                      
+   286       933     no       no      Formula for "GOVT"                      
+   287       935     no       no      Formula for "GOVT"                      
+   288       937     no       no      Formula for "GOVT"                      
+   289       940     no       no      Formula for "GOVT"                      
+   290       943     no       no      Formula for "GOVT"                      
+   291       946     no       no      Formula for "GOVT"                      
+   292       950     no       no      ZERODIVIDE instruction                  
+   293       952     no       no      WRITE from 'GOVT        '               
+   294       971     no       no      COEFFICIENT 'CNTqxsirs   '              
+   295       974     no       no      READ into 'CNTqxsirs   '                
+   296       977     no       no      COEFFICIENT 'CNTqimisr   '              
+   297       980     no       no      READ into 'CNTqimisr   '                
+   298       983     no       no      COEFFICIENT 'TTAX        '              
+   299       985     no       no      Formula for "TTAX"                      
+   300       987     no       no      Formula for "TTAX"                      
+   301       990     no       no      WRITE from 'TTAX        '               
+   302      1000     no       no      COEFFICIENT 'BVIMS       '              
+   303      1002     no       no      READ into 'BVIMS       '                
+   304      1005     no       no      COEFFICIENT 'BVIWS       '              
+   305      1007     no       no      READ into 'BVIWS       '                
+   306      1010     no       no      COEFFICIENT 'BIMTAX      '              
+   307      1012     no       no      Formula for "BIMTAX"                    
+   308      1015     no       no      COEFFICIENT 'BVXWD       '              
+   309      1017     no       no      READ into 'BVXWD       '                
+   310      1020     no       no      COEFFICIENT 'BEXTAX      '              
+   311      1022     no       no      Formula for "BEXTAX"                    
+   312      1025     no       no      COEFFICIENT 'UVIMS       '              
+   313      1027     no       no      READ into 'UVIMS       '                
+   314      1030     no       no      COEFFICIENT 'UVIWS       '              
+   315      1032     no       no      READ into 'UVIWS       '                
+   316      1035     no       no      COEFFICIENT 'UIMTAX      '              
+   317      1037     no       no      Formula for "UIMTAX"                    
+   318      1040     no       no      COEFFICIENT 'UVXWD       '              
+   319      1042     no       no      READ into 'UVXWD       '                
+   320      1045     no       no      COEFFICIENT 'UEXTAX      '              
+   321      1047     no       no      Formula for "UEXTAX"                    
+   322      1050     no       no      COEFFICIENT 'qxs         '              
+   323      1052     no       no      READ into 'qxs         '                
+   324      1055     no       no      COEFFICIENT 'TRADE       '              
+   325      1057     no       no      Formula for "TRADE"                     
+   326      1059     no       no      Formula for "TRADE"                     
+   327      1061     no       no      Formula for "TRADE"                     
+   328      1063     no       no      Formula for "TRADE"                     
+   329      1065     no       no      Formula for "TRADE"                     
+   330      1067     no       no      Formula for "TRADE"                     
+   331      1069     no       no      Formula for "TRADE"                     
+   332      1071     no       no      Formula for "TRADE"                     
+   333      1074     no       no      WRITE from 'TRADE       '               
+   334      1084     no       no      COEFFICIENT 'CNTqfeir    '              
+   335      1087     no       no      READ into 'CNTqfeir    '                
+   336      1090     no       no      WRITE from 'CNTqfeir    '               
+   337      1093     no       no      COEFFICIENT 'CNTqfeijr   '              
+   338      1096     no       no      READ into 'CNTqfeijr   '                
+   339      1099     no       no      COEFFICIENT 'BENDTAX     '              
+   340      1101     no       no      Formula for "BENDTAX"                   
+   341      1104     no       no      COEFFICIENT 'UENDTAX     '              
+   342      1106     no       no      Formula for "UENDTAX"                   
+   343      1109     no       no      COEFFICIENT 'qfe         '              
+   344      1111     no       no      READ into 'qfe         '                
+   345      1114     no       no      COEFFICIENT 'PFACTOR     '              
+   346      1116     no       no      Formula for "PFACTOR"                   
+   347      1118     no       no      Formula for "PFACTOR"                   
+   348      1120     no       no      Formula for "PFACTOR"                   
+   349      1122     no       no      Formula for "PFACTOR"                   
+   350      1125     no       no      WRITE from 'PFACTOR     '               
+   351      1135     no       no      COEFFICIENT 'CNTendwir   '              
+   352      1137     no       no      READ into 'CNTendwir   '                
+   353      1140     no       no      COEFFICIENT 'CNTendw     '              
+   354      1142     no       no      Formula for "CNTendw"                   
+   355      1144     no       no      WRITE from 'CNTendw     '               
+   356      1155     no       no      COEFFICIENT 'CNTkbr      '              
+   357      1157     no       no      READ into 'CNTkbr      '                
+   358      1159     no       no      WRITE from 'CNTkbr      '               
+   359      1179     no       no      COEFFICIENT 'CNTtech_aor '              
+   360      1182     no       no      READ into 'CNTtech_aor '                
+   361      1185     no       no      COEFFICIENT 'CNTtech_afer'              
+   362      1188     no       no      READ into 'CNTtech_afer'                
+   363      1191     no       no      COEFFICIENT 'CNTtech_avar'              
+   364      1194     no       no      READ into 'CNTtech_avar'                
+   365      1197     no       no      COEFFICIENT 'CNTtech_afr '              
+   366      1200     no       no      READ into 'CNTtech_afr '                
+   367      1203     no       no      COEFFICIENT 'CNTtech_atrr'              
+   368      1206     no       no      READ into 'CNTtech_atrr'                
+   369      1209     no       no      COEFFICIENT 'CNTtech_amsr'              
+   370      1212     no       no      READ into 'CNTtech_amsr'                
+   371      1215     no       no      COEFFICIENT 'CNTtech     '              
+   372      1217     no       no      Formula for "CNTtech"                   
+   373      1219     no       no      Formula for "CNTtech"                   
+   374      1221     no       no      Formula for "CNTtech"                   
+   375      1223     no       no      Formula for "CNTtech"                   
+   376      1225     no       no      Formula for "CNTtech"                   
+   377      1227     no       no      Formula for "CNTtech"                   
+   378      1230     no       no      WRITE from 'CNTtech     '               
+   379      1240     no       no      COEFFICIENT 'CNTtech_aoir'              
+   380      1242     no       no      READ into 'CNTtech_aoir'                
+   381      1244     no       no      WRITE from 'CNTtech_aoir'               
+   382      1248     no       no      COEFFICIENT 'Ctech_afeijr'              
+   383      1250     no       no      READ into 'Ctech_afeijr'                
+   384      1252     no       no      WRITE from 'Ctech_afeijr'               
+   385      1256     no       no      COEFFICIENT 'Ctech_avajr '              
+   386      1258     no       no      READ into 'Ctech_avajr '                
+   387      1260     no       no      WRITE from 'Ctech_avajr '               
+   388      1264     no       no      COEFFICIENT 'Ctech_afijr '              
+   389      1266     no       no      READ into 'Ctech_afijr '                
+   390      1268     no       no      WRITE from 'Ctech_afijr '               
+   391      1272     no       no      COEFFICIENT 'Ctech_mirs  '              
+   392      1274     no       no      READ into 'Ctech_mirs  '                
+   393      1276     no       no      WRITE from 'Ctech_mirs  '               
+   394      1280     no       no      COEFFICIENT 'Ctech_amsirs'              
+   395      1282     no       no      READ into 'Ctech_amsirs'                
+   396      1284     no       no      WRITE from 'Ctech_amsirs'               
+   397      1304     no       no      COEFFICIENT 'c1_ir       '              
+   398      1306     no       no      READ into 'c1_ir       '                
+   399      1309     no       no      COEFFICIENT 'c2_ir       '              
+   400      1311     no       no      READ into 'c2_ir       '                
+   401      1314     no       no      COEFFICIENT 'c3_ir       '              
+   402      1316     no       no      READ into 'c3_ir       '                
+   403      1319     no       no      COEFFICIENT 'TOT         '              
+   404      1322     no       no      Formula for "TOT"                       
+   405      1324     no       no      Formula for "TOT"                       
+   406      1326     no       no      Formula for "TOT"                       
+   407      1328     no       no      Formula for "TOT"                       
+   408      1332     no       no      Formula for "TOT"                       
+   409      1336     no       no      Formula for "TOT"                       
+   410      1341     no       no      WRITE from 'TOT         '               
+   411      1352     no       no      COEFFICIENT 'BSAVE       '              
+   412      1354     no       no      READ into 'BSAVE       '                
+   413      1357     no       no      COEFFICIENT 'BVDEP       '              
+   414      1359     no       no      READ into 'BVDEP       '                
+   415      1362     no       no      COEFFICIENT 'NETINV      '              
+   416      1364     no       no      Formula for "NETINV"                    
+   417      1367     no       no      COEFFICIENT 'ISBAL       '              
+   418      1369     no       no      Formula for "ISBAL"                     
+   419      1372     no       no      COEFFICIENT 'pcgds       '              
+   420      1374     no       no      READ into 'pcgds       '                
+   421      1377     no       no      COEFFICIENT 'psave       '              
+   422      1379     no       no      READ into 'psave       '                
+   423      1382     no       no      COEFFICIENT 'CGDSCOMP    '              
+   424      1384     no       no      Formula for "CGDSCOMP"                  
+   425      1386     no       no      Formula for "CGDSCOMP"                  
+   426      1388     no       no      Formula for "CGDSCOMP"                  
+   427      1390     no       no      WRITE from 'CGDSCOMP    '               
+   428      1400     no       no      COEFFICIENT 'FINCDCOMP   '              
+   429      1402     no       no      Formula for "FINCDCOMP"                 
+   430      1404     no       no      Formula for "FINCDCOMP"                 
+   431      1406     no       no      Formula for "FINCDCOMP"                 
+   432      1408     no       no      WRITE from 'FINCDCOMP   '               
+
+
+
+
+ ============
+ ++ SET TABLE
+ ============
+
+                    Defined   [Max] Inter             Set numbers this
+  Number    Name    at line    Size temp? Elements    is subset of
+  ---------------------------------------------------------------------
+     1  REG            95 [      10]  no   read 
+     2  HHLD           98 [      10]  no   read 
+     3  TRAD_COMM     101 [      10]  no   read      9    10
+     4  MARG_COMM     104 [      10]  no   read      3
+     5  NMRG_COMM     109 [       0]  no   other     3
+     6  CGDS_COMM     111 [       1]  no   read      9    11
+     7  ENDW_COMM     114 [       5]  no   read     10
+     8  ENDWC_COMM    117         1   no   fixed    11
+     9  PROD_COMM     119 [       0]  no   other    11
+    10  DEMD_COMM     121 [       0]  no   other    11
+    11  NSAV_COMM     123 [       0]  no   other
+    12  CTAX          136         7   no   fixed
+    13  TYPE          138         2   no   fixed    12
+    14  COLUMN        142         8   no   fixed
+    15  TECHTYPE      144         6   no   fixed
+    16  PRICES        146         3   no   fixed
+    17  DIR           148         2   no   fixed
+    18  ACTIVITY      150         3   no   fixed
+    19  COL           152         4   no   fixed
+    20  DIREC         154         2   no   fixed
+    21  FORM          156         2   no   fixed
+    22  COLM          158         3   no   fixed
+    23  FORINC        160         3   no   fixed
+
+
+
+
+ ===============
+ ++ SUBSET TABLE
+ ===============
+ 
+SSNO=1. Set 4 "MARG_COMM" is subset of set 3 "TRAD_COMM"
+SSNO=2. Set 5 "NMRG_COMM" is subset of set 3 "TRAD_COMM"
+SSNO=3. Set 3 "TRAD_COMM" is subset of set 9 "PROD_COMM"
+SSNO=4. Set 6 "CGDS_COMM" is subset of set 9 "PROD_COMM"
+SSNO=5. Set 7 "ENDW_COMM" is subset of set 10 "DEMD_COMM"
+SSNO=6. Set 3 "TRAD_COMM" is subset of set 10 "DEMD_COMM"
+SSNO=7. Set 10 "DEMD_COMM" is subset of set 11 "NSAV_COMM"
+SSNO=8. Set 6 "CGDS_COMM" is subset of set 11 "NSAV_COMM"
+SSNO=9. Set 9 "PROD_COMM" is subset of set 11 "NSAV_COMM"
+SSNO=10. Set 8 "ENDWC_COMM" is subset of set 11 "NSAV_COMM"
+SSNO=11. Set 13 "TYPE" is subset of set 12 "CTAX"
+
+
+
+
+ =============
+ ++ FILE TABLE
+ =============
+
+         Logical            Defined  File  File
+  Number  Name              at line  Type  Form  Actual name (if given)
+  --------------------------------------------------------------------
+     1  GTAPSETS                77    old  head
+     2  GTAPSOL                 79    old  head
+     3  GTAPBASE                81    old  head
+     4  GTAPUPDATE              83    old  head
+     5  WELVIEW                 85    new  head
+
+
+
+
+ ====================
+ ++ COEFFICIENT TABLE
+ ====================
+
+                        Defined  No            Arguments range
+  Number    Name        at line  Args Type     over sets numbered
+  ------------------------------------------------------------
+     1    BEVOA            172     3  real       7     2     1
+     2    BEVFA            176     3  real       7     9     1
+     3    BVIFA            180     3  real       3     9     1
+     4    BVDFA            184     3  real       3     9     1
+     5    BVOA             189     2  real      11     1
+     6    CNTalleffr       223     1  real       1
+     7    CNTendwr         229     1  real       1
+     8    CNTtechr         235     1  real       1
+     9    CNTpopr          241     1  real       1
+    10    CNTtotr          247     1  real       1
+    11    CNTcgdsr         253     1  real       1
+    12    CNTdpar          259     1  real       1
+    13    CNTfyr           265     1  real       1
+    14    CNTfkyr          271     1  real       1
+    15    CNTremr          277     1  real       1
+    16    CNTaidr          283     1  real       1
+    17    WELFARE          289     2  real       1    14
+    18    CNTalleffir      319     2  real      10     1
+    19    CNTalldemd       325     2  real       1    10
+    20    CNTqor           341     1  real       1
+    21    CNTqfer          347     1  real       1
+    22    CNTqfmr          353     1  real       1
+    23    CNTqfdr          358     1  real       1
+    24    CNTallir         363     1  real       1
+    25    CNTqpmr          368     1  real       1
+    26    CNTqpdr          373     1  real       1
+    27    CNTallpr         378     1  real       1
+    28    CNTqgmr          383     1  real       1
+    29    CNTqgdr          388     1  real       1
+    30    CNTallgr         393     1  real       1
+    31    CNTqxsr          398     1  real       1
+    32    CNTqimr          404     1  real       1
+    33    CNTalleffkr      410     2  real       1    12
+    34    BVDPM            450     3  real       3     2     1
+    35    BVDGM            454     2  real       3     1
+    36    BVDFM            458     3  real       3     9     1
+    37    UVDPM            462     3  real       3     2     1
+    38    UVDGM            466     2  real       3     1
+    39    UVDFM            470     3  real       3     9     1
+    40    UVIFA            474     3  real       3     9     1
+    41    UVDFA            478     3  real       3     9     1
+    42    BVXMD            482     3  real       3     1     1
+    43    UVXMD            487     3  real       3     1     1
+    44    CNTqoir          508     2  real      11     1
+    45    OTAX             514     2  real      11     1
+    46    BVFM             529     3  real       7     9     1
+    47    BVDM             534     2  real       3     1
+    48    BVST             540     2  real       4     1
+    49    BVOM             546     2  real      11     1
+    50    qo               557     2  real      11     1
+    51    BOUTAX           564     2  real      11     1
+    52    UVFM             571     3  real       7     9     1
+    53    UVDM             576     2  real       3     1
+    54    UVST             582     2  real       4     1
+    55    UEVOA            588     3  real       7     2     1
+    56    UEVFA            593     3  real       7     9     1
+    57    UVOA             598     2  real      11     1
+    58    UVOM             607     2  real      11     1
+    59    UOUTAX           620     2  real      11     1
+    60    OUTPUT           627     3  real      11     1    19
+    61    CNTqfmir         660     2  real       3     1
+    62    CNTqpmir         666     2  real       3     1
+    63    CNTqgmir         672     2  real       3     1
+    64    CNTqfdir         678     2  real       3     1
+    65    CNTqpdir         684     2  real       3     1
+    66    CNTqgdir         690     2  real       3     1
+    67    ATAX             696     4  real       3    18     1    17
+    68    CNTqfmijr        721     3  real       3     9     1
+    69    CNTqfdijr        727     3  real       3     9     1
+    70    STAX             733     4  real       3     9     1    17
+    71    BVIFM            750     3  real       3     9     1
+    72    qfm              755     3  real       3     9     1
+    73    qfd              760     3  real       3     9     1
+    74    UVIFM            765     3  real       3     9     1
+    75    FIRM             772     5  real       3     9     1    17    19
+
+    76    BVIPM            806     3  real       3     2     1
+    77    qpm              811     2  real       3     1
+    78    qpd              816     2  real       3     1
+    79    BVIPA            821     3  real       3     2     1
+    80    UVIPA            826     3  real       3     2     1
+    81    UVIPM            831     3  real       3     2     1
+    82    BVDPA            836     3  real       3     2     1
+    83    UVDPA            841     3  real       3     2     1
+    84    PRIVATE          848     4  real       3     1    17    19
+    85    BVIGM            887     2  real       3     1
+    86    qgm              892     2  real       3     1
+    87    qgd              897     2  real       3     1
+    88    BVIGA            902     2  real       3     1
+    89    UVIGA            907     2  real       3     1
+    90    UVIGM            912     2  real       3     1
+    91    BVDGA            917     2  real       3     1
+    92    UVDGA            922     2  real       3     1
+    93    GOVT             929     4  real       3     1    17    19
+    94    CNTqxsirs        971     3  real       3     1     1
+    95    CNTqimisr        977     3  real       3     1     1
+    96    TTAX             983     4  real       3     1     1    13
+    97    BVIMS           1000     3  real       3     1     1
+    98    BVIWS           1005     3  real       3     1     1
+    99    BIMTAX          1010     3  real       3     1     1
+   100    BVXWD           1015     3  real       3     1     1
+   101    BEXTAX          1020     3  real       3     1     1
+   102    UVIMS           1025     3  real       3     1     1
+   103    UVIWS           1030     3  real       3     1     1
+   104    UIMTAX          1035     3  real       3     1     1
+   105    UVXWD           1040     3  real       3     1     1
+   106    UEXTAX          1045     3  real       3     1     1
+   107    qxs             1050     3  real       3     1     1
+   108    TRADE           1055     5  real       3     1     1    19    20
+
+   109    CNTqfeir        1084     2  real       7     1
+   110    CNTqfeijr       1093     3  real       7     9     1
+   111    BENDTAX         1099     3  real       7     9     1
+   112    UENDTAX         1104     3  real       7     9     1
+   113    qfe             1109     3  real       7     9     1
+   114    PFACTOR         1114     4  real       7     9     1    19
+   115    CNTendwir       1135     2  real       7     1
+   116    CNTendw         1140     2  real       1     7
+   117    CNTkbr          1155     1  real       1
+   118    CNTtech_aor     1179     1  real       1
+   119    CNTtech_afer    1185     1  real       1
+   120    CNTtech_avar    1191     1  real       1
+   121    CNTtech_afr     1197     1  real       1
+   122    CNTtech_atrr    1203     1  real       1
+   123    CNTtech_amsr    1209     1  real       1
+   124    CNTtech         1215     2  real       1    15
+   125    CNTtech_aoir    1240     2  real       9     1
+   126    Ctech_afeijr    1248     3  real       7     9     1
+   127    Ctech_avajr     1256     2  real       9     1
+   128    Ctech_afijr     1264     3  real       3     9     1
+   129    Ctech_mirs      1272     4  real       4     3     1     1
+   130    Ctech_amsirs    1280     3  real       3     1     1
+   131    c1_ir           1304     2  real       3     1
+   132    c2_ir           1309     2  real       3     1
+   133    c3_ir           1314     2  real       3     1
+   134    TOT             1319     4  real       3     1    16    21
+   135    BSAVE           1352     1  real       1
+   136    BVDEP           1357     2  real       2     1
+   137    NETINV          1362     1  real       1
+   138    ISBAL           1367     1  real       1
+   139    pcgds           1372     1  real       1
+   140    psave           1377     1  real       1
+   141    CGDSCOMP        1382     2  real       1    22
+   142    FINCDCOMP       1400     2  real       1    23
+
+
+
+
+ ================
+ ++ FORMULA TABLE
+ ================
+
+           Defined   Semantic      LHS                RHS
+  Number   at line    Error?    coefficient       coefficient numbers
+  -------------------------------------------------------------------
+     1         191     no      BVOA               1
+     2         193     no      BVOA               2     3     4
+     3         291     no      WELFARE            6
+     4         293     no      WELFARE            7
+     5         295     no      WELFARE            8
+     6         297     no      WELFARE            9
+     7         299     no      WELFARE           10
+     8         301     no      WELFARE           11
+     9         303     no      WELFARE           12
+    10         305     no      WELFARE           13
+    11         327     no      CNTalldemd        18
+    12         365     no      CNTallir          22    23
+    13         380     no      CNTallpr          25    26
+    14         395     no      CNTallgr          28    29
+    15         412     no      CNTalleffkr       21
+    16         414     no      CNTalleffkr       20
+    17         416     no      CNTalleffkr       24
+    18         418     no      CNTalleffkr       27
+    19         420     no      CNTalleffkr       30
+    20         422     no      CNTalleffkr       31
+    21         424     no      CNTalleffkr       32
+    22         516     no      OTAX              44
+    23         536     no      BVDM              34    35    36
+    24         548     no      BVOM              46
+    25         550     no      BVOM              47    42    48
+    26         552     no      BVOM              47    42
+    27         554     no      BVOM               5
+    28         566     no      BOUTAX            49     5
+    29         578     no      UVDM              37    38    39
+    30         600     no      UVOA              55
+    31         602     no      UVOA              56    40    41
+    32         609     no      UVOM              52
+    33         611     no      UVOM              53    43    54
+    34         613     no      UVOM              53    43
+    35         615     no      UVOM              57
+    36         622     no      UOUTAX            58    57
+    37         629     no      OUTPUT            45
+    38         631     no      OUTPUT            49    50
+    39         633     no      OUTPUT            51
+    40         635     no      OUTPUT            59
+    41         698     no      ATAX              61
+    42         700     no      ATAX              62
+    43         702     no      ATAX              63
+    44         704     no      ATAX              64
+    45         706     no      ATAX              65
+    46         708     no      ATAX              66
+    47         735     no      STAX              68
+    48         737     no      STAX              69
+    49         775     no      FIRM              70
+    50         777     no      FIRM              71    72
+    51         779     no      FIRM              36    73
+    52         781     no      FIRM               3    71
+    53         784     no      FIRM              40    74
+    54         787     no      FIRM               4    36
+    55         790     no      FIRM              41    39
+    56         850     no      PRIVATE           67
+    57         852     no      PRIVATE           76    77
+    58         855     no      PRIVATE           34    78
+    59         858     no      PRIVATE           79    76
+    60         862     no      PRIVATE           80    81
+    61         866     no      PRIVATE           82    34
+    62         870     no      PRIVATE           83    37
+    63         931     no      GOVT              67
+    64         933     no      GOVT              85    86
+    65         935     no      GOVT              35    87
+    66         937     no      GOVT              88    85
+    67         940     no      GOVT              89    90
+    68         943     no      GOVT              91    35
+    69         946     no      GOVT              92    38
+    70         985     no      TTAX              94
+    71         987     no      TTAX              95
+    72        1012     no      BIMTAX            97    98
+    73        1022     no      BEXTAX           100    42
+    74        1037     no      UIMTAX           102   103
+    75        1047     no      UEXTAX           105    43
+    76        1057     no      TRADE             96
+    77        1059     no      TRADE             96
+    78        1061     no      TRADE             42   107
+    79        1063     no      TRADE             42   107
+    80        1065     no      TRADE             99
+    81        1067     no      TRADE            104
+    82        1069     no      TRADE            101
+    83        1071     no      TRADE            106
+    84        1101     no      BENDTAX            2    46
+    85        1106     no      UENDTAX           56    52
+    86        1116     no      PFACTOR          110
+    87        1118     no      PFACTOR           46   113
+    88        1120     no      PFACTOR          111
+    89        1122     no      PFACTOR          112
+    90        1142     no      CNTendw          115
+    91        1217     no      CNTtech          118
+    92        1219     no      CNTtech          119
+    93        1221     no      CNTtech          120
+    94        1223     no      CNTtech          121
+    95        1225     no      CNTtech          122
+    96        1227     no      CNTtech          123
+    97        1322     no      TOT              131
+    98        1324     no      TOT              132
+    99        1326     no      TOT              133
+   100        1328     no      TOT               10   131   134
+   101        1332     no      TOT               10   132   134
+   102        1336     no      TOT              133    10   134
+   103        1364     no      NETINV             5   136
+   104        1369     no      ISBAL            137   135
+   105        1384     no      CGDSCOMP         138
+   106        1386     no      CGDSCOMP         139
+   107        1388     no      CGDSCOMP         140
+   108        1402     no      FINCDCOMP         14
+   109        1404     no      FINCDCOMP         15
+   110        1406     no      FINCDCOMP         16
+
+
+
+
+ =============
+ ++ READ TABLE
+ =============
+
+           Defined    Semantic  Coefficient   File number
+  Number   at line     Error?    read into     read from   Header
+  ---------------------------------------------------------------
+     1        174       no      BEVOA               3       EVOA
+     2        178       no      BEVFA               3       EVFA
+     3        182       no      BVIFA               3       VIFA
+     4        186       no      BVDFA               3       VDFA
+     5        226       no      CNTalleffr          2       ALLR
+     6        232       no      CNTendwr            2       ENDR
+     7        238       no      CNTtechr            2       TECR
+     8        244       no      CNTpopr             2       POPR
+     9        250       no      CNTtotr             2       TOTR
+    10        256       no      CNTcgdsr            2       CGDS
+    11        262       no      CNTdpar             2       DPAR
+    12        268       no      CNTfyr              2       FY  
+    13        274       no      CNTfkyr             2       FKY 
+    14        280       no      CNTremr             2       REM 
+    15        286       no      CNTaidr             2       AID 
+    16        322       no      CNTalleffir         2       AEFI
+    17        344       no      CNTqor              2       QOR 
+    18        350       no      CNTqfer             2       QFER
+    19        356       no      CNTqfmr             2       QFMR
+    20        361       no      CNTqfdr             2       QFDR
+    21        371       no      CNTqpmr             2       QPMR
+    22        376       no      CNTqpdr             2       QPDR
+    23        386       no      CNTqgmr             2       QGMR
+    24        391       no      CNTqgdr             2       QGDR
+    25        401       no      CNTqxsr             2       QXSR
+    26        407       no      CNTqimr             2       QIMR
+    27        452       no      BVDPM               3       VDPM
+    28        456       no      BVDGM               3       VDGM
+    29        460       no      BVDFM               3       VDFM
+    30        464       no      UVDPM               4       VDPM
+    31        468       no      UVDGM               4       VDGM
+    32        472       no      UVDFM               4       VDFM
+    33        476       no      UVIFA               4       VIFA
+    34        480       no      UVDFA               4       VDFA
+    35        485       no      BVXMD               3       VXMD
+    36        490       no      UVXMD               4       VXMD
+    37        511       no      CNTqoir             2       QOIR
+    38        531       no      BVFM                3       VFM 
+    39        543       no      BVST                3       VST 
+    40        559       no      qo                  2       qo  
+    41        573       no      UVFM                4       VFM 
+    42        585       no      UVST                4       VST 
+    43        590       no      UEVOA               4       EVOA
+    44        595       no      UEVFA               4       EVFA
+    45        663       no      CNTqfmir            2       QFMI
+    46        669       no      CNTqpmir            2       QPMI
+    47        675       no      CNTqgmir            2       QGMI
+    48        681       no      CNTqfdir            2       QFDI
+    49        687       no      CNTqpdir            2       QPDI
+    50        693       no      CNTqgdir            2       QGDI
+    51        724       no      CNTqfmijr           2       QFMJ
+    52        730       no      CNTqfdijr           2       QFDJ
+    53        752       no      BVIFM               3       VIFM
+    54        757       no      qfm                 2       qfm 
+    55        762       no      qfd                 2       qfd 
+    56        767       no      UVIFM               4       VIFM
+    57        808       no      BVIPM               3       VIPM
+    58        813       no      qpm                 2       qpm 
+    59        818       no      qpd                 2       qpd 
+    60        823       no      BVIPA               3       VIPA
+    61        828       no      UVIPA               4       VIPA
+    62        833       no      UVIPM               4       VIPM
+    63        838       no      BVDPA               3       VDPA
+    64        843       no      UVDPA               4       VDPA
+    65        889       no      BVIGM               3       VIGM
+    66        894       no      qgm                 2       qgm 
+    67        899       no      qgd                 2       qgd 
+    68        904       no      BVIGA               3       VIGA
+    69        909       no      UVIGA               4       VIGA
+    70        914       no      UVIGM               4       VIGM
+    71        919       no      BVDGA               3       VDGA
+    72        924       no      UVDGA               4       VDGA
+    73        974       no      CNTqxsirs           2       QXSS
+    74        980       no      CNTqimisr           2       QIMS
+    75       1002       no      BVIMS               3       VIMS
+    76       1007       no      BVIWS               3       VIWS
+    77       1017       no      BVXWD               3       VXWD
+    78       1027       no      UVIMS               4       VIMS
+    79       1032       no      UVIWS               4       VIWS
+    80       1042       no      UVXWD               4       VXWD
+    81       1052       no      qxs                 2       qxs 
+    82       1087       no      CNTqfeir            2       QEIR
+    83       1096       no      CNTqfeijr           2       EIJR
+    84       1111       no      qfe                 2       qfe 
+    85       1137       no      CNTendwir           2       ENDI
+    86       1157       no      CNTkbr              2       CKBR
+    87       1182       no      CNTtech_aor         2       AOR 
+    88       1188       no      CNTtech_afer        2       AFER
+    89       1194       no      CNTtech_avar        2       AVAR
+    90       1200       no      CNTtech_afr         2       AFR 
+    91       1206       no      CNTtech_atrr        2       ATR 
+    92       1212       no      CNTtech_amsr        2       AMSR
+    93       1242       no      CNTtech_aoir        2       AOIR
+    94       1250       no      Ctech_afeijr        2       FEIJ
+    95       1258       no      Ctech_avajr         2       AVJR
+    96       1266       no      Ctech_afijr         2       AFIJ
+    97       1274       no      Ctech_mirs          2       MIRS
+    98       1282       no      Ctech_amsirs        2       AMIR
+    99       1306       no      c1_ir               2       C1IR
+   100       1311       no      c2_ir               2       C2IR
+   101       1316       no      c3_ir               2       C3IR
+   102       1354       no      BSAVE               3       SAVE
+   103       1359       no      BVDEP               3       VDEP
+   104       1374       no      pcgds               2       pcgd
+   105       1379       no      psave               2       psav
+
+
+
+
+ ==============
+ ++ WRITE TABLE
+ ==============
+
+        Defined   Sem      Coeff        Write
+ Number at line  Error?   written       file   Header     Long Name
+ --------------------------------------------------------------------------------
+     1      308   no      WELFARE           5  A      "EV Decomposition: Summar
+                                                       y"
+     2      330   no      CNTalldemd        5  A1     "Allocative Efficiency Ef
+                                                       fect: Commodity Summary"
+     3      427   no      CNTalleffkr       5  A2     "Allocative Efficiency Ef
+                                                       fect: Tax Type Summary"
+     4      519   no      OTAX              5  A21    "Output Tax Effect"
+     5      638   no      OUTPUT            5  A211   "Output Tax Effect: Expla
+                                                       natory Factors"
+     6      711   no      ATAX              5  A22    "Domestic Tax Effect: Sum
+                                                       mary"
+     7      740   no      STAX              5  A221   "Intermed. Input Tax Effe
+                                                       ct"
+     8      796   no      FIRM              5  A22F   "Intermed. Input Tax Effe
+                                                       ct: Explanatory Factors"
+     9      877   no      PRIVATE           5  A22P   "Private Cons. Tax Effect
+                                                       : Explanatory Factors"
+    10      952   no      GOVT              5  A22G   "Government Cons. Tax Eff
+                                                       ect: Explanatory Factors"
+    11      990   no      TTAX              5  A23    "Trade Tax Effect"
+    12     1074   no      TRADE             5  A231   "Trade Tax Effect: Explan
+                                                       atory Factors"
+    13     1090   no      CNTqfeir          5  A3     "Endowment Tax Effect"
+    14     1125   no      PFACTOR           5  A31    "Endowment Tax Effect: Ex
+                                                       planatory Factors"
+    15     1144   no      CNTendw           5  B1     "Endowment Effect, Gross 
+                                                       of Depreciation"
+    16     1159   no      CNTkbr            5  B2     "Endowment Effect: Deprec
+                                                       iation"
+    17     1230   no      CNTtech           5  C1     "Technical Change Effect:
+                                                        Summary"
+    18     1244   no      CNTtech_aoir      5  C11    "(ao) Output Augm. Tech. 
+                                                       Change Effect"
+    19     1252   no      Ctech_afeijr      5  C12    "(afe) Primary Factor Aug
+                                                       m. Tech. Change Effect"
+    20     1260   no      Ctech_avajr       5  C13    "(ava) Value Added Augm. 
+                                                       Tech. Change Effect"
+    21     1268   no      Ctech_afijr       5  C14    "(af) Intermed. Input Aug
+                                                       m. Tech. Change Effect"
+    22     1276   no      Ctech_mirs        5  C15    "(atmfsd) Internat. Margi
+                                                       n Augm. Tech. Change Eff
+                                                       ect"
+    23     1284   no      Ctech_amsirs      5  C16    "(ams) Bilateral Import A
+                                                       ugm. Tech. Change Effect"
+    24     1341   no      TOT               5  E1     "Terms of Trade Effect"
+    25     1390   no      CGDSCOMP          5  F1     "I-S Effect: Explanatory 
+                                                       Factors"
+    26     1408   no      FINCDCOMP         5  H1     "Foreign income Effects: 
+                                                       Explanatory Factors"
+
+
+
+
+ ===================
+ ++ ZERODIVIDE TABLE
+ ===================
+
+           Defined          Coefficient or
+  Number   at line   Type   real value specified
+  -----------------------------------------------
+     1        562     NDZ   0                   
+     2        569     NDZ   (Turned OFF)
+     3        618     NDZ   0                   
+     4        625     NDZ   (Turned OFF)
+     5        770     NDZ   0                   
+     6        794     NDZ   (Turned OFF)
+     7        846     NDZ   0                   
+     8        875     NDZ   (Turned OFF)
+     9        927     NDZ   0                   
+    10        950     NDZ   (Turned OFF)
+
+
+   
+ ======================
+ ++ INPUT CHECK SUMMARY
+ ======================
+ 
+ Total number of statements is 432.
+ There are NO syntax errors or semantic problems.
+
+
+ ******************************************************************************
+ -3-
+ -->                     Starting CODE GENERATION
+
+ ******************************************************************************
+
+
+
+  CODE OPTIONS CHOSEN
+  -------------------
+ 
+ 
+                         TABLO PORTABLE
+               CODE OPTIONS   ( --> indicates those in effect )
+ 
+      NEQ Do no equations           PGS Prepare output for GEMSIM
+      NDS Do no displays        --> WFP Write a Fortran Program
+      NWR Do no writes                    (i.e. a TABLO-generated program)
+                                --> FC5 Fast Compile TG-prog under LF95
+      ACC All comment lines in      DMS Allow simulations even
+             code                         though are no UPDATEs
+                                --> CIN Code file name same as
+                                          Information file name
+                                    CDM Old option. Has no effect.
+                                    NRZ No run-time reports re use of
+                                           ZERODIVIDE default values
+                                    NXS No "extra" statements allowed
+ 
+  Select an option   :  <opt>      Deselect an option      : -<opt>
+  Help for an option : ?<opt>      Help on all options     : ??
+  Redisplay options  : /           Finish option selection : Carriage return
+
+  END OF CODE OPTIONS CHOSEN
+  --------------------------
+  
+ ! ( Program is
+ ! 'D:\Projects\v10Tools\MyGTAP\to public\single\rungtapsh32\decompmy.for'.)
+ (Total number of lines of code is 12645.)
+ 
+ This program
+     o can carry out 26 WRITEs
+ 
+ MXGSRS = 0, MXGSIS = 0.
+ MXGSLG = 0, MXGSIC = 0.
+ 
+ MXGSOP = 0, MXGSIN = 0.
+ MXGSRC = 0, MXGSNS=0.
+ ! (Model Information file is
+ ! 'D:\Projects\v10Tools\MyGTAP\to public\single\rungtapsh32\decompmy.min'.)
+ 
+ (Total number of programs written is 1.)
+ 
+ *******************************************************************
+ Successful completion of TABLO.
+ The program is
+   'decompmy.for'.
+ 
+ This program
+     o can carry out 26 WRITEs
+ 
+ *******************************************************************

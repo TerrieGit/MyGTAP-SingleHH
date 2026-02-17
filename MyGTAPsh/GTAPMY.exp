@@ -1,0 +1,41 @@
+file gtapPARM = default.prm;
+Verbal Description =
+Numeraire shock;
+Method = Johansen;
+Steps = 1;
+automatic accuracy = no;
+subintervals = 1;
+exogenous
+    poph 
+    qoh_s
+    pfactwld
+    psaveslack profitslack incomeslack endwslack
+    cgdslack tradslack
+    gincomeslack hincomeslack 
+    ams atm atf ats atd
+    aosec aoreg avasec avareg
+    afcom afsec afreg afecom afesec afereg
+    aoall afall afeall
+    dppriv dpgov dpgsave dphsave dphsave_all
+    to tp tm tms tx txs tpdh tpmh toh
+    emplh empl
+    sremoh sremih remavo
+    sfyoh sfyih fyavo
+    saidout saidin aidavo
+    realTRNH realTRNG 
+    s_sub 
+    au ;
+
+Rest Endogenous ;
+Shock pfactwld = uniform 10;
+
+!@ contents of CMFStart when this EXP file was last saved
+!@ below is a record only....not read by RunGTAP
+!@ RunGTAP reads from the actual CMFSTART file
+!@ ! This is the default CMFSTART file which RunGTAP uses when
+!@ ! a version has no CMFSTART file of its own
+!@ iz1 = no ;
+!@ NDS = yes; ! no displays
+!@ Extrapolation accuracy file = YES ;
+!@ CPU = yes;
+!@ end of CMFSTART part

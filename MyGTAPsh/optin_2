@@ -1,0 +1,6 @@
+ -qnoipo -largeaddressaware  
+"C:\GP\gpa.lib"  
+"C:\GP\gpb.lib" 
+"C:\GP\tbgdum.lib" 
+"C:\GP\modlib.lib" 
+/out:mygtapsets.exe 

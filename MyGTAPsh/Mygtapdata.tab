@@ -1,0 +1,417 @@
+![[!
+    ==========================================
+    ImpactECON MyGTAP Model auxillary programs
+    May 2016
+
+    This version incorporates additional data for MyGTAP model 
+
+    ImpactECON LLC, Boulder, Colorado 
+    https://impactecon.com/ 
+
+    ==========================================
+
+Purpose of program:
+1. Includes remittances, foreign aid and government transfers into GTAP.
+2. Remove regional household
+
+Author: Terrie L walmsley
+Date: June 2 2015
+
+!]]!
+
+![[!
+    -----
+    FILES
+    -----
+!]]!
+
+File    GTAPDATA # GTAP Data Base #;
+        GTAPSETS # New GTAP sets #;
+        EXTDATA # File with other extra datasets #;
+ (new)  NEWDATA # File with new base data #;
+
+![[!
+    ----------------
+    SETS - GTAP sets
+    ----------------
+!]]!
+
+Set 
+ REG read elements from file GTAPSETS header "H1";
+ TRAD_COMM read elements from file GTAPSETS header "H2";
+ MARG_COMM read elements from file GTAPSETS header   "MARG";
+ CGDS_COMM read elements from file GTAPSETS header "H9";
+ ENDW_COMM read elements from file GTAPSETS header  "H6";
+
+subset MARG_COMM is subset of TRAD_COMM ;
+
+set
+ PROD_COMM # Produced commodities  # =TRAD_COMM + CGDS_COMM;
+ DEMD_COMM # Demanded commodities # = ENDW_COMM + TRAD_COMM;
+ NSAV_COMM # Non-savings commodities # = DEMD_COMM + CGDS_COMM;
+ NMRG_COMM # Non-margin commodities # = TRAD_COMM - MARG_COMM ;
+
+subset PROD_COMM is subset of NSAV_COMM ;
+
+Set
+    HHLD # Main household #  (MainHH);
+
+![[!  
+    ----------------------------
+    READ Statements of Base Data
+    ----------------------------
+!]]!
+
+Coefficient 
+    (all,r,REG) 
+        VKB0(r) # Value of output at agent's prices #;
+    (all,i,ENDW_COMM)(all,r,REG) 
+        EVOA0(i,r) # Value of output at agent's prices #;
+    (all,i,ENDW_COMM)(all,j,PROD_COMM)(all,r,REG)
+        EVFA(i,j,r) # Producer expenditure on i by industry j #;
+    (all,i,TRAD_COMM)(all,j,PROD_COMM)(all,r,REG)
+        VIFA(i,j,r) # Purchases of imported i for use in j in region r #;
+    (all,i,TRAD_COMM)(all,j,PROD_COMM)(all,r,REG)
+        VDFA(i,j,r) # Purchases of domestic i for use in j in region r #;
+    (all,i,TRAD_COMM)(all,r,REG)
+        VIPA0(i,r) # Private household h expenditure on imported i in r #;
+    (all,i,TRAD_COMM)(all,r,REG)
+        VDPA0(i,r) # Private household expenditure on domestic i in r #;
+    (all,i,TRAD_COMM)(all,r,REG)
+        VIGA(i,r) # Government household expenditure on imported i #;
+    (all,i,TRAD_COMM)(all,r,REG)
+        VDGA(i,r) # Government household expenditure on domestic i in r #;
+    (all,r,REG)
+        VDEP0(r) # Value of capital depreciation in r (exogenous) #;
+    (all,i,TRAD_COMM)(all,r,REG)(all,s,REG)
+        VXMD(i,r,s) 
+    # Exports of i from r to s at market prices (tradeables only) #;
+    (ge 0)(all,m,MARG_COMM)(all,r,REG)
+        VST(m,r)
+    # Exports of m from r for int'l transport at mkt prices (tradeables only) #;
+    (all,i,ENDW_COMM)(all,j,PROD_COMM)(all,r,REG)
+        VFM(i,j,r) # Producer expenditure on i by j in r at market prices #;
+    (all,i,TRAD_COMM)(all,j,PROD_COMM)(all,r,REG)
+        VIFM(i,j,r) # Purchases of imports i for use in j in region r #;
+    (all,i,TRAD_COMM)(all,j,PROD_COMM)(all,r,REG)
+        VDFM(i,j,r) # Purchases of domestic i r for use in j in region r #;
+    (all,i,TRAD_COMM) (all,r,REG)
+        VIPM0(i,r) # Private household expenditure on i in r #;
+    (all,i,TRAD_COMM)(all,r,REG)
+        VDPM0(i,r) # Private household expenditure on domestic i in r #;
+    (all,i,TRAD_COMM)(all,r,REG)
+        VIGM(i,r) # Gov't household expenditure on i in r #;
+    (all,i,TRAD_COMM)(all,r,REG)
+        VDGM(i,r) # Government household expenditure on domestic i in r #;
+    (all,i,TRAD_COMM)(all,r,REG)(all,s,REG)
+        VIMS(i,r,s) # Imports of i from r to s valued at domestic mkt prices #;
+    (all,i,TRAD_COMM)(all,r,REG)(all,s,REG)
+        VXWD(i,r,s) # Exports of i from r to s valued fob (tradeables only) #;
+    (all,i,TRAD_COMM)(all,r,REG)(all,s,REG)
+        VIWS(i,r,s) # Imports of i from r to s valued cif (tradeables only) #;
+
+Read
+    VKB0 from file GTAPDATA header "VKB";
+    EVOA0 from file GTAPDATA header "EVOA";
+    EVFA from file GTAPDATA header "EVFA";
+    VIFA from file GTAPDATA header "VIFA";
+    VDFA from file GTAPDATA header "VDFA";
+    VIPA0 from file GTAPDATA header "VIPA";
+    VDPA0 from file GTAPDATA header "VDPA";
+    VIGA from file GTAPDATA header "VIGA";
+    VDGA from file GTAPDATA header "VDGA";
+    VDEP0 from file GTAPDATA header "VDEP";
+    VXMD from file GTAPDATA header "VXMD";
+    VST from file GTAPDATA header "VST";
+    VFM from file GTAPDATA header "VFM";
+    VIFM from file GTAPDATA header "VIFM";
+    VDFM from file GTAPDATA header "VDFM";
+    VIPM0 from file GTAPDATA header "VIPM";
+    VDPM0 from file GTAPDATA header "VDPM";
+    VIGM from file GTAPDATA header "VIGM";
+    VDGM from file GTAPDATA header "VDGM";
+    VIMS from file GTAPDATA header "VIMS";
+    VXWD from file GTAPDATA header "VXWD";
+    VIWS from file GTAPDATA header "VIWS";
+
+![[! 
+    ----------------------------
+    DERIVATIVES OF THE BASE DATA
+    ----------------------------
+!]]!
+
+Coefficient 
+    (all,i,DEMD_COMM)(all,j,PROD_COMM)(all,r,REG)
+        VFA(i,j,r) # Firm's expenditure on i by industry j #;
+    (all,i,NSAV_COMM)(all,r,REG)
+        VOA(i,r) # Value of commodity i output in region r #;
+    (all,i,TRAD_COMM)(all,r,REG)
+        VGA(i,r) # Gov. household expenditure on i in r at agent's prices #;
+    (all,r,REG) 
+        GOVEXP(r) # Government expenditure in region r #;
+    (all,i,TRAD_COMM)(all,r,REG)
+        VDM(i,r) # Domestic sales of i in r at market prices (tradeables) #;
+    (all,i,NSAV_COMM)(all,r,REG)
+        VOM(i,r) # Value of commodity i output in region r at market prices #;
+    (all,r,REG)
+        NETAXES(r) # Net tax revenues in r #;
+
+Formula 
+    (all,i,ENDW_COMM)(all,j,PROD_COMM)(all,r,REG)
+        VFA(i,j,r) = EVFA(i,j,r);
+    (all,i,TRAD_COMM)(all,j,PROD_COMM)(all,s,REG)
+        VFA(i,j,s) = VDFA(i,j,s) + VIFA(i,j,s);
+    (all,i,ENDW_COMM)(all,r,REG)
+        VOA(i,r) = EVOA0(i,r);
+    (all,i,PROD_COMM)(all,r,REG)
+        VOA(i,r) = sum{j,DEMD_COMM, VFA(j,i,r)};
+    (all,i,TRAD_COMM)(all,s,REG)
+        VGA(i,s) = VDGA(i,s) + VIGA(i,s);
+    (all,r,REG) 
+        GOVEXP(r) = sum{i,TRAD_COMM, VGA(i,r)};
+    (all,i,TRAD_COMM)(all,r,REG) 
+    VDM(i,r) = VDPM0(i,r) + VDGM(i,r) + sum{j,PROD_COMM, VDFM(i,j,r)};
+    (all,i,ENDW_COMM)(all,r,REG)
+        VOM(i,r) = sum{j,PROD_COMM, VFM(i,j,r)};
+    (all,m,MARG_COMM)(all,r,REG)
+        VOM(m,r) = VDM(m,r) + sum{s,REG, VXMD(m,r,s)} + VST(m,r);
+    (all,i,NMRG_COMM)(all,r,REG)
+        VOM(i,r) = VDM(i,r) + sum{s,REG, VXMD(i,r,s)};
+    (all,h,CGDS_COMM)(all,r,REG)
+        VOM(h,r) = VOA(h,r);
+    (all,r,REG)
+    NETAXES(r)
+        = sum{i,NSAV_COMM, VOM(i,r) - VOA(i,r)}
+        + sum{j,PROD_COMM, sum{i,ENDW_COMM, VFA(i,j,r) - VFM(i,j,r)}}
+        + sum{i,TRAD_COMM, VIPA0(i,r) - VIPM0(i,r)}
+        + sum{i,TRAD_COMM, VDPA0(i,r) - VDPM0(i,r)}
+        + sum{i,TRAD_COMM, VIGA(i,r) - VIGM(i,r)}
+        + sum{i,TRAD_COMM, VDGA(i,r) - VDGM(i,r)}
+        + sum{j,PROD_COMM, sum{i,TRAD_COMM, VIFA(i,j,r) - VIFM(i,j,r)}}
+        + sum{j,PROD_COMM, sum{i,TRAD_COMM, VDFA(i,j,r) - VDFM(i,j,r)}}
+        + sum{i,TRAD_COMM, sum{s,REG, VXWD(i,r,s) - VXMD(i,r,s)}}
+        + sum{i,TRAD_COMM, sum{s,REG, VIMS(i,s,r) - VIWS(i,s,r)}};
+
+![[! 
+    -------------------
+    INCLUDE HHOUSEHOLDS
+    -------------------
+!]]!
+
+Coefficient (all,i,ENDW_COMM)(all,h,HHLD)(all,r,REG) 
+        EVOAH(i,h,r) # Value of output at agent's prices #;
+formula (all,i,ENDW_COMM)(all,h,HHLD)(all,r,REG) 
+        EVOAH(i,h,r) = EVOA0(i,r) ;
+
+Coefficient (all,i,ENDW_COMM)(all,h,HHLD)(all,r,REG)
+        EVOMH(i,h,r) # Value of commodity i output in region r at market prices #;
+formula (all,i,ENDW_COMM)(all,h,HHLD)(all,r,REG)
+        EVOMH(i,h,r) = VOM(i,r);
+
+Coefficient (all,h,HHLD)(all,r,REG) 
+        VKBH(h,r) # Value of output at agent's prices #;
+formula (all,h,HHLD)(all,r,REG) 
+        VKBH(h,r) = VKB0(r) ;
+
+Coefficient (all,h,HHLD)(all,r,REG)
+        VDEPH(h,r) # Value of capital depreciation in r (exogenous) #;
+formula (all,h,HHLD)(all,r,REG)
+        VDEPH(h,r) = VDEP0(r);
+
+Coefficient (all,i,TRAD_COMM)(all,h,HHLD)(all,r,REG)
+        VIPAH(i,h,r) # Private household h expenditure on imported i in r #;
+formula (all,i,TRAD_COMM)(all,h,HHLD)(all,r,REG)
+        VIPAH(i,h,r) = VIPA0(i,r);
+
+Coefficient (all,i,TRAD_COMM)(all,h,HHLD)(all,r,REG)
+        VDPAH(i,h,r) # Private household expenditure on domestic i in r #;
+formula (all,i,TRAD_COMM)(all,h,HHLD)(all,r,REG)
+        VDPAH(i,h,r) = VDPA0(i,r);
+
+Coefficient (all,i,TRAD_COMM)(all,h,HHLD)(all,r,REG)
+        VIPMH(i,h,r) # Private household expenditure on i in r #;
+formula (all,i,TRAD_COMM)(all,h,HHLD)(all,r,REG)
+        VIPMH(i,h,r) = VIPM0(i,r);
+
+Coefficient (all,i,TRAD_COMM)(all,h,HHLD)(all,r,REG)
+        VDPMH(i,h,r) # Private household expenditure on domestic i in r #;
+formula (all,i,TRAD_COMM)(all,h,HHLD)(all,r,REG)
+        VDPMH(i,h,r) = VDPM0(i,r);
+
+Coefficient (all,h,HHLD)(all,k,HHLD)(all,r,REG)
+        TRNH(h,k,r) # Value of transfers between households #;
+formula    (all,h,HHLD)(all,k,HHLD)(all,r,REG)
+        TRNH(h,k,r) = 0 ;
+
+![[! 
+  ----------------------------
+  Other Incomes and Transfers 
+  ----------------------------
+!]]!
+
+Coefficient 
+    (all,r,REG) FYI0(r)  # Foreign capital income for r # ;
+    (all,r,REG) FYO0(r)  # Foreign capital outflow from r#;
+    (all,r,REG) AIDI0(r) # Foreign aid income  for r # ;
+    (all,r,REG) AIDO0(r) # Foreign aid outflow for r # ;
+    (all,r,REG) REMI0(r) # Foreign Remittance income for r # ;
+    (all,r,REG) REMO0(r) # Foreign Remittance outflows  for r # ;
+    (all,r,REG) TRNG(r) # Government transfers for r # ;
+
+Read FYI0  from file EXTDATA header "FYI" ;
+     FYO0  from file EXTDATA header "FYO" ;
+     AIDI0 from file EXTDATA header "AIDI" ;
+     AIDO0 from file EXTDATA header "AIDO" ;
+     REMI0 from file EXTDATA header "REMI" ;
+     REMO0 from file EXTDATA header "REMO" ;
+     TRNG from file EXTDATA header "TRNG" ;
+
+!Rescale to ensure the values IN and OUT are Equal!
+
+!<formula (all,r,REG: TRANSG(r)<0) 
+    TRANSG(r)  = 0 ;>!
+
+Coefficient AVGFY ;
+Formula AVGFY = sum{r,REG,FYI0(r)+FYO0(r)}/2;
+Coefficient 
+    (all,h,HHLD)(all,r,REG)   FYI(h,r)   #Foreign capital income for r # ;
+    (all,h,HHLD)(all,r,REG)   FYO(h,r)  #Foreign capital outflow from r #;
+Formula  (all,h,HHLD)(all,r,REG) 
+    FYI(h,r)  =  FYI0(r)*AVGFY / sum{s,REG,FYI0(s)};
+Formula  (all,h,HHLD)(all,r,REG) 
+    FYO(h,r) =  FYO0(r)*AVGFY / sum{s,REG,FYO0(s)};
+ 
+Coefficient AVGAID ;
+Formula AVGAID = sum{r,REG,AIDI0(r)+AIDO0(r)}/2;
+Coefficient
+    (all,r,REG)   AIDI(r)   #Foreign capital income for r # ;
+    (all,r,REG)   AIDO(r)  #Foreign capital outflow from r #;
+Formula  (all,r,REG) 
+    AIDI(r)  =  AIDI0(r)*AVGAID / sum{s,REG,AIDI0(s)};
+Formula  (all,r,REG) 
+    AIDO(r) =  AIDO0(r)*AVGAID / sum{s,REG,AIDO0(s)};
+ 
+Coefficient AVGREM ;
+Formula AVGREM = sum{r,REG,REMI0(r)+REMO0(r)}/2;
+Coefficient
+     (all,h,HHLD)(all,r,REG)   REMI(h,r)   #Foreign capital income for r # ;
+     (all,h,HHLD)(all,r,REG)   REMO(h,r)  #Foreign capital outflow from r #;
+Formula (all,h,HHLD)(all,r,REG) 
+    REMI(h,r)  =  REMI0(r)*AVGREM / sum{s,REG,REMI0(s)};
+Formula  (all,h,HHLD)(all,r,REG) 
+    REMO(h,r) =  REMO0(r)*AVGREM / sum{s,REG,REMO0(s)};
+
+![[!  
+    -----------------------
+    New Income and Savings 
+    -----------------------
+!]]!
+
+!Regional Income!
+Coefficient (all,r,REG)
+    INCOME(r) # income, net of depreciation, by Household #;
+Formula (all,r,REG)
+    INCOME(r) = sum{i,ENDW_COMM, EVOA0(i,r)} - VDEP0(r) 
+             + NETAXES(r)
+             + sum(h, HHLD, FYI(h,r) - FYO(h,r) +
+             + REMI(h,r) - REMO(h,r))  
+             + AIDI(r) - AIDO(r) ;
+
+Coefficient (all,h,HHLD)(all,r,REG)
+    PRIVEXP(h,r) # Private expenditure by Household #;
+Formula (all,h,HHLD)(all,r,REG)
+    PRIVEXP(h,r) = sum(t, TRAD_COMM, VIPAH(t,h,r) + VDPAH(t,h,r)) ;
+
+Coefficient (all,r,REG)
+    SAVE(r) # income, net of depreciation, by Household #;
+Formula (all,r,REG)
+    SAVE(r) = INCOME(r) - sum(h, HHLD, PRIVEXP(h,r)) - GOVEXP(r) ;
+
+! Govt income !
+Coefficient (all,r,REG)
+    GINCOME(r) # income, net of depreciation, by Household #;
+Formula (all,r,REG)
+    GINCOME(r) = NETAXES(r) - TRNG(r)
+             + AIDI(r) - AIDO(r) ;
+
+Coefficient (all,r,REG)
+        SAV_GOV(r) # Value of commodity i output in region r at market prices #;
+formula (all,r,REG)
+        SAV_GOV(r) = GINCOME(r) - GOVEXP(r) ;
+
+! Household !
+Coefficient (all,h,HHLD)(all,r,REG)
+    HINCOME(h,r) # income, net of depreciation, by Household #;
+Formula (all,h,HHLD)(all,r,REG)
+    HINCOME(h,r) = sum{i,ENDW_COMM, EVOAH(i,h,r)} - VDEPH(h,r) 
+             + FYI(h,r) - FYO(h,r) +
+             + REMI(h,r) - REMO(h,r) + TRNG(r) ;
+
+Coefficient 
+    (all,h,HHLD)(all,r,REG)
+        SAV_HHLD(h,r) # Value of commodity i output in region r at market prices #;
+formula    (all,h,HHLD)(all,r,REG)
+        SAV_HHLD(h,r) = HINCOME(h,r) - PRIVEXP(h,r);
+
+Coefficient (all,r,REG)
+        SAVECHK(r) # Value of commodity i output in region r at market prices #;
+formula (all,r,REG)
+        SAVECHK(r) = SAVE(r) - SAV_GOV(r) - sum(h, HHLD, SAV_HHLD(h,r));
+
+![[! 
+    ------------
+    Write Output
+    ------------
+ !]]!
+
+write
+    AIDI to file NEWDATA header "AIDI";
+    AIDO to file NEWDATA header "AIDO";
+    FYI to file NEWDATA header "FYI";
+    FYO to file NEWDATA header "FYO";
+    REMI to file NEWDATA header "REMI";
+    REMO to file NEWDATA header "REMO";
+    TRNG to file NEWDATA header "TRNG";
+    VKBH to file NEWDATA header "VKB";
+    EVOAH to file NEWDATA header "EVOA";
+    EVOMH to file NEWDATA header "EVOM";
+    EVFA to file NEWDATA header "EVFA";
+    VIFA to file NEWDATA header "VIFA";
+    VDFA to file NEWDATA header "VDFA";
+    VIPAH to file NEWDATA header "VIPA";
+    VDPAH to file NEWDATA header "VDPA";
+    VIGA to file NEWDATA header "VIGA";
+    VDGA to file NEWDATA header "VDGA";
+    VDEPH to file NEWDATA header "VDEP";
+    VXMD to file NEWDATA header "VXMD";
+    VST to file NEWDATA header "VST";
+    VFM to file NEWDATA header "VFM";
+    VIFM to file NEWDATA header "VIFM";
+    VDFM to file NEWDATA header "VDFM";
+    VIPMH to file NEWDATA header "VIPM";
+    VDPMH to file NEWDATA header "VDPM";
+    VIGM to file NEWDATA header "VIGM";
+    VDGM to file NEWDATA header "VDGM";
+    VIMS to file NEWDATA header "VIMS";
+    SAV_GOV to file NEWDATA header "SGOV" longname
+    "Government Savings";
+    SAV_HHLD to file NEWDATA header "SHLD" longname
+    "Houehold Savings";
+    SAVE to file NEWDATA header "SAVE" longname
+    "Aggregated Savings";
+    INCOME to file NEWDATA header "INC" longname
+    "Income";
+    SAVECHK to file NEWDATA header "SCHK" longname
+    "Check on Aggregated Savings";
+    TRNH to file NEWDATA header "TRNH" longname
+    "transfers between households";
+   
+Transfer unwritten from FILE GTAPDATA TO FILE NEWDATA ;
+Transfer unread from FILE EXTDATA TO FILE NEWDATA ;
+
+![[!
+    ----
+    End 
+    ----
+!]]!
+

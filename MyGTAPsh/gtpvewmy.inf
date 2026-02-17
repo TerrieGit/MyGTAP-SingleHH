@@ -1,0 +1,2195 @@
+
+    TTTTTTTTTT  AAAAAAAAAA   BBBBBBB      LLLL        OOOOOOOOOO
+    TTTTTTTTTT  AAA    AAA   BBBBBBBBB    LLLL        OOOOOOOOOO
+       TTT      AAA    AAA   BBB    BBB   LLLL        OOO    OOO
+       TTT      AAA    AAA   BBB  BBB     LLLL        OOO    OOO
+       TTT      AAAAAAAAAA   BBBBBBB      LLLL        OOO    OOO
+       TTT      AAAAAAAAAA   BBB  BBB     LLLL        OOO    OOO
+       TTT      AAA    AAA   BBB    BBB   LLLL        OOO    OOO
+       TTT      AAA    AAA   BBBBBBBBB    LLLLLLLLL   OOOOOOOOOO
+       TTT      AAA    AAA   BBBBBBB      LLLLLLLLL   OOOOOOOOOO
+
+ <TABLO  Version 6.4   April 2012>                                     
+
+
+
+
+
+                     GEMPACK SOFTWARE
+     << COPYRIGHT 1987-2010:  The Impact Project and KPSOFT >>
+   
+   
+
+    +++  INFORMATION ABOUT THIS PRINT FILE  +++
+   
+ 
+ ! This file was created at 17:36:04 on 23-FEB-2020 by the program
+ !  <TABLO  Version 6.4   April 2012>
+ ! which accesses some of the routines in the GEMPACK software release
+ !  <GEMPACK Release 11.3.001   May 2014>
+ 
+ !     -------------------------------------------------------                
+ !    !            GEMPACK Software System Licence            !               
+ !    !  Source Code Licence for the GEMPACK Software System  !               
+ !    !                 Licence No.  GFM-1140                 !               
+ !    !          Licence for Release 11.0 of GEMPACK          !               
+ !    !                     Peter J Minor                     !               
+ !    !                      Boulder CO                       !               
+ !    !                          USA                          !               
+ !     -------------------------------------------------------                
+    
+
+    +++  END OF INFORMATION ABOUT THIS PRINT FILE  +++
+
+ ======================================================
+           TABLO PORTABLE   
+ ++> TABLO OPTIONS   ( --> indicates those in effect )
+ ======================================================
+
+
+
+      -----------                   ----------
+  --> F1 CHECK                      L1 CHECK
+      F2 CONDENSATION               L2 CONDENSATION
+      F3 CODE GENERATION        --> L3 CODE GENERATION
+      Mode
+      ----
+      INTERACTIVE
+      BATCH
+  --> UNSPECIFIED
+ 
+
+ ==================================================
+ ++> TABLO Input file is 'gtpvewmy.tab'
+ ++> This Information file is 'gtpvewmy'
+ ==================================================
+
+
+
+ ******************************************************************************
+ -1-
+ -->                     Starting CHECK stage
+
+ ******************************************************************************
+
+
+      1   !<
+      2       ==========================================
+      3       ImpactECON MyGTAP Model auxillary programs
+      4       May 2016
+      5    
+      6       SAMView program
+      7    
+      8       ImpactECON LLC, Boulder, Colorado
+      9       https://impactecon.com/
+     10    
+     11       ==========================================
+     12    
+     13   Adapted from:
+     14    
+     15   GTPVEW.tab for GTAP model
+     16   Global Trade Analysis Project
+     17   The GTAP Modeling Framework
+     18   GTAPVIEW.TAB FILE
+     19   By Thomas Hertel, Melanie Bacou,and Wusheng Yu
+     20    
+     21       --------------------
+     22       History of this file
+     23       --------------------
+     24       April 29, 1998: Following features are new:
+     25           - disposition of output across all uses
+     26           - full set of tax rates are available now for all transactions
+     27       Sept, 1998: eliminate unnecessary sets.
+     28       October, 1998: add code to compute the initial tax rates.
+     29       May, 2000: Modified by Ken Itakura
+     30           - added Appendix on elasticities
+     31           - reformatted
+     32       July, 2003: Changed element "prod" of set SALES to "prd"
+     33                   to be compatible with Release 8.0 of GEMPACK
+     34       May 2016: adapted for MyGTAP model by Terrie Walmsley
+     35    
+     36       --------------------------------------
+     37       Overview of the GTAPVIEW.TAB structure
+     38       --------------------------------------
+     39       FILE declaration
+     40       SET declaration
+     41       READ statements of Base Data
+     42       Derivatives of the Base Data
+     43           1. Macro variables ( Reg )
+     44           2.Trade, Transport and Protection ( Reg x Reg )
+     45           3. Commodities ( Comm x Reg )
+     46           4. Sectors ( Comm x Reg )
+     47       Write statements of the Derivatives
+     48       Computation of Initial Tax Rates
+     49       Appendix: Derived Elasticities of demands >!
+     50    
+     51    
+     52    
+     53   !<
+     54       -----
+     55       FILES
+     56       -----
+     57   >!
+     58    
+     59   File
+     60       GTAPDATA # File containing all base data #;
+     61   File
+     62       GTAPSETS # File with set specification #;
+     63   File
+     64       GTAPPARM # File containing behavioral prameters #;
+     65      ! above not actually used, but must leave in !
+     66   File (new)
+     67       GTAPVIEW # File with headers for viewing #;
+     68   File (new)
+     69       TAXRATES # File with headers for viewing initial tax rates #;
+     70    
+     71   !<
+     72       ----
+     73       SETS
+     74       ----
+     75   >!
+     76   set HOU # New Household #
+     77       read elements from file GTAPSETS header "HOU";
+     78   Set
+     79       REG # Regions in the model #
+     80       maximum size 10 read elements from file GTAPSETS header "H1";
+     81   Set
+     82       TRAD_COMM # Traded commodities #
+     83       maximum size 10 read elements from file GTAPSETS header "H2";
+     84   Set
+     85       MARG_COMM # Margin commodities #
+     86       maximum size 10 read elements from file GTAPSETS header "MARG";
+     87   Subset
+     88       MARG_COMM is subset of TRAD_COMM;
+     89   Set
+     90       NMRG_COMM # Non-margin commodities # = TRAD_COMM - MARG_COMM;
+     91   Set
+     92       CGDS_COMM # Capital goods commodities #
+     93       maximum size 1  read elements from file GTAPSETS header "H9";
+     94   Set
+     95       ENDW_COMM # Endowment commodities #
+     96       maximum size 5  read elements from file GTAPSETS header "H6";
+     97   !Set
+     98       ENDWC_COMM # Capital Endowment Commodity # (capital); !
+     99   Set
+    100       PROD_COMM # PRODUCED COMMODITIES  # = TRAD_COMM union CGDS_COMM;
+    101   Set
+    102       DEMD_COMM # DEMANDED COMMODITIES # = ENDW_COMM union TRAD_COMM;
+    103   Set
+    104       NSAV_COMM # NON-SAVINGS COMMODITIES # = DEMD_COMM union CGDS_COMM;
+    105   Subset
+    106       PROD_COMM is subset of NSAV_COMM;
+    107   !Subset
+    108       ENDWC_COMM is subset of NSAV_COMM;!
+    109    
+    110   !<
+    111       The following are new sets for GTAPVIEW
+    112       Supplementary sets for "toggles" in VIEWHAR
+    113   >!
+    114    
+    115   Set GDPEXPEND(cons,inv,gov,export,imp);
+    116   Set GDPSOURCE(fact,tax,depr);
+    117   Set CAPACCT(save,inv);
+    118   Set CURACCT(export,imp);
+    119   Set MKTVALUE(fob,trans);
+    120   Set OUT(dom,trans,export);
+    121   Set SALES(production,cons,gov);
+    122   Set PURCHVALUE(mktexp,comtax);
+    123   Set DIR(domestic,imported);
+    124   Set OUTVALUE(prodrev,outtax);
+    125   Set EXPVALUE(exprev,xtax);
+    126   Set IMPVALUE(impcost,mtax);
+    127    
+    128   !<
+    129       ----------------------------
+    130       READ statements of Base Data
+    131       ----------------------------
+    132    
+    133       base revenues and expenditures at agent's prices
+    134       ------------------------------------------------
+    135   >!
+    136   Coefficient (all,h,HOU) (all,r,REG)
+    137       SAV_HHLD(h,r) # income, net of depreciation, by Household #;
+    138   Read
+    139       SAV_HHLD from file GTAPDATA header "SHLD";
+    140    
+    141   Coefficient (all,r,REG)
+    142       SAV_GOV(r) # income, net of depreciation, by Household #;
+    143   Read
+    144       SAV_GOV from file GTAPDATA header "SGOV";
+    145   Coefficient (all,i,ENDW_COMM)(all,h,HOU)(all,r,REG)
+    146       EVOA(i,h,r) # Value of output at agent's prices #;
+    147   Read
+    148       EVOA from file GTAPDATA header "EVOA";
+    149    
+    150   Coefficient (all,i,ENDW_COMM)(all,h,HOU)(all,r,REG)
+    151       EVOM(i,h,r) # Value of output at agent's prices #;
+    152   Read
+    153       EVOM from file GTAPDATA header "EVOM";
+    154    
+    155   Coefficient (all,i,ENDW_COMM)(all,j,PROD_COMM)(all,r,REG)
+    156       EVFA(i,j,r) # Producer expenditure on i by industry j #;
+    157   Read
+    158       EVFA from file GTAPDATA header "EVFA";
+    159    
+    160   Coefficient (all,i,TRAD_COMM)(all,j,PROD_COMM)(all,r,REG)
+    161       VIFA(i,j,r) # Purchases of imported i r for use in j in region r #;
+    162   Read
+    163       VIFA from file GTAPDATA header "VIFA";
+    164    
+    165   Coefficient (all,i,TRAD_COMM)(all,j,PROD_COMM)(all,r,REG)
+    166       VDFA(i,j,r) # Purchases of domestic i r for use in j in region r #;
+    167   Read
+    168       VDFA from file GTAPDATA header "VDFA";
+    169    
+    170   Coefficient (all,i,TRAD_COMM) (all,r,REG)(all,h,HOU)
+    171       VIPA(i,h,r) # Private household h expenditure on imported i in r #;
+    172   Read
+    173       VIPA from file GTAPDATA header "VIPA";
+    174    
+    175   Coefficient (all,i,TRAD_COMM)(all,r,REG)(all,h,HOU)
+    176       VDPA(i,h,r) # Private household expenditure on domestic i in r #;
+    177   Read
+    178       VDPA from file GTAPDATA header "VDPA";
+    179    
+    180   Coefficient (all,i,TRAD_COMM)(all,r,REG)
+    181       VIGA(i,r) # Government household expenditure on imported i #;
+    182   Read
+    183       VIGA from file GTAPDATA header "VIGA";
+    184    
+    185   Coefficient (all,i,TRAD_COMM)(all,r,REG)
+    186       VDGA(i,r) # Government household expenditure on domestic i in r #;
+    187   Read
+    188       VDGA from file GTAPDATA header "VDGA";
+    189    
+    190   Coefficient (all,h,HOU)(all, r, REG)
+    191       VKB(h,r) # Value of beginning-of-period capital stock, in region r #;
+    192   Read
+    193       VKB from file GTAPDATA header "VKB";
+    194    
+    195   Coefficient (all,h,HOU)(all, r, REG)
+    196       VDEP(h,r) # Value of capital depreciation in r (exogenous) #;
+    197   Read
+    198       VDEP from file GTAPDATA header "VDEP";
+    199    
+    200   !<
+    201       base revenues and expenditures at prices
+    202       ----------------------------------------
+    203   >!
+    204    
+    205   Coefficient (all,i,TRAD_COMM)(all,r,REG)(all,s,REG)
+    206       VXMD(i,r,s) # Exports of i from r to s at market prices (tradeables only) #;
+    207   Read
+    208       VXMD from file GTAPDATA header "VXMD";
+    209    
+    210   Coefficient (ge 0)(all,m,MARG_COMM)(all,r,REG)
+    211       VST(m,r)
+    212       # Exports of m from r for int'l transport at mkt prices (tradeables only) #;
+    213   Read
+    214       VST from file GTAPDATA header "VST";
+    215    
+    216   Coefficient (all,i,ENDW_COMM)(all,j,PROD_COMM)(all,r,REG)
+    217       VFM(i,j,r) # Producer expenditure on i by j in r at market prices #;
+    218   Read
+    219       VFM from file GTAPDATA header "VFM";
+    220    
+    221   Coefficient (all,i,TRAD_COMM)(all,j,PROD_COMM)(all,r,REG)
+    222       VIFM(i,j,r) # Purchases of imports i for use in j in region r #;
+    223   Read
+    224       VIFM from file GTAPDATA header "VIFM";
+    225    
+    226   Coefficient (all,i,TRAD_COMM)(all,j,PROD_COMM)(all,r,REG)
+    227       VDFM(i,j,r) # Purchases of domestic i r for use in j in region r #;
+    228   Read
+    229       VDFM from file GTAPDATA header "VDFM";
+    230    
+    231   Coefficient (all,i,TRAD_COMM) (all,r,REG)(all,h,HOU)
+    232       VIPM(i,h,r) # Private household expenditure on i in r #;
+    233   Read
+    234       VIPM from file GTAPDATA header "VIPM";
+    235    
+    236   Coefficient (all,i,TRAD_COMM)(all,r,REG)(all,h,HOU)
+    237       VDPM(i,h,r) # Private household expenditure on domestic i in r #;
+    238   Read
+    239       VDPM from file GTAPDATA header "VDPM";
+    240    
+    241   Coefficient (all,i,TRAD_COMM)(all,r,REG)
+    242       VIGM(i,r) # Gov't household expenditure on i in r #;
+    243   Read
+    244       VIGM from file GTAPDATA header "VIGM";
+    245    
+    246   Coefficient (all,i,TRAD_COMM)(all,r,REG)
+    247       VDGM(i,r) # Government household expenditure on domestic i in r #;
+    248   Read
+    249       VDGM from file GTAPDATA header "VDGM";
+    250    
+    251   Coefficient (all,i,TRAD_COMM)(all,r,REG)(all,s,REG)
+    252       VIMS(i,r,s) # Imports of i from r to s valued at domestic mkt prices #;
+    253   Read
+    254       VIMS from file GTAPDATA header "VIMS";
+    255    
+    256   !<
+    257       base revenues and expenditures at world prices
+    258       ----------------------------------------------
+    259   >!
+    260    
+    261   Coefficient (all,i,TRAD_COMM)(all,r,REG)(all,s,REG)
+    262       VXWD(i,r,s) # Exports of i from r to s valued fob (tradeables only) #;
+    263   Read
+    264       VXWD from file GTAPDATA header "VXWD";
+    265    
+    266   Coefficient (all,i,TRAD_COMM)(all,r,REG)(all,s,REG)
+    267       VIWS(i,r,s) # Imports of i from r to s valued cif (tradeables only) #;
+    268   Read
+    269       VIWS from file GTAPDATA header "VIWS";
+    270    
+    271   Coefficient (all,k,MARG_COMM)(all,i,TRAD_COMM)(all,r,REG)(all,s,REG)
+    272       VTWR(k,i,r,s)
+    273       # Value of transport services at world prices, by destination #;
+    274   Read
+    275       VTWR from file GTAPDATA header "VTWR";
+    276    
+    277   !<
+    278      Grants, remittances and transfers
+    279       --------------------------------
+    280   >!
+    281    
+    282    
+    283   Coefficient
+    284   (all,r,REG) GRANTSIN(r) # foreign aid in #;
+    285   (all,r,REG) GRANTSOUT(r) # foreign aid out #;
+    286   (all,h,HOU) (all,r,REG) FYI_HHLD(h,r) # foreign income in #;
+    287   (all,h,HOU) (all,r,REG) FYO_HHLD(h,r) # foregin income out #;
+    288   (all,h,HOU) (all,r,REG) REMIN_HHLD(h,r) # Remittances in #;
+    289   (all,h,HOU) (all,r,REG) REMOUT_HHLD(h,r) # Remittances out #;
+    290   (all,h,HOU)(all,k,HOU)(all,r,REG) TRANS_HHLD(h,k,r)
+    291   # transfers between households - transfers to/from #;
+    292   (all,h,HOU)(all,r,REG) TRANS_GOV(h,r)
+    293   # transfers to household h from government #;
+    294    
+    295   Read (ifheaderexists)
+    296       GRANTSIN from file GTAPDATA header "AIDI";
+    297       GRANTSOUT from file GTAPDATA header "AIDO";
+    298       FYI_HHLD from file GTAPDATA header "FYI";
+    299       FYO_HHLD from file GTAPDATA header "FYO";
+    300       REMIN_HHLD from file GTAPDATA header "REMI";
+    301       REMOUT_HHLD from file GTAPDATA header "REMO";
+    302       TRANS_HHLD from file GTAPDATA header "TRNH";
+    303       TRANS_GOV from file GTAPDATA header "TRNG";
+    304    
+    305   !<
+    306       ----------------------------
+    307       DERIVATIVES OF THE BASE DATA
+    308       ----------------------------
+    309    
+    310       1. Macro variables ( Reg )
+    311       --------------------------
+    312           GDPEXP
+    313           GDPSRC
+    314           CAPITALACCT
+    315           CURRENTACCT
+    316    
+    317   >!
+    318    
+    319   Coefficient (all,i,TRAD_COMM)(all,r,REG)(all,h, HOU)
+    320       VPA(i,r,h) # Private household expenditure on i in r at agent's prices #;
+    321   Formula (all,i,TRAD_COMM)(all,r,REG)(all,h,HOU)
+    322       VPA(i,r,h) = VDPA(i,h,r) + VIPA(i,h,r);
+    323   Coefficient (all,r,REG)
+    324       PRIVEXP(r) # Private consumption expenditure in region r #;
+    325   Formula (all,r,REG)
+    326       PRIVEXP(r) = sum{i,TRAD_COMM, sum{h, HOU, VPA(i,r,h)}};
+    327    
+    328   Coefficient (all,i,DEMD_COMM)(all,j,PROD_COMM)(all,r,REG)
+    329       VFA(i,j,r) # Firm's expenditure on i by industry j #;
+    330   Formula (all,i,ENDW_COMM)(all,j,PROD_COMM)(all,r,REG)
+    331       VFA(i,j,r) = EVFA(i,j,r);
+    332   Formula (all,i,TRAD_COMM)(all,j,PROD_COMM)(all,s,REG)
+    333       VFA(i,j,s) = VDFA(i,j,s) + VIFA(i,j,s);
+    334   Coefficient (all,i,NSAV_COMM)(all,r,REG)
+    335       VOA(i,r) # Value of commodity i output in region r #;
+    336   Formula (all,i,ENDW_COMM)(all,r,REG)
+    337       VOA(i,r) = sum(h, HOU, EVOA(i,h,r));
+    338   Formula (all,i,PROD_COMM)(all,r,REG)
+    339       VOA(i,r) = sum{j,DEMD_COMM, VFA(j,i,r)};
+    340   Coefficient (all, r, REG)
+    341       REGINV(r) # Regional gross investment in region r #;
+    342   Formula (all, r, REG)
+    343       REGINV(r) = sum{k,CGDS_COMM, VOA(k,r)};
+    344    
+    345   Coefficient (all,i,TRAD_COMM)(all,r,REG)
+    346       VGA(i,r) # Government household expenditure on i in r at agent's prices #;
+    347   Formula (all,i,TRAD_COMM)(all,s,REG)
+    348       VGA(i,s) = VDGA(i,s) + VIGA(i,s);
+    349   Coefficient (all,r,REG)
+    350       GOVEXP(r) # Government expenditure in region r #;
+    351   Formula (all,r,REG)
+    352       GOVEXP(r) = sum{i,TRAD_COMM, VGA(i,r)};
+    353    
+    354   Coefficient (all,r,REG)
+    355       VEXPORTS(r)
+    356       # Value of merchandise and services sales to the world market from r #;
+    357   Formula (all,r,REG)
+    358       VEXPORTS(r)
+    359           = sum{i,NMRG_COMM, sum{s,REG, VXWD(i,r,s)}}
+    360           + sum{m,MARG_COMM, sum{s,REG, VXWD(m,r,s)} + VST(m,r)}
+    361   ;
+    362    
+    363   Coefficient (all,s,REG)
+    364       VIMPORTS(s)
+    365       # Value of merchandise and services purchases from world market by s #;
+    366   Formula (all,s,REG)
+    367       VIMPORTS(s) = sum{i,TRAD_COMM, sum{r,REG, VIWS(i,r,s)}};
+    368    
+    369   Coefficient  (all,r,REG)(all,k,GDPEXPEND)
+    370       GDPEXP(r,k) # Composition of GDP from the expenditure side #;
+    371   Formula  (all,r,REG)
+    372       GDPEXP(r,"cons") = PRIVEXP(r);
+    373   Formula  (all,r,REG)
+    374       GDPEXP(r,"inv") = REGINV(r);
+    375   Formula  (all,r,REG)
+    376       GDPEXP(r,"gov") = GOVEXP(r);
+    377   Formula  (all,r,REG)
+    378       GDPEXP(r,"export") = VEXPORTS(r);
+    379   Formula  (all,r,REG)
+    380       GDPEXP(r,"imp") = - VIMPORTS(r);
+    381    
+    382   Coefficient (all,r,REG)
+    383       NETFACTINC(r) # Factor income, net of depreciation #;
+    384   Formula (all,r,REG)
+    385       NETFACTINC(r) = sum{i,ENDW_COMM, VOA(i,r)} - sum(h, HOU, VDEP(h,r));
+    386    
+    387   Coefficient (all,i,TRAD_COMM)(all,r,REG)
+    388       VDM(i,r) # Domestic sales of i in r at market prices (tradeables only) #;
+    389   Formula (all,i,TRAD_COMM)(all,r,REG)
+    390   VDM(i,r) = sum{h, HOU, VDPM(i,h,r)} + VDGM(i,r) + sum{j,PROD_COMM, VDFM(i,j,r)};
+    391    
+    392   Coefficient (all,i,NSAV_COMM)(all,r,REG)
+    393       VOM(i,r) # Value of commodity i output in region r at market prices #;
+    394   Formula (all,i,ENDW_COMM)(all,r,REG)
+    395       VOM(i,r) = sum{j,PROD_COMM, VFM(i,j,r)};
+    396   Formula (all,m,MARG_COMM)(all,r,REG)
+    397       VOM(m,r) = VDM(m,r) + sum{s,REG, VXMD(m,r,s)} + VST(m,r);
+    398   Formula (all,i,NMRG_COMM)(all,r,REG)
+    399       VOM(i,r) = VDM(i,r) + sum{s,REG, VXMD(i,r,s)};
+    400   Formula (all,h,CGDS_COMM)(all,r,REG)
+    401       VOM(h,r) = VOA(h,r);
+    402    
+    403   Coefficient (all,r,REG)
+    404       NETAXES(r) # Net tax revenues in r #;
+    405   Formula (all,r,REG)
+    406       NETAXES(r)
+    407           = sum{i,NSAV_COMM, VOM(i,r) - VOA(i,r)}
+    408           + sum{j,PROD_COMM, sum{i,ENDW_COMM, VFA(i,j,r) - VFM(i,j,r)}}
+    409           + sum{i,TRAD_COMM, sum{h, HOU, VIPA(i,h,r) - VIPM(i,h,r)}}
+    410           + sum{i,TRAD_COMM, sum{h, HOU, VDPA(i,h,r) - VDPM(i,h,r)}}
+    411           + sum{i,TRAD_COMM, VIGA(i,r) - VIGM(i,r)}
+    412           + sum{i,TRAD_COMM, VDGA(i,r) - VDGM(i,r)}
+    413           + sum{j,PROD_COMM, sum{i,TRAD_COMM, VIFA(i,j,r) - VIFM(i,j,r)}}
+    414           + sum{j,PROD_COMM, sum{i,TRAD_COMM, VDFA(i,j,r) - VDFM(i,j,r)}}
+    415           + sum{i,TRAD_COMM, sum{s,REG, VXWD(i,r,s) - VXMD(i,r,s)}}
+    416           + sum{i,TRAD_COMM, sum{s,REG, VIMS(i,s,r) - VIWS(i,s,r)}}
+    417   ;
+    418    
+    419   Coefficient (all,r,REG)(all,k,GDPSOURCE)
+    420       GDPSRC(r,k) # Composition of GDP from the sources side #;
+    421   Formula (all,r,REG)
+    422       GDPSRC(r,"fact") = NETFACTINC(r);
+    423   Formula (all,r,REG)
+    424       GDPSRC(r,"tax") = NETAXES(r);
+    425   Formula (all,r,REG)
+    426       GDPSRC(r,"depr") = sum(h, HOU, VDEP(h,r));
+    427   Coefficient (all,r,REG)
+    428       SAVE(r) # Total Regional savings #;
+    429   Formula (initial) (all,r,REG)
+    430       SAVE(r) = SAV_GOV(r) + sum{h,HOU,SAV_HHLD(h,r)};
+    431    
+    432   Coefficient (all, r, REG)
+    433       NETINV(r) # Regional net investment in region r #;
+    434   Formula (all, r, REG)
+    435       NETINV(r) = REGINV(r) - sum(h, HOU, VDEP(h,r));
+    436    
+    437   Coefficient (all,r,REG)(all,k,CAPACCT)
+    438       CAPITALACCT(r,k) # S - I = X - M #;
+    439   Formula (all,r,REG)
+    440       CAPITALACCT(r,"save") = save(r);
+    441   Formula (all,r,REG)
+    442       CAPITALACCT(r,"inv") = - NETINV(r);
+    443    
+    444   Coefficient (all,r,REG)(all,k,CURACCT)(all,i,TRAD_COMM)
+    445       CURRENTACCT(r,k,i) # X - M = S - I #;
+    446   Formula (all,r,REG)(all,m,MARG_COMM)
+    447       CURRENTACCT(r,"export",m) = sum{s,REG, VXWD(m,r,s)} + VST(m,r);
+    448   Formula (all,r,REG)(all,i,NMRG_COMM)
+    449       CURRENTACCT(r,"export",i) = sum{s,REG, VXWD(i,r,s)};
+    450   Formula  (all,r,REG)(all,i,TRAD_COMM)
+    451       CURRENTACCT(r,"imp",i) = - sum{s,REG, VIWS(i,s,r)};
+    452    
+    453   !<
+    454       2.Trade, Transport and Protection ( Reg x Reg )
+    455       -----------------------------------------------
+    456           VALEXPORTS
+    457           VALIMPORTS
+    458           CIFDECOMP
+    459    
+    460   >!
+    461    
+    462   Coefficient (all,i,TRAD_COMM)(all,r,REG)(all,s,REG)(all,k,EXPVALUE)
+    463       VALEXPORTS(i,r,s,k) # Value of exports at world prices #;
+    464   Formula (all,i,TRAD_COMM)(all,r,REG)(all,s,REG)
+    465       VALEXPORTS(i,r,s,"exprev") = VXMD(i,r,s);
+    466   Formula (all,i,TRAD_COMM)(all,r,REG)(all,s,REG)
+    467       VALEXPORTS(i,r,s,"xtax") = VXWD(i,r,s) - VXMD(i,r,s);
+    468    
+    469   Coefficient (all,i,TRAD_COMM)(all,r,REG)(all,s,REG)(all,k,IMPVALUE)
+    470       VALIMPORTS(i,r,s,k) # Value of imports at domestic prices #;
+    471   Formula (all,i,TRAD_COMM)(all,r,REG)(all,s,REG)
+    472       VALIMPORTS(i,r,s,"impcost") = VIWS(i,r,s);
+    473   Formula (all,i,TRAD_COMM)(all,r,REG)(all,s,REG)
+    474       VALIMPORTS(i,r,s,"mtax") = VIMS(i,r,s) - VIWS(i,r,s);
+    475    
+    476   Coefficient (all,i,TRAD_COMM)(all,r,REG)(all,s,REG)(all,j,MKTVALUE)
+    477       CIFDECOMP(i,r,s,j) # Value of tradables from r to s #;
+    478   Formula (all,i,TRAD_COMM)(all,r,REG)(all,s,REG)
+    479       CIFDECOMP(i,r,s,"fob") = VXWD(i,r,s);
+    480   Formula (all,i,TRAD_COMM)(all,r,REG)(all,s,REG)
+    481       CIFDECOMP(i,r,s,"trans") = VIWS(i,r,s) - VXWD(i,r,s);
+    482    
+    483   !<
+    484       3. Commodities ( Comm x Reg )
+    485       -----------------------------
+    486           OUTDISP
+    487           DOMSALESDISP
+    488           IMPSALESDISP
+    489           VALOUTPUT
+    490           SUFFICIENCY
+    491    
+    492   >!
+    493    
+    494   Coefficient (all,i,TRAD_COMM)(all,j,OUT)(all,r,REG)
+    495       OUTDISP(i,j,r)
+    496       # Value of sales of tradables to different markets at dom market price #;
+    497   Formula (all,i,TRAD_COMM)(all,j,OUT)(all,r,REG)
+    498       OUTDISP(i,j,r) = 0.0;
+    499   Formula (all,i,TRAD_COMM)(all,r,REG)
+    500       OUTDISP(i,"dom",r) = VDM(i,r);
+    501   Formula (all,m,MARG_COMM)(all,r,REG)
+    502       OUTDISP(m,"trans",r) = VST(m,r);
+    503   Formula (all,i,TRAD_COMM)(all,r,REG)
+    504       OUTDISP(i,"export",r) = sum{s,REG, VXMD(i,r,s)};
+    505    
+    506   Coefficient (all,i,TRAD_COMM)(all,m,SALES)(all,r,REG)
+    507       DOMSALESDISP(i,m,r)
+    508       # Value of domestic sales of tradables at dom market price #;
+    509   Formula (all,i,TRAD_COMM)(all,r,REG)
+    510       DOMSALESDISP(i,"production",r) = sum{j,PROD_COMM, VDFM(i,j,r)};
+    511   Formula  (all,i,TRAD_COMM)(all,r,REG)
+    512       DOMSALESDISP(i,"cons",r) = sum{h, HOU, VDPM(i,h,r)};
+    513   Formula  (all,i,TRAD_COMM)(all,r,REG)
+    514       DOMSALESDISP(i,"gov",r) = VDGM(i,r);
+    515    
+    516   Coefficient (all,i,TRAD_COMM)(all,m,SALES)(all,r,REG)
+    517       IMPSALESDISP(i,m,r)
+    518       # Value of sales of tradables to different markets at dom market price #;
+    519   Formula (all,i,TRAD_COMM)(all,r,REG)
+    520       IMPSALESDISP(i,"production",r) = sum{j,PROD_COMM, VIFM(i,j,r)};
+    521   Formula (all,i,TRAD_COMM)(all,r,REG)
+    522       IMPSALESDISP(i,"cons",r) = sum{h,HOU, VIPM(i,h,r)};
+    523   Formula (all,i,TRAD_COMM)(all,r,REG)
+    524       IMPSALESDISP(i,"gov",r) = VIGM(i,r);
+    525    
+    526   !<
+    527       Finally, calculate some policy instruments of interest.
+    528       Note that this approach produces positive taxes,
+    529       but GROSS tax rates.
+    530   >!
+    531   Coefficient (all,i,TRAD_COMM)(all,r,REG)(all,k,OUTVALUE)
+    532       VALOUTPUT(i,r,k) # Value of output at agent's prices #;
+    533   Formula (all,i,TRAD_COMM)(all,r,REG)
+    534       VALOUTPUT(i,r,"prodrev") = VOA(i,r);
+    535   Formula (all,i,TRAD_COMM)(all,r,REG)
+    536       VALOUTPUT(i,r,"outtax") = VOM(i,r) - VOA(i,r);
+    537    
+    538   Zerodivide (zero_by_zero) default 0;
+    539   Zerodivide (NONZERO_BY_ZERO) default 0;
+    540    
+    541   Coefficient (all,i, TRAD_COMM)(all,r, REG)
+    542       SUFFICIENCY(i,r) # Region's r rate of self-sufficiency for good i #;
+    543   Formula (all,i, TRAD_COMM)(all,r, REG)
+    544       SUFFICIENCY(i,r) = VOM(i,r) / [VDM(i,r) + sum{s,REG, VIMS(i,s,r)}];
+    545    
+    546   Zerodivide (zero_by_zero) off;
+    547   Zerodivide (NONZERO_BY_ZERO) off;
+    548    
+    549   !<
+    550       4. Sectors ( Comm x Reg )
+    551       -------------------------
+    552           NVFA
+    553           NVPA
+    554           NVGA
+    555    
+    556   >!
+    557    
+    558   Coefficient (all,i,DEMD_COMM)(all,j,PROD_COMM)(all,r,REG)(all,d,DIR)
+    559       (all,k,PURCHVALUE)
+    560       NVFA(i,j,r,d,k) # Firm's expenditure on i by industry j #;
+    561   Formula (all,i,ENDW_COMM)(all,j,PROD_COMM)(all,r,REG)
+    562       NVFA(i,j,r,"domestic","mktexp") = VFM(i,j,r);
+    563   Formula (all,i,ENDW_COMM)(all,j,PROD_COMM)(all,r,REG)
+    564       NVFA(i,j,r,"imported","mktexp") = 0;
+    565   Formula (all,i,TRAD_COMM)(all,j,PROD_COMM)(all,s,REG)
+    566       NVFA(i,j,s,"domestic","mktexp") = VDFM(i,j,s);
+    567   Formula (all,i,TRAD_COMM)(all,j,PROD_COMM)(all,s,REG)
+    568       NVFA(i,j,s,"imported","mktexp") = VIFM(i,j,s);
+    569    
+    570   Formula (all,i,ENDW_COMM)(all,j,PROD_COMM)(all,r,REG)
+    571       NVFA(i,j,r,"domestic","comtax") = EVFA(i,j,r) - VFM(i,j,r);
+    572   Formula (all,i,ENDW_COMM)(all,j,PROD_COMM)(all,r,REG)
+    573       NVFA(i,j,r,"imported","comtax") = 0;
+    574   Formula (all,i,TRAD_COMM)(all,j,PROD_COMM)(all,s,REG)
+    575       NVFA(i,j,s,"domestic","comtax") = VDFA(i,j,s) - VDFM(i,j,s);
+    576   Formula (all,i,TRAD_COMM)(all,j,PROD_COMM)(all,s,REG)
+    577       NVFA(i,j,s,"imported","comtax") = VIFA(i,j,s) - VIFM(i,j,s);
+    578    
+    579   Coefficient (ALL,h,HOU)(all,i,TRAD_COMM)(all,s,REG)(all,d,DIR)(all,k,PURCHVALUE)
+    580       NVPA(i,h,s,d,k) # Consumption expenditure on i by industry j #;
+    581   Formula (ALL,h,HOU)(all,i,TRAD_COMM)(all,s,REG)
+    582       NVPA(i,h,s,"domestic","mktexp") = VDPM(i,h,s);
+    583   Formula (ALL,h,HOU)(all,i,TRAD_COMM)(all,s,REG)
+    584       NVPA(i,h,s,"imported","mktexp") =  VIPM(i,h,s);
+    585    
+    586   Formula (ALL,h,HOU)(all,i,TRAD_COMM)(all,s,REG)
+    587       NVPA(i,h,s,"domestic","comtax") =
+    588       VDPA(i,h,s) - VDPM(i,h,s);
+    589   Formula (ALL,h,HOU)(all,i,TRAD_COMM)(all,s,REG)
+    590       NVPA(i,h,s,"imported","comtax") = VIPA(i,h,s) - VIPM(i,h,s);
+    591    
+    592   Coefficient (all,i,TRAD_COMM)(all,s,REG)(all,d,DIR)(all,k,PURCHVALUE)
+    593       NVGA(i,s,d,k) # Government expenditure on i by industry j #;
+    594   Formula (all,i,TRAD_COMM)(all,s,REG)
+    595       NVGA(i,s,"domestic","mktexp") = VDGM(i,s);
+    596   Formula (all,i,TRAD_COMM)(all,s,REG)
+    597       NVGA(i,s,"imported","mktexp") = VIGM(i,s);
+    598    
+    599   Formula (all,i,TRAD_COMM)(all,s,REG)
+    600       NVGA(i,s,"domestic","comtax") = VDGA(i,s) - VDGM(i,s);
+    601   Formula (all,i,TRAD_COMM)(all,s,REG)
+    602       NVGA(i,s,"imported","comtax") = VIGA(i,s) - VIGM(i,s);
+    603    
+    604   !<
+    605       -----------------------------------
+    606       Write statements of the Derivatives
+    607       -----------------------------------
+    608    
+    609       1. Macro variables ( Reg )
+    610       --------------------------
+    611   >!
+    612   Write GDPEXP to file GTAPVIEW header "AG01" longname
+    613       "GDPEXP = C + I + G + X - M, GDP from the expenditure side";
+    614   Write GDPSRC to file GTAPVIEW header "AG02" longname
+    615       "GDPSRC = NETFACTINC + NETAXES + VDEP, GDP from the sources side";
+    616   Write EVFA to file GTAPVIEW header "AG03" longname
+    617       "Sources of factor income (NETFACTINC + VDEP) by sector - EVFA(j,r)";
+    618   Write CAPITALACCT to file GTAPVIEW header "AG04" longname
+    619       "S - I = X - M: CAPITALACCT";
+    620   Write CURRENTACCT to file GTAPVIEW header "AG05" longname
+    621       "X - M = S - I: CURRENTACCT";
+    622   Write VKB to file GTAPVIEW header "AG06" longname
+    623       "Capital stock by region - VKB";
+    624    
+    625   !<
+    626       2.Trade, Transport and Protection ( Reg x Reg )
+    627       -----------------------------------------------
+    628   >!
+    629   Write VALEXPORTS to file GTAPVIEW header "BI01" longname
+    630       "Decomposition of exports at world prices: VXWD=VXMD+XTAX";
+    631   Write VALIMPORTS to file GTAPVIEW header "BI02" longname
+    632       "Decomposition of imports at market prices: VIMS=VIWS+MTAX";
+    633   Write CIFDECOMP to file GTAPVIEW header "BI03" longname
+    634       "Decomposition of cif values - CIFDECOMP";
+    635    
+    636   ! addition jmhApr2003 -- display trade with own region (diagonal view) !
+    637   Coefficient (all,i,TRAD_COMM)(all,q,REG)(all,k,EXPVALUE)
+    638       VALOWNEXPORT(i,q,k) # Value of exports to self at world prices #;
+    639   Formula (all,i,TRAD_COMM)(all,q,REG)(all,k,EXPVALUE)
+    640       VALOWNEXPORT(i,q,k) = VALEXPORTS(i,q,q,k);
+    641    
+    642   Coefficient (all,i,TRAD_COMM)(all,q,REG)(all,k,IMPVALUE)
+    643       VALOWNIMPORT(i,q,k) # Value of imports to self at domestic prices #;
+    644   Formula (all,i,TRAD_COMM)(all,q,REG)(all,k,IMPVALUE)
+    645       VALOWNIMPORT(i,q,k) = VALIMPORTS(i,q,q,k);
+    646    
+    647   Coefficient (all,i,TRAD_COMM)(all,q,REG)(all,j,MKTVALUE)
+    648       CIFOWNDECOMP(i,q,j) # Value of tradables from q to q #;
+    649   Formula (all,i,TRAD_COMM)(all,q,REG)(all,j,MKTVALUE)
+    650       CIFOWNDECOMP(i,q,j)= CIFDECOMP(i,q,q,j);
+    651    
+    652   Write VALOWNEXPORT to file GTAPVIEW header "BX01" longname
+    653       "Decomposition of exports to own region at world prices: VXWD=VXMD+XTAX";
+    654   Write VALOWNIMPORT to file GTAPVIEW header "BX02" longname
+    655       "Decomposition of imports from self at market prices: VIMS=VIWS+MTAX";
+    656   Write CIFOWNDECOMP to file GTAPVIEW header "BX03" longname
+    657       "Decomposition of cif values of own region - CIFDECOMP";
+    658    
+    659    
+    660    
+    661    
+    662   !<
+    663       3. Commodities ( Comm x Reg )
+    664       -----------------------------
+    665   >!
+    666   Write OUTDISP to file GTAPVIEW header "CM01" longname
+    667       "Disposition of output - OUTDISP";
+    668   Write DOMSALESDISP to file GTAPVIEW header "CM02" longname
+    669       "Disposition of domestic goods - DOMSALESDISP";
+    670   Write IMPSALESDISP to file GTAPVIEW header "CM03" longname
+    671       "Disposition of imported goods - IMPSALESDISP";
+    672   Write VALOUTPUT to file GTAPVIEW header "CM04" longname
+    673       "Value of output at market prices:  VOM = VOA + OUTTAX ";
+    674   Write SUFFICIENCY to file GTAPVIEW header "CM05" longname
+    675       "Self-sufficiency or domestic share in total use - SUFFICIENCY";
+    676    
+    677   !<
+    678       4. Sectors ( Comm x Reg )
+    679       -------------------------
+    680   >!
+    681    
+    682   Write NVFA to file GTAPVIEW header "SF01" longname
+    683       "Cost structure of firms - VFA";
+    684   Write NVPA to file GTAPVIEW header "SF02" longname
+    685       "Cost structure of consumption - VPA";
+    686   Write NVGA to file GTAPVIEW header "SF03" longname
+    687       "Cost structure of government - VGA";
+    688    
+    689   !<
+    690       --------------------------------
+    691       Computation of Initial Tax Rates
+    692       --------------------------------
+    693    
+    694       Calculate initial distortions as percent ad valorem rates
+    695   >!
+    696    
+    697   Coefficient
+    698       (all,i,NSAV_COMM)(all,r,REG)                   rTO(i,r);
+    699       (all,i,ENDW_COMM)(all,j,PROD_COMM)(all,r,REG)  rTF(i,j,r);
+    700       (all,i,TRAD_COMM)(all,h, HOU)(all,r,REG)      rTPD(i,h,r);
+    701       (all,i,TRAD_COMM)(all,h, HOU)(all,r,REG)      rTPI(i,h,r);
+    702       (all,i,TRAD_COMM)(all,r,REG)                  rTGD(i,r);
+    703       (all,i,TRAD_COMM)(all,r,REG)                  rTGI(i,r);
+    704       (all,i,TRAD_COMM)(all,j,PROD_COMM)(all,r,REG) rTFD(i,j,r);
+    705       (all,i,TRAD_COMM)(all,j,PROD_COMM)(all,r,REG) rTFI(i,j,r);
+    706       (all,i,TRAD_COMM)(all,r,REG)(all,s,REG)       rTXS(i,r,s);
+    707       (all,i,TRAD_COMM)(all,r,REG)(all,s,REG)       rTMS(i,r,s);
+    708    
+    709   Zerodivide default 1;
+    710   Formula
+    711       (all,i,NSAV_COMM)(all,r,REG)
+    712       rTO(i,r)    = 100*{[VOA(i,r)/VOM(i,r)]-1};
+    713    
+    714       (all,i,ENDW_COMM)(all,j,PROD_COMM)(all,r,REG)
+    715       rTF(i,j,r)  = 100*{[VFA(i,j,r)/VFM(i,j,r)]-1};
+    716    
+    717       (all,i,TRAD_COMM)(all,h,HOU)(all,r,REG)
+    718       rTPD(i,h,r)   =  100*{[VDPA(i,h,r)/VDPM(i,h,r)]-1};
+    719    
+    720       (all,i,TRAD_COMM)(all,h,HOU)(all,r,REG)
+    721       rTPI(i,h,r)   = 100*{[VIPA(i,h,r)/VIPM(i,h,r)]-1};
+    722    
+    723       (all,i,TRAD_COMM)(all,r,REG)
+    724       rTGD(i,r)   = 100*{[VDGA(i,r)/VDGM(i,r)]-1};
+    725    
+    726       (all,i,TRAD_COMM)(all,r,REG)
+    727       rTGI(i,r)   = 100*{[VIGA(i,r)/VIGM(i,r)]-1};
+    728    
+    729       (all,i,TRAD_COMM)(all,j,PROD_COMM)(all,r,REG)
+    730       rTFD(i,j,r) = 100*{[VDFA(i,j,r)/VDFM(i,j,r)]-1};
+    731    
+    732       (all,i,TRAD_COMM)(all,j,PROD_COMM)(all,r,REG)
+    733       rTFI(i,j,r) = 100*{[VIFA(i,j,r)/VIFM(i,j,r)]-1};
+    734    
+    735       (all,i,TRAD_COMM)(all,r,REG)(all,s,REG)
+    736       rTXS(i,r,s) = 100*{[VXMD(i,r,s)/VXWD(i,r,s)]-1};
+    737    
+    738       (all,i,TRAD_COMM)(all,r,REG)(all,s,REG)
+    739       rTMS(i,r,s) = 100*{[VIMS(i,r,s)/VIWS(i,r,s)]-1};
+    740    
+    741   Zerodivide off;
+    742    
+    743   Write
+    744       rTO to file TAXRATES header "rTO " longname
+    745       "% ad valorem rate, output (or income) subsidies in region r";
+    746       rTF to file TAXRATES header "rTF " longname
+    747       "% ad valorem rate, taxes on primary factors";
+    748       rTPD to file TAXRATES header "rTPD" longname
+    749       "% ad valorem rate, private domestic consumption taxes";
+    750       rTPI to file TAXRATES header "rTPI" longname
+    751       "% ad valorem rate, private import consumption taxes";
+    752       rTGD to file TAXRATES header "rTGD" longname
+    753       "% ad valorem rate, government domestic purchases taxes";
+    754       rTGI to file TAXRATES header "rTGI" longname
+    755       "% ad valorem rate, government import purchases taxes";
+    756       rTFD to file TAXRATES header "rTFD" longname
+    757       "% ad valorem rate, taxes on firms' domestic purchases";
+    758       rTFI to file TAXRATES header "rTFI" longname
+    759       "% ad valorem rate, taxes on firms' imports purchases";
+    760       rTXS to file TAXRATES header "rTXS" longname
+    761       "% ad valorem rate, export subsidies, by destination";
+    762       rTMS to file TAXRATES header "rTMS" longname
+    763       "% ad valorem rate, import taxes, by source";
+    764    
+    765   !<
+    766       -------------------------------
+    767       Checking the balance conditions
+    768       -------------------------------
+    769   >!
+    770    
+    771   Coefficient (all,i,TRAD_COMM)(all,s,REG)
+    772       CHKMKTCLIMP(i,s)
+    773       # Checking the accounting on traded commodities supply and demand #;
+    774   Formula  (all,i,TRAD_COMM)(all,s,REG)
+    775       CHKMKTCLIMP(i,s)
+    776           = sum{r,REG, VIMS(i,r,s)}
+    777           - sum{j,PROD_COMM, VIFM(i,j,s)}
+    778           - sum{h,HOU,VIPM(i,h,s)} - VIGM(i,s);
+    779    
+    780   Coefficient (all,s,REG)
+    781       SURPLUS(s)
+    782       # Economic surplus in region s.  This should be close to zero. #;
+    783   Formula (all,r,REG)
+    784       SURPLUS(r)
+    785           = sum{i,ENDW_COMM, VOA(i,r)} - sum{h, HOU, VDEP(h,r)}
+    786           + sum{h, hou, FYI_HHLD(h,r)-FYO_HHLD(h,r)}
+    787           + sum{h, hou, REMIN_HHLD(h,r)-REMOUT_HHLD(h,r)}
+    788           + sum{k, Hou, sum{h,hou,TRANS_HHLD(h,k,r) - TRANS_HHLD(k,h,r)}}
+    789           +     GRANTSIN(r) - GRANTSOUT(r)
+    790           + sum{i,NSAV_COMM, VOM(i,r) - VOA(i,r)}
+    791           + sum{j,PROD_COMM, sum{i,ENDW_COMM, VFA(i,j,r) - VFM(i,j,r)}}
+    792           + sum{i,TRAD_COMM, sum{h,HOU,       VIPA(i,h,r) - VIPM(i,h,r)}}
+    793           + sum{i,TRAD_COMM, sum{h,HOU,       VDPA(i,h,r) - VDPM(i,h,r)}}
+    794           + sum{i,TRAD_COMM, VIGA(i,r) - VIGM(i,r)}
+    795           + sum{i,TRAD_COMM, VDGA(i,r) - VDGM(i,r)}
+    796           + sum{j,PROD_COMM, sum{i,TRAD_COMM, VIFA(i,j,r) - VIFM(i,j,r)}}
+    797           + sum{j,PROD_COMM, sum{i,TRAD_COMM, VDFA(i,j,r) - VDFM(i,j,r)}}
+    798           + sum{i,TRAD_COMM, sum{s,REG, VXWD(i,r,s) - VXMD(i,r,s)}}
+    799           + sum{i,TRAD_COMM, sum{s,REG, VIMS(i,s,r) - VIWS(i,s,r)}}
+    800           - sum{i,TRAD_COMM, sum{h, HOU, VPA(i,r,h)} + VGA(i,r)} - save(r);
+    801    
+    802   Coefficient (all,i,TRAD_COMM)(all,r,REG)(all,s,REG)
+    803       VTWR_M(i,r,s)
+    804       # Value of transport services associated w/ the shipment of i from r to s #;
+    805   Formula (all,i,TRAD_COMM)(all,r,REG)(all,s,REG)
+    806       VTWR_M(i,r,s) = VIWS(i,r,s) - VXWD(i,r,s);
+    807    
+    808   Coefficient (all,i,TRAD_COMM)(all,r,REG)(all,s,REG)
+    809       CHKTRANS_D(i,r,s)
+    810       # Difference between global demand and margins, should be close to zero #;
+    811   Formula (all,i,TRAD_COMM)(all,r,REG)(all,s,REG)
+    812       CHKTRANS_D(i,r,s) = VTWR_M(i,r,s) - sum{m, MARG_COMM, VTWR(m,i,r,s)};
+    813    
+    814   Coefficient (all,i,TRAD_COMM)(all,r,REG)
+    815       VSTT(i,r) #For check on tranport services and margines #;
+    816   Formula (all,i,TRAD_COMM)(all,r,REG)
+    817       VSTT(i,r) = 0;
+    818   Formula (all,i,MARG_COMM)(all,r,REG)
+    819       VSTT(i,r) = VST(i,r);
+    820    
+    821   Coefficient
+    822       CHKTRANS_S
+    823   #Diff btwn ttl supply of trnsprt srvcs & ttl margins, should be close to zero#;
+    824   Formula
+    825       CHKTRANS_S
+    826           = sum{m,MARG_COMM,sum{i,TRAD_COMM,sum{r,REG,sum{s,REG, VTWR(m,i,r,s)}}}}
+    827           - sum{i,TRAD_COMM,sum{r,REG, VSTT(i,r)}};
+    828    
+    829   Coefficient (all,i,ENDW_COMM)(all,r,REG)
+    830       CHKVOM(i,r) # Check on VOM = VFM #;
+    831   Formula (all,i,ENDW_COMM)(all,r,REG)
+    832       CHKVOM(i,r) = (VOM(i,r) - sum(h, HOU, EVOM(i,h,r))) ;
+    833    
+    834   !<
+    835       ------------------------------------------
+    836       Calculating Summary Measures for Imbalance
+    837       ------------------------------------------
+    838    
+    839       For each GTAPDATA calculate a summary measure of imbalance, the sum of
+    840       the absolute magnitudes of the imbalances in components.  Calculate an
+    841       overall summary measure, the sum of the variable-specific summary
+    842       measures.
+    843   >!
+    844    
+    845   Coefficient
+    846       SUMTRANS_S
+    847       # Summary measure for transport services, should be close to zero #;
+    848   Formula
+    849       SUMTRANS_S = abs(CHKTRANS_S);
+    850    
+    851   Coefficient
+    852       SUMTRANS_D
+    853       # Summary measure for transport services, should be close to zero #;
+    854   Formula
+    855       SUMTRANS_D
+    856           = sum{i, TRAD_COMM, sum{r, REG, sum{s, REG, abs(CHKTRANS_D(i,r,s))}}};
+    857    
+    858   Coefficient
+    859       SUMSURPLUS
+    860       # Summary measure for economic surplus, should be close to zero #;
+    861   Formula
+    862       SUMSURPLUS = sum{r, REG, abs(SURPLUS(r))};
+    863    
+    864   Coefficient
+    865       SUMMKTCLIMP
+    866       # Summary measure for excess importation, should be close to zero #;
+    867   Formula
+    868       SUMMKTCLIMP = sum{i,TRAD_COMM, sum{s,REG, abs(CHKMKTCLIMP(i,s))}};
+    869    
+    870   Coefficient
+    871       SUMIMBALS # Summary measure of imbalances, should be close to zero #;
+    872   Formula
+    873       SUMIMBALS
+    874           = SUMTRANS_S + SUMTRANS_D + SUMSURPLUS + SUMMKTCLIMP ;
+    875    
+    876   !<
+    877       -------------------------------------
+    878       Writing Summary Measures of Imbalance
+    879       -------------------------------------
+    880   >!
+    881    
+    882   Write SUMIMBALS   to file GTAPVIEW header "0IMB";
+    883   Write SUMTRANS_S  to file GTAPVIEW header "1TNS";
+    884   Write SUMTRANS_D  to file GTAPVIEW header "1TND";
+    885   Write SUMSURPLUS  to file GTAPVIEW header "1SRP";
+    886   Write SUMMKTCLIMP to file GTAPVIEW header "1IMP";
+    887   Write CHKTRANS_S  to file GTAPVIEW header "2TNS";
+    888   Write CHKTRANS_D  to file GTAPVIEW header "2TND";
+    889   Write SURPLUS     to file GTAPVIEW header "2SRP";
+    890   Write CHKMKTCLIMP to file GTAPVIEW header "2IMP";
+    891   Write CHKVOM to file GTAPVIEW header "CVOM";
+    892    
+    893   !<
+    894       ----------------------------
+    895       Checking the sign conditions
+    896       ----------------------------
+    897   >!
+    898    
+    899   Coefficient ! work matrices for holding binary flags: re-used to save RAM !
+    900   (all,i,ENDW_COMM)(all,j,PROD_COMM)(all,r,REG) SIGNEPR(i,j,r);
+    901   (all,i,ENDW_COMM)(all,h,HOU)(all,r,REG) SIGNER(i,h,r);
+    902   (all,k,MARG_COMM)(all,r,REG) SIGNMR(k,r);
+    903   (all,k,MARG_COMM)(all,i,TRAD_COMM)(all,r,REG)(all,s,REG) SIGNMTRR(k,i,r,s);
+    904   (all,h,HOU)(all,r,REG) SIGNR(h,r);
+    905   (all,i,TRAD_COMM)(all,j,PROD_COMM)(all,r,REG) SIGNTPR(i,j,r);
+    906   (all,i,TRAD_COMM)(all,h, HOU)(all,r,REG) SIGNTHR(i,h,r);
+    907   (all,i,TRAD_COMM)(all,r,REG) SIGNTR(i,r);
+    908   (all,i,TRAD_COMM)(all,r,REG)(all,s,REG) SIGNTRR(i,r,s);
+    909    
+    910   Formula (all,i,ENDW_COMM)(all,h,HOU)(all,r,REG)
+    911         SIGNER(i,h,r) = IF(EVOA(i,h,r)<0, 1);
+    912   Write SIGNER to file GTAPVIEW header "SVOA"
+    913    longname "EVOA bad-sign flag; 1 if negative, else 0";
+    914    
+    915   Formula (all,i,ENDW_COMM)(all,j,PROD_COMM)(all,r,REG)
+    916         SIGNEPR(i,j,r) = IF(EVFA(i,j,r)<0, 1);
+    917   Write SIGNEPR to file GTAPVIEW header "SVFA"
+    918    longname "EVFA bad-sign flag; 1 if negative, else 0";
+    919    
+    920   Formula (all,i,TRAD_COMM)(all,j,PROD_COMM)(all,r,REG)
+    921         SIGNTPR(i,j,r) = IF(VIFA(i,j,r)<0, 1);
+    922   Write SIGNTPR to file GTAPVIEW header "SIFA"
+    923    longname "VIFA bad-sign flag; 1 if negative, else 0";
+    924    
+    925   Formula (all,i,TRAD_COMM)(all,j,PROD_COMM)(all,r,REG)
+    926         SIGNTPR(i,j,r) = IF(VDFA(i,j,r)<0, 1);
+    927   Write SIGNTPR to file GTAPVIEW header "SDFA"
+    928    longname "VDFA bad-sign flag; 1 if negative, else 0";
+    929    
+    930   Formula (all,i,TRAD_COMM)(all,h, HOU)(all,r,REG)
+    931         SIGNTHR(i,h,r) = IF(VIPA(i,h,r)<0, 1);
+    932   Write SIGNTHR to file GTAPVIEW header "SIPA"
+    933    longname "VIPA bad-sign flag; 1 if negative, else 0";
+    934    
+    935   Formula (all,i,TRAD_COMM)(all,h,HOU)(all,r,REG)
+    936         SIGNTHR(i,h,r) = IF(VDPA(i,h,r)<0, 1);
+    937   Write SIGNTHR to file GTAPVIEW header "SDPA"
+    938    longname "VDPA bad-sign flag; 1 if negative, else 0";
+    939    
+    940   Formula (all,i,TRAD_COMM)(all,r,REG)
+    941         SIGNTR(i,r) = IF(VIGA(i,r)<0, 1);
+    942   Write SIGNTR to file GTAPVIEW header "SIGA"
+    943    longname "VIGA bad-sign flag; 1 if negative, else 0";
+    944    
+    945   Formula (all,i,TRAD_COMM)(all,r,REG)
+    946         SIGNTR(i,r) = IF(VDGA(i,r)<0, 1);
+    947   Write SIGNTR to file GTAPVIEW header "SDGA"
+    948    longname "VDGA bad-sign flag; 1 if negative, else 0";
+    949    
+    950   Formula (all,h,HOU)(all,r,REG)
+    951         SIGNR(h,r) = IF(VKB(h,r)<0, 1);
+    952   Write SIGNR to file GTAPVIEW header "SKB"
+    953    longname "VKB bad-sign flag; 1 if negative, else 0";
+    954    
+    955   Formula (all,h,HOU)(all,r,REG)
+    956         SIGNR(h,r) = IF(VDEP(h,r)<0, 1);
+    957   Write SIGNR to file GTAPVIEW header "SDEP"
+    958    longname "VDEP bad-sign flag; 1 if negative, else 0";
+    959    
+    960   Formula (all,i,TRAD_COMM)(all,r,REG)(all,s,REG)
+    961         SIGNTRR(i,r,s) = IF(VXMD(i,r,s)<0, 1);
+    962   Write SIGNTRR to file GTAPVIEW header "SXMD"
+    963    longname "VXMD bad-sign flag; 1 if negative, else 0";
+    964    
+    965   Formula (all,i,MARG_COMM)(all,r,REG)
+    966         SIGNMR(i,r) = IF(VST(i,r)<0, 1);
+    967   Write SIGNMR to file GTAPVIEW header "SST"
+    968    longname "VST bad-sign flag; 1 if negative, else 0";
+    969    
+    970   Formula (all,k,MARG_COMM)(all,i,TRAD_COMM)(all,r,REG)(all,s,REG)
+    971         SIGNMTRR(k,i,r,s) = IF(VTWR(k,i,r,s)<0, 1);
+    972   Write SIGNMTRR to file GTAPVIEW header "STWR"
+    973    longname "VTWR bad-sign flag; 1 if negative, else 0";
+    974    
+    975   Formula (all,i,ENDW_COMM)(all,j,PROD_COMM)(all,r,REG)
+    976         SIGNEPR(i,j,r) = IF(VFM(i,j,r)<0, 1);
+    977   Write SIGNEPR to file GTAPVIEW header "SFM"
+    978    longname "VFM bad-sign flag; 1 if negative, else 0";
+    979    
+    980   Formula (all,i,TRAD_COMM)(all,j,PROD_COMM)(all,r,REG)
+    981         SIGNTPR(i,j,r) = IF(VIFM(i,j,r)<0, 1);
+    982   Write SIGNTPR to file GTAPVIEW header "SIFM"
+    983    longname "VIFM bad-sign flag; 1 if negative, else 0";
+    984    
+    985   Formula (all,i,TRAD_COMM)(all,j,PROD_COMM)(all,r,REG)
+    986         SIGNTPR(i,j,r) = IF(VDFM(i,j,r)<0, 1);
+    987   Write SIGNTPR to file GTAPVIEW header "SDFM"
+    988    longname "VDFM bad-sign flag; 1 if negative, else 0";
+    989    
+    990   Formula (all,i,TRAD_COMM)(all,h,HOU)(all,r,REG)
+    991         SIGNTHR(i,h,r) = IF(VIPM(i,h,r)<0, 1);
+    992   Write SIGNTHR to file GTAPVIEW header "SIPM"
+    993    longname "VIPM bad-sign flag; 1 if negative, else 0";
+    994    
+    995   Formula (all,i,TRAD_COMM)(all,h,HOU)(all,r,REG)
+    996         SIGNTHR(i,h,r) = IF(VDPM(i,h,r)<0, 1);
+    997   Write SIGNTHR to file GTAPVIEW header "SDPM"
+    998    longname "VDPM bad-sign flag; 1 if negative, else 0";
+    999    
+   1000   Formula (all,i,TRAD_COMM)(all,r,REG)
+   1001         SIGNTR(i,r) = IF(VIGM(i,r)<0, 1);
+   1002   Write SIGNTR to file GTAPVIEW header "SIGM"
+   1003    longname "VIGM bad-sign flag; 1 if negative, else 0";
+   1004    
+   1005   Formula (all,i,TRAD_COMM)(all,r,REG)
+   1006         SIGNTR(i,r) = IF(VDGM(i,r)<0, 1);
+   1007   Write SIGNTR to file GTAPVIEW header "SDGM"
+   1008    longname "VDGM bad-sign flag; 1 if negative, else 0";
+   1009    
+   1010   Formula (all,i,TRAD_COMM)(all,r,REG)(all,s,REG)
+   1011         SIGNTRR(i,r,s) = IF(VIMS(i,r,s)<0, 1);
+   1012   Write SIGNTRR to file GTAPVIEW header "SIMS"
+   1013    longname "VIMS bad-sign flag; 1 if negative, else 0";
+   1014    
+   1015   Formula (all,i,TRAD_COMM)(all,r,REG)(all,s,REG)
+   1016         SIGNTRR(i,r,s) = IF(VXWD(i,r,s)<0, 1);
+   1017   Write SIGNTRR to file GTAPVIEW header "SXWD"
+   1018    longname "VXWD bad-sign flag; 1 if negative, else 0";
+   1019    
+   1020   Formula (all,i,TRAD_COMM)(all,r,REG)(all,s,REG)
+   1021         SIGNTRR(i,r,s) = IF(VIWS(i,r,s)<0, 1);
+   1022   Write SIGNTRR to file GTAPVIEW header "SIWS"
+   1023    longname "VIWS bad-sign flag; 1 if negative, else 0";
+   1024    
+   1025   !Expenditure and Income!
+   1026    
+   1027   Coefficient (all,h,HOU) (all,r,REG)
+   1028       INCOME_HHLD(h,r) # income, net of depreciation, by Household #;
+   1029   Formula (all,r,REG)(all,h,HOU)
+   1030       INCOME_HHLD(h,r) = sum{i,ENDW_COMM, EVOA(i,h, r)} - VDEP(h,r) +
+   1031                TRANS_GOV(h,r) + FYI_HHLD(h,r) - FYO_HHLD(h,r) +
+   1032                + REMIN_HHLD(h,r) - REMOUT_HHLD(h,r) +
+   1033                sum(k, HOU, TRANS_HHLD(h,k,r) - TRANS_HHLD(k,h,r)) ;
+   1034    
+   1035   Coefficient  (all,r,REG)
+   1036       INCOME_GOV(r) # Factor income, net of depreciation, by Household #;
+   1037   Formula (all,r,REG)
+   1038       INCOME_GOV(r) = NETAXES(r) + GRANTSIN(r) - GRANTSOUT(r) -
+   1039                sum(h, HOU, TRANS_GOV(h,r));
+   1040    
+   1041   Coefficient (all,h,HOU) (all,r,REG)
+   1042       PRIVEXP_HHLD(h,r) # income, net of depreciation, by Household #;
+   1043   Formula (all,r,REG)(all,h,HOU)
+   1044       PRIVEXP_HHLD(h,r) = sum(t, TRAD_COMM, VIPA(t,h,r) + VDPA(t,h,r)) ;
+   1045    
+   1046   set TAB_INC (Income, ForIncome, Transfers, Expenditure, Saving) ;
+   1047    
+   1048   Coefficient (all,t,TAB_INC)(all,h,HOU) (all,r,REG)
+   1049       TABLE_HHLD(t,h,r) # table of incomes, expenditure and saving by household #;
+   1050   Formula (all,h,HOU) (all,r,REG)
+   1051       TABLE_HHLD("Income",h,r) = sum{i,ENDW_COMM, EVOA(i,h, r)} - VDEP(h,r)  ;
+   1052   Formula (all,h,HOU) (all,r,REG)
+   1053       TABLE_HHLD("ForIncome",h,r) = FYI_HHLD(h,r) - FYO_HHLD(h,r) +
+   1054                + REMIN_HHLD(h,r) - REMOUT_HHLD(h,r) ;
+   1055   Formula (all,h,HOU) (all,r,REG)
+   1056       TABLE_HHLD("Transfers",h,r) = TRANS_GOV(h,r)
+   1057                + sum(k, HOU, TRANS_HHLD(h,k,r) - TRANS_HHLD(k,h,r)) ;
+   1058   Formula (all,h,HOU) (all,r,REG)
+   1059       TABLE_HHLD("Expenditure",h,r) = -1*PRIVEXP_HHLD(h,r) ;
+   1060   Formula (all,h,HOU) (all,r,REG)
+   1061       TABLE_HHLD("Saving",h,r) = -1*SAV_HHLD(h,r) ;
+   1062    
+   1063   Coefficient (all,t,TAB_INC) (all,r,REG)
+   1064       TABLE_GOV(t,r) # table of incomes, expenditure and saving by household #;
+   1065   Formula (all,r,REG)
+   1066       TABLE_GOV("Income",r) = NETAXES(r)  ;
+   1067   Formula (all,r,REG)
+   1068       TABLE_GOV("ForIncome",r) = GRANTSIN(r) - GRANTSOUT(r) ;
+   1069   Formula (all,r,REG)
+   1070       TABLE_GOV("Transfers",r) = - sum(h, HOU, TRANS_GOV(h,r));
+   1071   Formula (all,r,REG)
+   1072       TABLE_GOV("Expenditure",r) = -1*GOVEXP(r) ;
+   1073   Formula (all,r,REG)
+   1074       TABLE_GOV("Saving",r) = -1*SAV_GOV(r) ;
+   1075    
+   1076   Coefficient (all,h,HOU)(all,r,REG)
+   1077       CHKSAV_HHLD(h,r) # check on savings #;
+   1078   Formula (all,h,HOU)(all,r,REG)
+   1079       CHKSAV_HHLD(h,r) = INCOME_HHLD(h,r) - PRIVEXP_HHLD(h,r)
+   1080                  - SAV_HHLD(h,r)  ;
+   1081    
+   1082   Coefficient (all,r,REG)
+   1083       CHKSAV_GOV(r) # check on savings #;
+   1084   Formula (all,r,REG)
+   1085       CHKSAV_GOV(r) = INCOME_GOV(r) - GOVEXP(r)
+   1086                  - SAV_GOV(r)  ;
+   1087    
+   1088   write
+   1089       TABLE_HHLD to file GTAPVIEW header "HHLD" longname
+   1090       "Household income - Expenditure plus savings";
+   1091       TABLE_GOV to file GTAPVIEW header "GOV" longname
+   1092       "Government income - Expenditure plus savings";
+   1093       CHKSAV_HHLD to file GTAPVIEW header "CSVH" longname
+   1094       "Check household savings";
+   1095       CHKSAV_GOV to file GTAPVIEW header "CSVG" longname
+   1096       "Check government savings";
+   1097    
+   1098   !<
+   1099       ------------------------
+   1100       End of GTAPVIEW.TAB file
+   1101       ------------------------
+   1102   >!
+   1103    
+
+
+
+
+ ========================
+ ++ INPUT STATEMENT TABLE
+ ========================
+
+          Starts   Syntax  Semantic
+  Number  at line  Error?   Error?            Description
+  ------------------------------------------------------------
+     1        59     no       no      FILE 'GTAPDATA            '             
+     2        61     no       no      FILE 'GTAPSETS            '             
+     3        63     no       no      FILE 'GTAPPARM            '             
+     4        66     no       no      FILE 'GTAPVIEW            '             
+     5        68     no       no      FILE 'TAXRATES            '             
+     6        76     no       no      SET 'HOU         '                      
+     7        78     no       no      SET 'REG         '                      
+     8        81     no       no      SET 'TRAD_COMM   '                      
+     9        84     no       no      SET 'MARG_COMM   '                      
+    10        87     no       no      SUBSET 'MARG_COMM   ' of 'TRAD_COMM   ' 
+    11        89     no       no      SET 'NMRG_COMM   '                      
+    12        89     no       no      SUBSET 'NMRG_COMM   ' of 'TRAD_COMM   ' 
+    13        91     no       no      SET 'CGDS_COMM   '                      
+    14        94     no       no      SET 'ENDW_COMM   '                      
+    15        99     no       no      SET 'PROD_COMM   '                      
+    16        99     no       no      SUBSET 'TRAD_COMM   ' of 'PROD_COMM   ' 
+    17        99     no       no      SUBSET 'CGDS_COMM   ' of 'PROD_COMM   ' 
+    18       101     no       no      SET 'DEMD_COMM   '                      
+    19       101     no       no      SUBSET 'ENDW_COMM   ' of 'DEMD_COMM   ' 
+    20       101     no       no      SUBSET 'TRAD_COMM   ' of 'DEMD_COMM   ' 
+    21       103     no       no      SET 'NSAV_COMM   '                      
+    22       103     no       no      SUBSET 'DEMD_COMM   ' of 'NSAV_COMM   ' 
+    23       103     no       no      SUBSET 'CGDS_COMM   ' of 'NSAV_COMM   ' 
+    24       105     no       no      SUBSET 'PROD_COMM   ' of 'NSAV_COMM   ' 
+    25       115     no       no      SET 'GDPEXPEND   '                      
+    26       116     no       no      SET 'GDPSOURCE   '                      
+    27       117     no       no      SET 'CAPACCT     '                      
+    28       118     no       no      SET 'CURACCT     '                      
+    29       119     no       no      SET 'MKTVALUE    '                      
+    30       120     no       no      SET 'OUT         '                      
+    31       121     no       no      SET 'SALES       '                      
+    32       122     no       no      SET 'PURCHVALUE  '                      
+    33       123     no       no      SET 'DIR         '                      
+    34       124     no       no      SET 'OUTVALUE    '                      
+    35       125     no       no      SET 'EXPVALUE    '                      
+    36       126     no       no      SET 'IMPVALUE    '                      
+    37       136     no       no      COEFFICIENT 'SAV_HHLD    '              
+    38       138     no       no      READ into 'SAV_HHLD    '                
+    39       141     no       no      COEFFICIENT 'SAV_GOV     '              
+    40       143     no       no      READ into 'SAV_GOV     '                
+    41       145     no       no      COEFFICIENT 'EVOA        '              
+    42       147     no       no      READ into 'EVOA        '                
+    43       150     no       no      COEFFICIENT 'EVOM        '              
+    44       152     no       no      READ into 'EVOM        '                
+    45       155     no       no      COEFFICIENT 'EVFA        '              
+    46       157     no       no      READ into 'EVFA        '                
+    47       160     no       no      COEFFICIENT 'VIFA        '              
+    48       162     no       no      READ into 'VIFA        '                
+    49       165     no       no      COEFFICIENT 'VDFA        '              
+    50       167     no       no      READ into 'VDFA        '                
+    51       170     no       no      COEFFICIENT 'VIPA        '              
+    52       172     no       no      READ into 'VIPA        '                
+    53       175     no       no      COEFFICIENT 'VDPA        '              
+    54       177     no       no      READ into 'VDPA        '                
+    55       180     no       no      COEFFICIENT 'VIGA        '              
+    56       182     no       no      READ into 'VIGA        '                
+    57       185     no       no      COEFFICIENT 'VDGA        '              
+    58       187     no       no      READ into 'VDGA        '                
+    59       190     no       no      COEFFICIENT 'VKB         '              
+    60       192     no       no      READ into 'VKB         '                
+    61       195     no       no      COEFFICIENT 'VDEP        '              
+    62       197     no       no      READ into 'VDEP        '                
+    63       205     no       no      COEFFICIENT 'VXMD        '              
+    64       207     no       no      READ into 'VXMD        '                
+    65       210     no       no      COEFFICIENT 'VST         '              
+    66       213     no       no      READ into 'VST         '                
+    67       216     no       no      COEFFICIENT 'VFM         '              
+    68       218     no       no      READ into 'VFM         '                
+    69       221     no       no      COEFFICIENT 'VIFM        '              
+    70       223     no       no      READ into 'VIFM        '                
+    71       226     no       no      COEFFICIENT 'VDFM        '              
+    72       228     no       no      READ into 'VDFM        '                
+    73       231     no       no      COEFFICIENT 'VIPM        '              
+    74       233     no       no      READ into 'VIPM        '                
+    75       236     no       no      COEFFICIENT 'VDPM        '              
+    76       238     no       no      READ into 'VDPM        '                
+    77       241     no       no      COEFFICIENT 'VIGM        '              
+    78       243     no       no      READ into 'VIGM        '                
+    79       246     no       no      COEFFICIENT 'VDGM        '              
+    80       248     no       no      READ into 'VDGM        '                
+    81       251     no       no      COEFFICIENT 'VIMS        '              
+    82       253     no       no      READ into 'VIMS        '                
+    83       261     no       no      COEFFICIENT 'VXWD        '              
+    84       263     no       no      READ into 'VXWD        '                
+    85       266     no       no      COEFFICIENT 'VIWS        '              
+    86       268     no       no      READ into 'VIWS        '                
+    87       271     no       no      COEFFICIENT 'VTWR        '              
+    88       274     no       no      READ into 'VTWR        '                
+    89       283     no       no      COEFFICIENT 'GRANTSIN    '              
+    90       285     no       no      COEFFICIENT 'GRANTSOUT   '              
+    91       286     no       no      COEFFICIENT 'FYI_HHLD    '              
+    92       287     no       no      COEFFICIENT 'FYO_HHLD    '              
+    93       288     no       no      COEFFICIENT 'REMIN_HHLD  '              
+    94       289     no       no      COEFFICIENT 'REMOUT_HHLD '              
+    95       290     no       no      COEFFICIENT 'TRANS_HHLD  '              
+    96       292     no       no      COEFFICIENT 'TRANS_GOV   '              
+    97       295     no       no      READ into 'GRANTSIN    '                
+    98       297     no       no      READ into 'GRANTSOUT   '                
+    99       298     no       no      READ into 'FYI_HHLD    '                
+   100       299     no       no      READ into 'FYO_HHLD    '                
+   101       300     no       no      READ into 'REMIN_HHLD  '                
+   102       301     no       no      READ into 'REMOUT_HHLD '                
+   103       302     no       no      READ into 'TRANS_HHLD  '                
+   104       303     no       no      READ into 'TRANS_GOV   '                
+   105       319     no       no      COEFFICIENT 'VPA         '              
+   106       321     no       no      Formula for "VPA"                       
+   107       323     no       no      COEFFICIENT 'PRIVEXP     '              
+   108       325     no       no      Formula for "PRIVEXP"                   
+   109       328     no       no      COEFFICIENT 'VFA         '              
+   110       330     no       no      Formula for "VFA"                       
+   111       332     no       no      Formula for "VFA"                       
+   112       334     no       no      COEFFICIENT 'VOA         '              
+   113       336     no       no      Formula for "VOA"                       
+   114       338     no       no      Formula for "VOA"                       
+   115       340     no       no      COEFFICIENT 'REGINV      '              
+   116       342     no       no      Formula for "REGINV"                    
+   117       345     no       no      COEFFICIENT 'VGA         '              
+   118       347     no       no      Formula for "VGA"                       
+   119       349     no       no      COEFFICIENT 'GOVEXP      '              
+   120       351     no       no      Formula for "GOVEXP"                    
+   121       354     no       no      COEFFICIENT 'VEXPORTS    '              
+   122       357     no       no      Formula for "VEXPORTS"                  
+   123       363     no       no      COEFFICIENT 'VIMPORTS    '              
+   124       366     no       no      Formula for "VIMPORTS"                  
+   125       369     no       no      COEFFICIENT 'GDPEXP      '              
+   126       371     no       no      Formula for "GDPEXP"                    
+   127       373     no       no      Formula for "GDPEXP"                    
+   128       375     no       no      Formula for "GDPEXP"                    
+   129       377     no       no      Formula for "GDPEXP"                    
+   130       379     no       no      Formula for "GDPEXP"                    
+   131       382     no       no      COEFFICIENT 'NETFACTINC  '              
+   132       384     no       no      Formula for "NETFACTINC"                
+   133       387     no       no      COEFFICIENT 'VDM         '              
+   134       389     no       no      Formula for "VDM"                       
+   135       392     no       no      COEFFICIENT 'VOM         '              
+   136       394     no       no      Formula for "VOM"                       
+   137       396     no       no      Formula for "VOM"                       
+   138       398     no       no      Formula for "VOM"                       
+   139       400     no       no      Formula for "VOM"                       
+   140       403     no       no      COEFFICIENT 'NETAXES     '              
+   141       405     no       no      Formula for "NETAXES"                   
+   142       419     no       no      COEFFICIENT 'GDPSRC      '              
+   143       421     no       no      Formula for "GDPSRC"                    
+   144       423     no       no      Formula for "GDPSRC"                    
+   145       425     no       no      Formula for "GDPSRC"                    
+   146       427     no       no      COEFFICIENT 'SAVE        '              
+   147       429     no       no      Formula for "SAVE"                      
+   148       432     no       no      COEFFICIENT 'NETINV      '              
+   149       434     no       no      Formula for "NETINV"                    
+   150       437     no       no      COEFFICIENT 'CAPITALACCT '              
+   151       439     no       no      Formula for "CAPITALACCT"               
+   152       441     no       no      Formula for "CAPITALACCT"               
+   153       444     no       no      COEFFICIENT 'CURRENTACCT '              
+   154       446     no       no      Formula for "CURRENTACCT"               
+   155       448     no       no      Formula for "CURRENTACCT"               
+   156       450     no       no      Formula for "CURRENTACCT"               
+   157       462     no       no      COEFFICIENT 'VALEXPORTS  '              
+   158       464     no       no      Formula for "VALEXPORTS"                
+   159       466     no       no      Formula for "VALEXPORTS"                
+   160       469     no       no      COEFFICIENT 'VALIMPORTS  '              
+   161       471     no       no      Formula for "VALIMPORTS"                
+   162       473     no       no      Formula for "VALIMPORTS"                
+   163       476     no       no      COEFFICIENT 'CIFDECOMP   '              
+   164       478     no       no      Formula for "CIFDECOMP"                 
+   165       480     no       no      Formula for "CIFDECOMP"                 
+   166       494     no       no      COEFFICIENT 'OUTDISP     '              
+   167       497     no       no      Formula for "OUTDISP"                   
+   168       499     no       no      Formula for "OUTDISP"                   
+   169       501     no       no      Formula for "OUTDISP"                   
+   170       503     no       no      Formula for "OUTDISP"                   
+   171       506     no       no      COEFFICIENT 'DOMSALESDISP'              
+   172       509     no       no      Formula for "DOMSALESDISP"              
+   173       511     no       no      Formula for "DOMSALESDISP"              
+   174       513     no       no      Formula for "DOMSALESDISP"              
+   175       516     no       no      COEFFICIENT 'IMPSALESDISP'              
+   176       519     no       no      Formula for "IMPSALESDISP"              
+   177       521     no       no      Formula for "IMPSALESDISP"              
+   178       523     no       no      Formula for "IMPSALESDISP"              
+   179       531     no       no      COEFFICIENT 'VALOUTPUT   '              
+   180       533     no       no      Formula for "VALOUTPUT"                 
+   181       535     no       no      Formula for "VALOUTPUT"                 
+   182       538     no       no      ZERODIVIDE instruction                  
+   183       539     no       no      ZERODIVIDE instruction                  
+   184       541     no       no      COEFFICIENT 'SUFFICIENCY '              
+   185       543     no       no      Formula for "SUFFICIENCY"               
+   186       546     no       no      ZERODIVIDE instruction                  
+   187       547     no       no      ZERODIVIDE instruction                  
+   188       558     no       no      COEFFICIENT 'NVFA        '              
+   189       561     no       no      Formula for "NVFA"                      
+   190       563     no       no      Formula for "NVFA"                      
+   191       565     no       no      Formula for "NVFA"                      
+   192       567     no       no      Formula for "NVFA"                      
+   193       570     no       no      Formula for "NVFA"                      
+   194       572     no       no      Formula for "NVFA"                      
+   195       574     no       no      Formula for "NVFA"                      
+   196       576     no       no      Formula for "NVFA"                      
+   197       579     no       no      COEFFICIENT 'NVPA        '              
+   198       581     no       no      Formula for "NVPA"                      
+   199       583     no       no      Formula for "NVPA"                      
+   200       586     no       no      Formula for "NVPA"                      
+   201       589     no       no      Formula for "NVPA"                      
+   202       592     no       no      COEFFICIENT 'NVGA        '              
+   203       594     no       no      Formula for "NVGA"                      
+   204       596     no       no      Formula for "NVGA"                      
+   205       599     no       no      Formula for "NVGA"                      
+   206       601     no       no      Formula for "NVGA"                      
+   207       612     no       no      WRITE from 'GDPEXP      '               
+   208       614     no       no      WRITE from 'GDPSRC      '               
+   209       616     no       no      WRITE from 'EVFA        '               
+   210       618     no       no      WRITE from 'CAPITALACCT '               
+   211       620     no       no      WRITE from 'CURRENTACCT '               
+   212       622     no       no      WRITE from 'VKB         '               
+   213       629     no       no      WRITE from 'VALEXPORTS  '               
+   214       631     no       no      WRITE from 'VALIMPORTS  '               
+   215       633     no       no      WRITE from 'CIFDECOMP   '               
+   216       637     no       no      COEFFICIENT 'VALOWNEXPORT'              
+   217       639     no       no      Formula for "VALOWNEXPORT"              
+   218       642     no       no      COEFFICIENT 'VALOWNIMPORT'              
+   219       644     no       no      Formula for "VALOWNIMPORT"              
+   220       647     no       no      COEFFICIENT 'CIFOWNDECOMP'              
+   221       649     no       no      Formula for "CIFOWNDECOMP"              
+   222       652     no       no      WRITE from 'VALOWNEXPORT'               
+   223       654     no       no      WRITE from 'VALOWNIMPORT'               
+   224       656     no       no      WRITE from 'CIFOWNDECOMP'               
+   225       666     no       no      WRITE from 'OUTDISP     '               
+   226       668     no       no      WRITE from 'DOMSALESDISP'               
+   227       670     no       no      WRITE from 'IMPSALESDISP'               
+   228       672     no       no      WRITE from 'VALOUTPUT   '               
+   229       674     no       no      WRITE from 'SUFFICIENCY '               
+   230       682     no       no      WRITE from 'NVFA        '               
+   231       684     no       no      WRITE from 'NVPA        '               
+   232       686     no       no      WRITE from 'NVGA        '               
+   233       697     no       no      COEFFICIENT 'rTO         '              
+   234       699     no       no      COEFFICIENT 'rTF         '              
+   235       700     no       no      COEFFICIENT 'rTPD        '              
+   236       701     no       no      COEFFICIENT 'rTPI        '              
+   237       702     no       no      COEFFICIENT 'rTGD        '              
+   238       703     no       no      COEFFICIENT 'rTGI        '              
+   239       704     no       no      COEFFICIENT 'rTFD        '              
+   240       705     no       no      COEFFICIENT 'rTFI        '              
+   241       706     no       no      COEFFICIENT 'rTXS        '              
+   242       707     no       no      COEFFICIENT 'rTMS        '              
+   243       709     no       no      ZERODIVIDE instruction                  
+   244       710     no       no      Formula for "rTO"                       
+   245       714     no       no      Formula for "rTF"                       
+   246       717     no       no      Formula for "rTPD"                      
+   247       720     no       no      Formula for "rTPI"                      
+   248       723     no       no      Formula for "rTGD"                      
+   249       726     no       no      Formula for "rTGI"                      
+   250       729     no       no      Formula for "rTFD"                      
+   251       732     no       no      Formula for "rTFI"                      
+   252       735     no       no      Formula for "rTXS"                      
+   253       738     no       no      Formula for "rTMS"                      
+   254       741     no       no      ZERODIVIDE instruction                  
+   255       743     no       no      WRITE from 'rTO         '               
+   256       746     no       no      WRITE from 'rTF         '               
+   257       748     no       no      WRITE from 'rTPD        '               
+   258       750     no       no      WRITE from 'rTPI        '               
+   259       752     no       no      WRITE from 'rTGD        '               
+   260       754     no       no      WRITE from 'rTGI        '               
+   261       756     no       no      WRITE from 'rTFD        '               
+   262       758     no       no      WRITE from 'rTFI        '               
+   263       760     no       no      WRITE from 'rTXS        '               
+   264       762     no       no      WRITE from 'rTMS        '               
+   265       771     no       no      COEFFICIENT 'CHKMKTCLIMP '              
+   266       774     no       no      Formula for "CHKMKTCLIMP"               
+   267       780     no       no      COEFFICIENT 'SURPLUS     '              
+   268       783     no       no      Formula for "SURPLUS"                   
+   269       802     no       no      COEFFICIENT 'VTWR_M      '              
+   270       805     no       no      Formula for "VTWR_M"                    
+   271       808     no       no      COEFFICIENT 'CHKTRANS_D  '              
+   272       811     no       no      Formula for "CHKTRANS_D"                
+   273       814     no       no      COEFFICIENT 'VSTT        '              
+   274       816     no       no      Formula for "VSTT"                      
+   275       818     no       no      Formula for "VSTT"                      
+   276       821     no       no      COEFFICIENT 'CHKTRANS_S  '              
+   277       824     no       no      Formula for "CHKTRANS_S"                
+   278       829     no       no      COEFFICIENT 'CHKVOM      '              
+   279       831     no       no      Formula for "CHKVOM"                    
+   280       845     no       no      COEFFICIENT 'SUMTRANS_S  '              
+   281       848     no       no      Formula for "SUMTRANS_S"                
+   282       851     no       no      COEFFICIENT 'SUMTRANS_D  '              
+   283       854     no       no      Formula for "SUMTRANS_D"                
+   284       858     no       no      COEFFICIENT 'SUMSURPLUS  '              
+   285       861     no       no      Formula for "SUMSURPLUS"                
+   286       864     no       no      COEFFICIENT 'SUMMKTCLIMP '              
+   287       867     no       no      Formula for "SUMMKTCLIMP"               
+   288       870     no       no      COEFFICIENT 'SUMIMBALS   '              
+   289       872     no       no      Formula for "SUMIMBALS"                 
+   290       882     no       no      WRITE from 'SUMIMBALS   '               
+   291       883     no       no      WRITE from 'SUMTRANS_S  '               
+   292       884     no       no      WRITE from 'SUMTRANS_D  '               
+   293       885     no       no      WRITE from 'SUMSURPLUS  '               
+   294       886     no       no      WRITE from 'SUMMKTCLIMP '               
+   295       887     no       no      WRITE from 'CHKTRANS_S  '               
+   296       888     no       no      WRITE from 'CHKTRANS_D  '               
+   297       889     no       no      WRITE from 'SURPLUS     '               
+   298       890     no       no      WRITE from 'CHKMKTCLIMP '               
+   299       891     no       no      WRITE from 'CHKVOM      '               
+   300       899     no       no      COEFFICIENT 'SIGNEPR     '              
+   301       901     no       no      COEFFICIENT 'SIGNER      '              
+   302       902     no       no      COEFFICIENT 'SIGNMR      '              
+   303       903     no       no      COEFFICIENT 'SIGNMTRR    '              
+   304       904     no       no      COEFFICIENT 'SIGNR       '              
+   305       905     no       no      COEFFICIENT 'SIGNTPR     '              
+   306       906     no       no      COEFFICIENT 'SIGNTHR     '              
+   307       907     no       no      COEFFICIENT 'SIGNTR      '              
+   308       908     no       no      COEFFICIENT 'SIGNTRR     '              
+   309       910     no       no      Formula for "SIGNER"                    
+   310       912     no       no      WRITE from 'SIGNER      '               
+   311       915     no       no      Formula for "SIGNEPR"                   
+   312       917     no       no      WRITE from 'SIGNEPR     '               
+   313       920     no       no      Formula for "SIGNTPR"                   
+   314       922     no       no      WRITE from 'SIGNTPR     '               
+   315       925     no       no      Formula for "SIGNTPR"                   
+   316       927     no       no      WRITE from 'SIGNTPR     '               
+   317       930     no       no      Formula for "SIGNTHR"                   
+   318       932     no       no      WRITE from 'SIGNTHR     '               
+   319       935     no       no      Formula for "SIGNTHR"                   
+   320       937     no       no      WRITE from 'SIGNTHR     '               
+   321       940     no       no      Formula for "SIGNTR"                    
+   322       942     no       no      WRITE from 'SIGNTR      '               
+   323       945     no       no      Formula for "SIGNTR"                    
+   324       947     no       no      WRITE from 'SIGNTR      '               
+   325       950     no       no      Formula for "SIGNR"                     
+   326       952     no       no      WRITE from 'SIGNR       '               
+   327       955     no       no      Formula for "SIGNR"                     
+   328       957     no       no      WRITE from 'SIGNR       '               
+   329       960     no       no      Formula for "SIGNTRR"                   
+   330       962     no       no      WRITE from 'SIGNTRR     '               
+   331       965     no       no      Formula for "SIGNMR"                    
+   332       967     no       no      WRITE from 'SIGNMR      '               
+   333       970     no       no      Formula for "SIGNMTRR"                  
+   334       972     no       no      WRITE from 'SIGNMTRR    '               
+   335       975     no       no      Formula for "SIGNEPR"                   
+   336       977     no       no      WRITE from 'SIGNEPR     '               
+   337       980     no       no      Formula for "SIGNTPR"                   
+   338       982     no       no      WRITE from 'SIGNTPR     '               
+   339       985     no       no      Formula for "SIGNTPR"                   
+   340       987     no       no      WRITE from 'SIGNTPR     '               
+   341       990     no       no      Formula for "SIGNTHR"                   
+   342       992     no       no      WRITE from 'SIGNTHR     '               
+   343       995     no       no      Formula for "SIGNTHR"                   
+   344       997     no       no      WRITE from 'SIGNTHR     '               
+   345      1000     no       no      Formula for "SIGNTR"                    
+   346      1002     no       no      WRITE from 'SIGNTR      '               
+   347      1005     no       no      Formula for "SIGNTR"                    
+   348      1007     no       no      WRITE from 'SIGNTR      '               
+   349      1010     no       no      Formula for "SIGNTRR"                   
+   350      1012     no       no      WRITE from 'SIGNTRR     '               
+   351      1015     no       no      Formula for "SIGNTRR"                   
+   352      1017     no       no      WRITE from 'SIGNTRR     '               
+   353      1020     no       no      Formula for "SIGNTRR"                   
+   354      1022     no       no      WRITE from 'SIGNTRR     '               
+   355      1027     no       no      COEFFICIENT 'INCOME_HHLD '              
+   356      1029     no       no      Formula for "INCOME_HHLD"               
+   357      1035     no       no      COEFFICIENT 'INCOME_GOV  '              
+   358      1037     no       no      Formula for "INCOME_GOV"                
+   359      1041     no       no      COEFFICIENT 'PRIVEXP_HHLD'              
+   360      1043     no       no      Formula for "PRIVEXP_HHLD"              
+   361      1046     no       no      SET 'TAB_INC     '                      
+   362      1048     no       no      COEFFICIENT 'TABLE_HHLD  '              
+   363      1050     no       no      Formula for "TABLE_HHLD"                
+   364      1052     no       no      Formula for "TABLE_HHLD"                
+   365      1055     no       no      Formula for "TABLE_HHLD"                
+   366      1058     no       no      Formula for "TABLE_HHLD"                
+   367      1060     no       no      Formula for "TABLE_HHLD"                
+   368      1063     no       no      COEFFICIENT 'TABLE_GOV   '              
+   369      1065     no       no      Formula for "TABLE_GOV"                 
+   370      1067     no       no      Formula for "TABLE_GOV"                 
+   371      1069     no       no      Formula for "TABLE_GOV"                 
+   372      1071     no       no      Formula for "TABLE_GOV"                 
+   373      1073     no       no      Formula for "TABLE_GOV"                 
+   374      1076     no       no      COEFFICIENT 'CHKSAV_HHLD '              
+   375      1078     no       no      Formula for "CHKSAV_HHLD"               
+   376      1082     no       no      COEFFICIENT 'CHKSAV_GOV  '              
+   377      1084     no       no      Formula for "CHKSAV_GOV"                
+   378      1088     no       no      WRITE from 'TABLE_HHLD  '               
+   379      1091     no       no      WRITE from 'TABLE_GOV   '               
+   380      1093     no       no      WRITE from 'CHKSAV_HHLD '               
+   381      1095     no       no      WRITE from 'CHKSAV_GOV  '               
+
+
+
+
+ ============
+ ++ SET TABLE
+ ============
+
+                    Defined   [Max] Inter             Set numbers this
+  Number    Name    at line    Size temp? Elements    is subset of
+  ---------------------------------------------------------------------
+     1  HOU            76 [       0]  no   read 
+     2  REG            78 [      10]  no   read 
+     3  TRAD_COMM      81 [      10]  no   read      8     9
+     4  MARG_COMM      84 [      10]  no   read      3
+     5  NMRG_COMM      89 [       0]  no   other     3
+     6  CGDS_COMM      91 [       1]  no   read      8    10
+     7  ENDW_COMM      94 [       5]  no   read      9
+     8  PROD_COMM      99 [       0]  no   other    10
+     9  DEMD_COMM     101 [       0]  no   other    10
+    10  NSAV_COMM     103 [       0]  no   other
+    11  GDPEXPEND     115         5   no   fixed
+    12  GDPSOURCE     116         3   no   fixed
+    13  CAPACCT       117         2   no   fixed
+    14  CURACCT       118         2   no   fixed
+    15  MKTVALUE      119         2   no   fixed
+    16  OUT           120         3   no   fixed
+    17  SALES         121         3   no   fixed
+    18  PURCHVALUE    122         2   no   fixed
+    19  DIR           123         2   no   fixed
+    20  OUTVALUE      124         2   no   fixed
+    21  EXPVALUE      125         2   no   fixed
+    22  IMPVALUE      126         2   no   fixed
+    23  TAB_INC      1046         5   no   fixed
+
+
+
+
+ ===============
+ ++ SUBSET TABLE
+ ===============
+ 
+SSNO=1. Set 4 "MARG_COMM" is subset of set 3 "TRAD_COMM"
+SSNO=2. Set 5 "NMRG_COMM" is subset of set 3 "TRAD_COMM"
+SSNO=3. Set 3 "TRAD_COMM" is subset of set 8 "PROD_COMM"
+SSNO=4. Set 6 "CGDS_COMM" is subset of set 8 "PROD_COMM"
+SSNO=5. Set 7 "ENDW_COMM" is subset of set 9 "DEMD_COMM"
+SSNO=6. Set 3 "TRAD_COMM" is subset of set 9 "DEMD_COMM"
+SSNO=7. Set 9 "DEMD_COMM" is subset of set 10 "NSAV_COMM"
+SSNO=8. Set 6 "CGDS_COMM" is subset of set 10 "NSAV_COMM"
+SSNO=9. Set 8 "PROD_COMM" is subset of set 10 "NSAV_COMM"
+
+
+
+
+ =============
+ ++ FILE TABLE
+ =============
+
+         Logical            Defined  File  File
+  Number  Name              at line  Type  Form  Actual name (if given)
+  --------------------------------------------------------------------
+     1  GTAPDATA                59    old  head
+     2  GTAPSETS                61    old  head
+     3  GTAPPARM                63    old  head
+     4  GTAPVIEW                66    new  head
+     5  TAXRATES                68    new  head
+
+
+
+
+ ====================
+ ++ COEFFICIENT TABLE
+ ====================
+
+                        Defined  No            Arguments range
+  Number    Name        at line  Args Type     over sets numbered
+  ------------------------------------------------------------
+     1    SAV_HHLD         136     2  real       1     2
+     2    SAV_GOV          141     1  real       2
+     3    EVOA             145     3  real       7     1     2
+     4    EVOM             150     3  real       7     1     2
+     5    EVFA             155     3  real       7     8     2
+     6    VIFA             160     3  real       3     8     2
+     7    VDFA             165     3  real       3     8     2
+     8    VIPA             170     3  real       3     1     2
+     9    VDPA             175     3  real       3     1     2
+    10    VIGA             180     2  real       3     2
+    11    VDGA             185     2  real       3     2
+    12    VKB              190     2  real       1     2
+    13    VDEP             195     2  real       1     2
+    14    VXMD             205     3  real       3     2     2
+    15    VST              210     2  real       4     2
+    16    VFM              216     3  real       7     8     2
+    17    VIFM             221     3  real       3     8     2
+    18    VDFM             226     3  real       3     8     2
+    19    VIPM             231     3  real       3     1     2
+    20    VDPM             236     3  real       3     1     2
+    21    VIGM             241     2  real       3     2
+    22    VDGM             246     2  real       3     2
+    23    VIMS             251     3  real       3     2     2
+    24    VXWD             261     3  real       3     2     2
+    25    VIWS             266     3  real       3     2     2
+    26    VTWR             271     4  real       4     3     2     2
+    27    GRANTSIN         283     1  real       2
+    28    GRANTSOUT        285     1  real       2
+    29    FYI_HHLD         286     2  real       1     2
+    30    FYO_HHLD         287     2  real       1     2
+    31    REMIN_HHLD       288     2  real       1     2
+    32    REMOUT_HHLD      289     2  real       1     2
+    33    TRANS_HHLD       290     3  real       1     1     2
+    34    TRANS_GOV        292     2  real       1     2
+    35    VPA              319     3  real       3     2     1
+    36    PRIVEXP          323     1  real       2
+    37    VFA              328     3  real       9     8     2
+    38    VOA              334     2  real      10     2
+    39    REGINV           340     1  real       2
+    40    VGA              345     2  real       3     2
+    41    GOVEXP           349     1  real       2
+    42    VEXPORTS         354     1  real       2
+    43    VIMPORTS         363     1  real       2
+    44    GDPEXP           369     2  real       2    11
+    45    NETFACTINC       382     1  real       2
+    46    VDM              387     2  real       3     2
+    47    VOM              392     2  real      10     2
+    48    NETAXES          403     1  real       2
+    49    GDPSRC           419     2  real       2    12
+    50    SAVE             427     1  real       2
+    51    NETINV           432     1  real       2
+    52    CAPITALACCT      437     2  real       2    13
+    53    CURRENTACCT      444     3  real       2    14     3
+    54    VALEXPORTS       462     4  real       3     2     2    21
+    55    VALIMPORTS       469     4  real       3     2     2    22
+    56    CIFDECOMP        476     4  real       3     2     2    15
+    57    OUTDISP          494     3  real       3    16     2
+    58    DOMSALESDISP     506     3  real       3    17     2
+    59    IMPSALESDISP     516     3  real       3    17     2
+    60    VALOUTPUT        531     3  real       3     2    20
+    61    SUFFICIENCY      541     2  real       3     2
+    62    NVFA             558     5  real       9     8     2    19    18
+
+    63    NVPA             579     5  real       3     1     2    19    18
+
+    64    NVGA             592     4  real       3     2    19    18
+    65    VALOWNEXPORT     637     3  real       3     2    21
+    66    VALOWNIMPORT     642     3  real       3     2    22
+    67    CIFOWNDECOMP     647     3  real       3     2    15
+    68    rTO              697     2  real      10     2
+    69    rTF              699     3  real       7     8     2
+    70    rTPD             700     3  real       3     1     2
+    71    rTPI             701     3  real       3     1     2
+    72    rTGD             702     2  real       3     2
+    73    rTGI             703     2  real       3     2
+    74    rTFD             704     3  real       3     8     2
+    75    rTFI             705     3  real       3     8     2
+    76    rTXS             706     3  real       3     2     2
+    77    rTMS             707     3  real       3     2     2
+    78    CHKMKTCLIMP      771     2  real       3     2
+    79    SURPLUS          780     1  real       2
+    80    VTWR_M           802     3  real       3     2     2
+    81    CHKTRANS_D       808     3  real       3     2     2
+    82    VSTT             814     2  real       3     2
+    83    CHKTRANS_S       821     0  real
+    84    CHKVOM           829     2  real       7     2
+    85    SUMTRANS_S       845     0  real
+    86    SUMTRANS_D       851     0  real
+    87    SUMSURPLUS       858     0  real
+    88    SUMMKTCLIMP      864     0  real
+    89    SUMIMBALS        870     0  real
+    90    SIGNEPR          899     3  real       7     8     2
+    91    SIGNER           901     3  real       7     1     2
+    92    SIGNMR           902     2  real       4     2
+    93    SIGNMTRR         903     4  real       4     3     2     2
+    94    SIGNR            904     2  real       1     2
+    95    SIGNTPR          905     3  real       3     8     2
+    96    SIGNTHR          906     3  real       3     1     2
+    97    SIGNTR           907     2  real       3     2
+    98    SIGNTRR          908     3  real       3     2     2
+    99    INCOME_HHLD     1027     2  real       1     2
+   100    INCOME_GOV      1035     1  real       2
+   101    PRIVEXP_HHLD    1041     2  real       1     2
+   102    TABLE_HHLD      1048     3  real      23     1     2
+   103    TABLE_GOV       1063     2  real      23     2
+   104    CHKSAV_HHLD     1076     2  real       1     2
+   105    CHKSAV_GOV      1082     1  real       2
+
+
+
+
+ ================
+ ++ FORMULA TABLE
+ ================
+
+           Defined   Semantic      LHS                RHS
+  Number   at line    Error?    coefficient       coefficient numbers
+  -------------------------------------------------------------------
+     1         321     no      VPA                9     8
+     2         325     no      PRIVEXP           35
+     3         330     no      VFA                5
+     4         332     no      VFA                7     6
+     5         336     no      VOA                3
+     6         338     no      VOA               37
+     7         342     no      REGINV            38
+     8         347     no      VGA               11    10
+     9         351     no      GOVEXP            40
+    10         357     no      VEXPORTS          24    15
+    11         366     no      VIMPORTS          25
+    12         371     no      GDPEXP            36
+    13         373     no      GDPEXP            39
+    14         375     no      GDPEXP            41
+    15         377     no      GDPEXP            42
+    16         379     no      GDPEXP            43
+    17         384     no      NETFACTINC        38    13
+    18         389     no      VDM               20    22    18
+    19         394     no      VOM               16
+    20         396     no      VOM               46    14    15
+    21         398     no      VOM               46    14
+    22         400     no      VOM               38
+    23         405     no      NETAXES           47    38    37    16     8
+                                                 19     9    20    10    21
+                                                 11    22     6    17     7
+                                                 18    24    14    23    25
+
+    24         421     no      GDPSRC            45
+    25         423     no      GDPSRC            48
+    26         425     no      GDPSRC            13
+    27         429     no      SAVE               2     1
+    28         434     no      NETINV            39    13
+    29         439     no      CAPITALACCT       50
+    30         441     no      CAPITALACCT       51
+    31         446     no      CURRENTACCT       24    15
+    32         448     no      CURRENTACCT       24
+    33         450     no      CURRENTACCT       25
+    34         464     no      VALEXPORTS        14
+    35         466     no      VALEXPORTS        24    14
+    36         471     no      VALIMPORTS        25
+    37         473     no      VALIMPORTS        23    25
+    38         478     no      CIFDECOMP         24
+    39         480     no      CIFDECOMP         25    24
+    40         497     no      OUTDISP     
+    41         499     no      OUTDISP           46
+    42         501     no      OUTDISP           15
+    43         503     no      OUTDISP           14
+    44         509     no      DOMSALESDISP      18
+    45         511     no      DOMSALESDISP      20
+    46         513     no      DOMSALESDISP      22
+    47         519     no      IMPSALESDISP      17
+    48         521     no      IMPSALESDISP      19
+    49         523     no      IMPSALESDISP      21
+    50         533     no      VALOUTPUT         38
+    51         535     no      VALOUTPUT         47    38
+    52         543     no      SUFFICIENCY       47    46    23
+    53         561     no      NVFA              16
+    54         563     no      NVFA        
+    55         565     no      NVFA              18
+    56         567     no      NVFA              17
+    57         570     no      NVFA               5    16
+    58         572     no      NVFA        
+    59         574     no      NVFA               7    18
+    60         576     no      NVFA               6    17
+    61         581     no      NVPA              20
+    62         583     no      NVPA              19
+    63         586     no      NVPA               9    20
+    64         589     no      NVPA               8    19
+    65         594     no      NVGA              22
+    66         596     no      NVGA              21
+    67         599     no      NVGA              11    22
+    68         601     no      NVGA              10    21
+    69         639     no      VALOWNEXPORT      54
+    70         644     no      VALOWNIMPORT      55
+    71         649     no      CIFOWNDECOMP      56
+    72         710     no      rTO               38    47
+    73         714     no      rTF               37    16
+    74         717     no      rTPD               9    20
+    75         720     no      rTPI               8    19
+    76         723     no      rTGD              11    22
+    77         726     no      rTGI              10    21
+    78         729     no      rTFD               7    18
+    79         732     no      rTFI               6    17
+    80         735     no      rTXS              14    24
+    81         738     no      rTMS              23    25
+    82         774     no      CHKMKTCLIMP       23    17    19    21
+    83         783     no      SURPLUS           38    13    29    30    31
+                                                 32    33    27    28    47
+                                                 37    16     8    19     9
+                                                 20    10    21    11    22
+
+     6    17     7    18    24
+                                                 14    23    25    35    40
+                                                 50
+    84         805     no      VTWR_M            25    24
+    85         811     no      CHKTRANS_D        80    26
+    86         816     no      VSTT        
+    87         818     no      VSTT              15
+    88         824     no      CHKTRANS_S        26    82
+    89         831     no      CHKVOM            47     4
+    90         848     no      SUMTRANS_S        83
+    91         854     no      SUMTRANS_D        81
+    92         861     no      SUMSURPLUS        79
+    93         867     no      SUMMKTCLIMP       78
+    94         872     no      SUMIMBALS         85    86    87    88
+    95         910     no      SIGNER             3
+    96         915     no      SIGNEPR            5
+    97         920     no      SIGNTPR            6
+    98         925     no      SIGNTPR            7
+    99         930     no      SIGNTHR            8
+   100         935     no      SIGNTHR            9
+   101         940     no      SIGNTR            10
+   102         945     no      SIGNTR            11
+   103         950     no      SIGNR             12
+   104         955     no      SIGNR             13
+   105         960     no      SIGNTRR           14
+   106         965     no      SIGNMR            15
+   107         970     no      SIGNMTRR          26
+   108         975     no      SIGNEPR           16
+   109         980     no      SIGNTPR           17
+   110         985     no      SIGNTPR           18
+   111         990     no      SIGNTHR           19
+   112         995     no      SIGNTHR           20
+   113        1000     no      SIGNTR            21
+   114        1005     no      SIGNTR            22
+   115        1010     no      SIGNTRR           23
+   116        1015     no      SIGNTRR           24
+   117        1020     no      SIGNTRR           25
+   118        1029     no      INCOME_HHLD        3    13    34    29    30
+                                                 31    32    33
+   119        1037     no      INCOME_GOV        48    27    28    34
+   120        1043     no      PRIVEXP_HHLD       8     9
+   121        1050     no      TABLE_HHLD         3    13
+   122        1052     no      TABLE_HHLD        29    30    31    32
+   123        1055     no      TABLE_HHLD        34    33
+   124        1058     no      TABLE_HHLD       101
+   125        1060     no      TABLE_HHLD         1
+   126        1065     no      TABLE_GOV         48
+   127        1067     no      TABLE_GOV         27    28
+   128        1069     no      TABLE_GOV         34
+   129        1071     no      TABLE_GOV         41
+   130        1073     no      TABLE_GOV          2
+   131        1078     no      CHKSAV_HHLD       99   101     1
+   132        1084     no      CHKSAV_GOV       100    41     2
+
+
+
+
+ =============
+ ++ READ TABLE
+ =============
+
+           Defined    Semantic  Coefficient   File number
+  Number   at line     Error?    read into     read from   Header
+  ---------------------------------------------------------------
+     1        138       no      SAV_HHLD            1       SHLD
+     2        143       no      SAV_GOV             1       SGOV
+     3        147       no      EVOA                1       EVOA
+     4        152       no      EVOM                1       EVOM
+     5        157       no      EVFA                1       EVFA
+     6        162       no      VIFA                1       VIFA
+     7        167       no      VDFA                1       VDFA
+     8        172       no      VIPA                1       VIPA
+     9        177       no      VDPA                1       VDPA
+    10        182       no      VIGA                1       VIGA
+    11        187       no      VDGA                1       VDGA
+    12        192       no      VKB                 1       VKB 
+    13        197       no      VDEP                1       VDEP
+    14        207       no      VXMD                1       VXMD
+    15        213       no      VST                 1       VST 
+    16        218       no      VFM                 1       VFM 
+    17        223       no      VIFM                1       VIFM
+    18        228       no      VDFM                1       VDFM
+    19        233       no      VIPM                1       VIPM
+    20        238       no      VDPM                1       VDPM
+    21        243       no      VIGM                1       VIGM
+    22        248       no      VDGM                1       VDGM
+    23        253       no      VIMS                1       VIMS
+    24        263       no      VXWD                1       VXWD
+    25        268       no      VIWS                1       VIWS
+    26        274       no      VTWR                1       VTWR
+    27        295       no      GRANTSIN            1       AIDI
+    28        297       no      GRANTSOUT           1       AIDO
+    29        298       no      FYI_HHLD            1       FYI 
+    30        299       no      FYO_HHLD            1       FYO 
+    31        300       no      REMIN_HHLD          1       REMI
+    32        301       no      REMOUT_HHLD         1       REMO
+    33        302       no      TRANS_HHLD          1       TRNH
+    34        303       no      TRANS_GOV           1       TRNG
+
+
+
+
+ ==============
+ ++ WRITE TABLE
+ ==============
+
+        Defined   Sem      Coeff        Write
+ Number at line  Error?   written       file   Header     Long Name
+ --------------------------------------------------------------------------------
+     1      612   no      GDPEXP            4  AG01   "GDPEXP = C + I + G + X -
+                                                        M, GDP from the expendi
+                                                       ture side"
+     2      614   no      GDPSRC            4  AG02   "GDPSRC = NETFACTINC + NE
+                                                       TAXES + VDEP, GDP from t
+                                                       he sources side"
+     3      616   no      EVFA              4  AG03   "Sources of factor income
+                                                        (NETFACTINC + VDEP) by 
+                                                       sector - EVFA(j,r)"
+     4      618   no      CAPITALACCT       4  AG04   "S - I = X - M: CAPITALAC
+                                                       CT"
+     5      620   no      CURRENTACCT       4  AG05   "X - M = S - I: CURRENTAC
+                                                       CT"
+     6      622   no      VKB               4  AG06   "Capital stock by region 
+                                                       - VKB"
+     7      629   no      VALEXPORTS        4  BI01   "Decomposition of exports
+                                                        at world prices: VXWD=V
+                                                       XMD+XTAX"
+     8      631   no      VALIMPORTS        4  BI02   "Decomposition of imports
+                                                        at market prices: VIMS=
+                                                       VIWS+MTAX"
+     9      633   no      CIFDECOMP         4  BI03   "Decomposition of cif val
+                                                       ues - CIFDECOMP"
+    10      652   no      VALOWNEXPORT      4  BX01   "Decomposition of exports
+                                                        to own region at world 
+                                                       prices: VXWD=VXMD+XTAX"
+    11      654   no      VALOWNIMPORT      4  BX02   "Decomposition of imports
+                                                        from self at market pri
+                                                       ces: VIMS=VIWS+MTAX"
+    12      656   no      CIFOWNDECOMP      4  BX03   "Decomposition of cif val
+                                                       ues of own region - CIFD
+                                                       ECOMP"
+    13      666   no      OUTDISP           4  CM01   "Disposition of output - 
+                                                       OUTDISP"
+    14      668   no      DOMSALESDISP      4  CM02   "Disposition of domestic 
+                                                       goods - DOMSALESDISP"
+    15      670   no      IMPSALESDISP      4  CM03   "Disposition of imported 
+                                                       goods - IMPSALESDISP"
+    16      672   no      VALOUTPUT         4  CM04   "Value of output at marke
+                                                       t prices:  VOM = VOA + O
+                                                       UTTAX"
+    17      674   no      SUFFICIENCY       4  CM05   "Self-sufficiency or dome
+                                                       stic share in total use 
+                                                       - SUFFICIENCY"
+    18      682   no      NVFA              4  SF01   "Cost structure of firms 
+                                                       - VFA"
+    19      684   no      NVPA              4  SF02   "Cost structure of consum
+                                                       ption - VPA"
+    20      686   no      NVGA              4  SF03   "Cost structure of govern
+                                                       ment - VGA"
+    21      743   no      rTO               5  rTO    "% ad valorem rate, outpu
+                                                       t (or income) subsidies 
+                                                       in region r"
+    22      746   no      rTF               5  rTF    "% ad valorem rate, taxes
+                                                        on primary factors"
+    23      748   no      rTPD              5  rTPD   "% ad valorem rate, priva
+                                                       te domestic consumption 
+                                                       taxes"
+    24      750   no      rTPI              5  rTPI   "% ad valorem rate, priva
+                                                       te import consumption ta
+                                                       xes"
+    25      752   no      rTGD              5  rTGD   "% ad valorem rate, gover
+                                                       nment domestic purchases
+                                                        taxes"
+    26      754   no      rTGI              5  rTGI   "% ad valorem rate, gover
+                                                       nment import purchases t
+                                                       axes"
+    27      756   no      rTFD              5  rTFD   "% ad valorem rate, taxes
+                                                        on firms' domestic purc
+                                                       hases"
+    28      758   no      rTFI              5  rTFI   "% ad valorem rate, taxes
+                                                        on firms' imports purch
+                                                       ases"
+    29      760   no      rTXS              5  rTXS   "% ad valorem rate, expor
+                                                       t subsidies, by destinat
+                                                       ion"
+    30      762   no      rTMS              5  rTMS   "% ad valorem rate, impor
+                                                       t taxes, by source"
+    31      882   no      SUMIMBALS         4  0IMB    Not defined by the user
+    32      883   no      SUMTRANS_S        4  1TNS    Not defined by the user
+    33      884   no      SUMTRANS_D        4  1TND    Not defined by the user
+    34      885   no      SUMSURPLUS        4  1SRP    Not defined by the user
+    35      886   no      SUMMKTCLIMP       4  1IMP    Not defined by the user
+    36      887   no      CHKTRANS_S        4  2TNS    Not defined by the user
+    37      888   no      CHKTRANS_D        4  2TND    Not defined by the user
+    38      889   no      SURPLUS           4  2SRP    Not defined by the user
+    39      890   no      CHKMKTCLIMP       4  2IMP    Not defined by the user
+    40      891   no      CHKVOM            4  CVOM    Not defined by the user
+    41      912   no      SIGNER            4  SVOA   "EVOA bad-sign flag; 1 if
+                                                        negative, else 0"
+    42      917   no      SIGNEPR           4  SVFA   "EVFA bad-sign flag; 1 if
+                                                        negative, else 0"
+    43      922   no      SIGNTPR           4  SIFA   "VIFA bad-sign flag; 1 if
+                                                        negative, else 0"
+    44      927   no      SIGNTPR           4  SDFA   "VDFA bad-sign flag; 1 if
+                                                        negative, else 0"
+    45      932   no      SIGNTHR           4  SIPA   "VIPA bad-sign flag; 1 if
+                                                        negative, else 0"
+    46      937   no      SIGNTHR           4  SDPA   "VDPA bad-sign flag; 1 if
+                                                        negative, else 0"
+    47      942   no      SIGNTR            4  SIGA   "VIGA bad-sign flag; 1 if
+                                                        negative, else 0"
+    48      947   no      SIGNTR            4  SDGA   "VDGA bad-sign flag; 1 if
+                                                        negative, else 0"
+    49      952   no      SIGNR             4  SKB    "VKB bad-sign flag; 1 if 
+                                                       negative, else 0"
+    50      957   no      SIGNR             4  SDEP   "VDEP bad-sign flag; 1 if
+                                                        negative, else 0"
+    51      962   no      SIGNTRR           4  SXMD   "VXMD bad-sign flag; 1 if
+                                                        negative, else 0"
+    52      967   no      SIGNMR            4  SST    "VST bad-sign flag; 1 if 
+                                                       negative, else 0"
+    53      972   no      SIGNMTRR          4  STWR   "VTWR bad-sign flag; 1 if
+                                                        negative, else 0"
+    54      977   no      SIGNEPR           4  SFM    "VFM bad-sign flag; 1 if 
+                                                       negative, else 0"
+    55      982   no      SIGNTPR           4  SIFM   "VIFM bad-sign flag; 1 if
+                                                        negative, else 0"
+    56      987   no      SIGNTPR           4  SDFM   "VDFM bad-sign flag; 1 if
+                                                        negative, else 0"
+    57      992   no      SIGNTHR           4  SIPM   "VIPM bad-sign flag; 1 if
+                                                        negative, else 0"
+    58      997   no      SIGNTHR           4  SDPM   "VDPM bad-sign flag; 1 if
+                                                        negative, else 0"
+    59     1002   no      SIGNTR            4  SIGM   "VIGM bad-sign flag; 1 if
+                                                        negative, else 0"
+    60     1007   no      SIGNTR            4  SDGM   "VDGM bad-sign flag; 1 if
+                                                        negative, else 0"
+    61     1012   no      SIGNTRR           4  SIMS   "VIMS bad-sign flag; 1 if
+                                                        negative, else 0"
+    62     1017   no      SIGNTRR           4  SXWD   "VXWD bad-sign flag; 1 if
+                                                        negative, else 0"
+    63     1022   no      SIGNTRR           4  SIWS   "VIWS bad-sign flag; 1 if
+                                                        negative, else 0"
+    64     1088   no      TABLE_HHLD        4  HHLD   "Household income - Expen
+                                                       diture plus savings"
+    65     1091   no      TABLE_GOV         4  GOV    "Government income - Expe
+                                                       nditure plus savings"
+    66     1093   no      CHKSAV_HHLD       4  CSVH   "Check household savings"
+    67     1095   no      CHKSAV_GOV        4  CSVG   "Check government savings"
+
+
+
+
+ ===================
+ ++ ZERODIVIDE TABLE
+ ===================
+
+           Defined          Coefficient or
+  Number   at line   Type   real value specified
+  -----------------------------------------------
+     1        538     ZDZ   0                   
+     2        539     NDZ   0                   
+     3        546     ZDZ   (Turned OFF)
+     4        547     NDZ   (Turned OFF)
+     5        709     ZDZ   1                   
+     6        741     ZDZ   (Turned OFF)
+
+
+   
+ ======================
+ ++ INPUT CHECK SUMMARY
+ ======================
+ 
+ Total number of statements is 381.
+ There are NO syntax errors or semantic problems.
+
+
+ ******************************************************************************
+ -3-
+ -->                     Starting CODE GENERATION
+
+ ******************************************************************************
+
+
+
+  CODE OPTIONS CHOSEN
+  -------------------
+ 
+ 
+                         TABLO PORTABLE
+               CODE OPTIONS   ( --> indicates those in effect )
+ 
+      NEQ Do no equations           PGS Prepare output for GEMSIM
+      NDS Do no displays        --> WFP Write a Fortran Program
+      NWR Do no writes                    (i.e. a TABLO-generated program)
+                                --> FC5 Fast Compile TG-prog under LF95
+      ACC All comment lines in      DMS Allow simulations even
+             code                         though are no UPDATEs
+                                --> CIN Code file name same as
+                                          Information file name
+                                    CDM Old option. Has no effect.
+                                    NRZ No run-time reports re use of
+                                           ZERODIVIDE default values
+                                    NXS No "extra" statements allowed
+ 
+  Select an option   :  <opt>      Deselect an option      : -<opt>
+  Help for an option : ?<opt>      Help on all options     : ??
+  Redisplay options  : /           Finish option selection : Carriage return
+
+  END OF CODE OPTIONS CHOSEN
+  --------------------------
+  
+ ! ( Program is
+ ! 'D:\Projects\v10Tools\MyGTAP\to public\single\rungtapsh32\gtpvewmy.for'.)
+ (Total number of lines of code is 14200.)
+ 
+ This program
+     o can carry out 67 WRITEs
+ 
+ MXGSRS = 0, MXGSIS = 0.
+ MXGSLG = 0, MXGSIC = 0.
+ 
+ MXGSOP = 0, MXGSIN = 0.
+ MXGSRC = 0, MXGSNS=0.
+ ! (Model Information file is
+ ! 'D:\Projects\v10Tools\MyGTAP\to public\single\rungtapsh32\gtpvewmy.min'.)
+ 
+ (Total number of programs written is 1.)
+ 
+ *******************************************************************
+ Successful completion of TABLO.
+ The program is
+   'gtpvewmy.for'.
+ 
+ This program
+     o can carry out 67 WRITEs
+ 
+ *******************************************************************

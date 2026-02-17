@@ -1,0 +1,10 @@
+auxiliary files = samview;
+check-on-read elements = yes;
+cpu = yes ; 
+log only = yes;   
+! Input files:
+file GTAPDATA = basedata.har ;! Basedata from GTAPAGG
+file GTAPSETS = sets.har ;! sets data from GTAPAGG
+file GTAPPARM = default.prm ;! common sets required
+! Output files:
+file GTAPSAM = GTAPsam.har ;! Output SAM

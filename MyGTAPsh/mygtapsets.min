@@ -1,0 +1,253 @@
+#FILES
+Logical Name         In/Out Ud  Type Actual Name
+GTAPSETS              In     n  HAR
+ Original GTAP sets file
+BASEDATA              In     n  HAR
+ Base Data
+INPAR                 In     n  HAR
+ Parameters file
+EXTDAT                In     n  HAR
+ File with other extra datasets
+NEWSETS               Out    n  HAR
+ updated sets writtent to ouput directory
+OUTPAR                Out    n  HAR
+ New parameters file
+(Display)             Out    n  DIS
+(Solution)            Out    n  SL4
+(Equations)           Out    n  EQ4
+#TABFILE
+mygtapsets.tab
+#TMDATE
+at 17:38:51 on 23-FEB-2020
+#STIFILE
+%none
+#SETS
+   17
+    1 REG             -1  u Regions
+    2 TRAD_COMM       -1  u Traded comms
+    3 MARG_COMM       -1  u Margin comms
+    4 CGDS_COMM       -1  u Investment good
+    5 ENDW_COMM0      -1  u Primary factors
+    6 PROD_COMM       -1  u Produced commodities
+    7 HHLD             1  k Main household
+MainHH      
+    8 ALLHH            1  kAll Households New splits and old
+MainHH      
+    9 BASICFAC        -1  u Basic factors for splitting
+   10 FAC0            -1  uOriginal factors in GTAP database
+   11 ENDS            -1  u New Factors for split region
+   12 ALLFAC          -1  uFinal factors
+   13 ENDW_GTAP        8  k Original GTAP endowments
+Land        
+tech_aspros 
+clerks      
+service_shop
+off_mgr_pros
+ag_othlowsk 
+Capital     
+NatlRes     
+   14 ENDWC_GTAP       1  k Original GTAP capital endowment commodity
+Capital     
+   15 ENDWL_GTAP       5  k Original GTAP Labor endowment commodity
+tech_aspros 
+clerks      
+service_shop
+off_mgr_pros
+ag_othlowsk 
+   16 ENDWC_COMM      -1  u capital endowment commodities
+   17 ENDWL_COMM      -1  u capital endowment commodities
+#VARIABLES
+         0
+#SUBSETS
+    13
+     1     3     2
+     2     2     6
+     3     4     6
+     4     7     8
+     5     8     7
+     6     5    10
+     7     9    10
+     8     5    12
+     9    11    12
+    10    14    13
+    11    15    13
+    12    16    12
+    13    17    12
+#COEFFICIENTS
+   18
+    1 MAPENDS_BFAC    1 i y n
+   11 m   11    9
+    2 MAPENDW_BFAC    1 i y n
+    5 m    5    9
+    3 MAPAFAC         1 i n n
+   12 m   12   10
+    4 MAPGTAP_ENDW    1 i y n
+   13 m   13    5
+    5 CINDICG         1 r n n  Indicator for Capital endowments
+    5
+    6 CINDICB         1 r n n  Indicator for Capital endowments
+    9
+    7 CINDICF         1 r n n  Indicator for Capital endowments
+   10
+    8 CINDIC          1 r n n  Indicator for Capital endowments
+   12
+    9 LINDICG         1 r n n  Indicator for Capital endowments
+    5
+   10 LINDICB         1 r n n  Indicator for Capital endowments
+    9
+   11 LINDICF         1 r n n  Indicator for Capital endowments
+   10
+   12 LINDIC          1 r n n  Indicator for Capital endowments
+   12
+   13 SLUG0           1 i y n  CES between composite intermediate inputs
+    5 c
+   14 ETRAE0          1 r y n  CES between composite intermediate inputs
+    5
+   15 ETRAEB          1 r n n  CES between composite intermediate inputs
+    9
+   16 ETRAE           1 r n n  CES between composite intermediate inputs
+   12
+   17 SLUGB           1 i n n  CES between composite intermediate inputs
+    9 c
+   18 SLUG            1 i n n  CES between composite intermediate inputs
+   12 c
+#EQUATIONS
+    0
+#READS
+    5
+    1     1 MAPENDS_BFAC      1 GTAPSETS             H6   a h     1
+     0
+    2     2 MAPENDW_BFAC      1 GTAPSETS             H6   a h     1
+     0
+    3     4 MAPGTAP_ENDW      1 GTAPSETS             MEND a h     1
+     0
+    4    14 ETRAE0            3 INPAR                ETRE a h     1
+     5
+    5    13 SLUG0             3 INPAR                SLUG a h     1
+     5
+#READ(EXTRA)
+    7
+    1 el
+ REG          GTAPSETS             H1  
+    2 el
+ TRAD_COMM    GTAPSETS             H2  
+    3 el
+ MARG_COMM    GTAPSETS             MARG
+    4 el
+ CGDS_COMM    GTAPSETS             H9  
+    5 el
+ ENDW_COMM0   GTAPSETS             H6  
+    6 el
+ BASICFAC     GTAPSETS             H6  
+    7 el
+ ENDS         GTAPSETS             H6  
+#NCVARIABLES
+    0
+#STATEMENTS
+      21   1 fl                                                 22  44    0 n
+      23   8 fl                                                 23  30    0 n
+      24   8 fl                                                 24  36    0 n
+      25   8 fl                                                 25  49    0 n
+      26   2 fl                                                 26  60    0 n
+      27   2 fl                                                 27  40    0 n
+      36   1 st REG                                             37  78    0 n
+      38   2 st TRAD_COMM                                       38  77    0 n
+      39   2 st MARG_COMM                                       39  80    0 n
+      40   2 st CGDS_COMM                                       40  78    0 n
+      41   2 st ENDW_COMM0                                      41  78    0 n
+      43   1 ss                                                 43  41    0 n
+      45   1 st PROD_COMM                                       46  61    0 n
+      45   1 ss                                                 46  61    0 n
+      45   1 ss                                                 46  61    0 n
+      48   1 st HHLD                                            49  34    0 n
+      50   2 st ALLHH                                           50  51    0 n
+      50   2 ss                                                 50  51    0 n
+      50   2 ss                                                 50  51    0 n
+      52   1 st BASICFAC                                        55  45    0 n
+      56   2 st FAC0                                            56  72    0 n
+      56   2 ss                                                 56  72    0 n
+      56   2 ss                                                 56  72    0 n
+      57   2 st ENDS                                            58  53    0 n
+      59   2 st ALLFAC                                          59  48    0 n
+      59   2 ss                                                 59  48    0 n
+      59   2 ss                                                 59  48    0 n
+      62   1 cs MAPENDS_BFAC                                    62  44    0 n
+      63   1 rd MAPENDS_BFAC         a                          63  63    0 n
+      65   1 cs MAPENDW_BFAC                                    65  50    0 n
+      66   1 rd MAPENDW_BFAC         a                          67   5    0 n
+      69   1 cs MAPAFAC                                         69  37    0 n
+      70   1 fm                                                 70  63    0 n
+      71   1 fm                                                 71  50    0 n
+      73   1 st ENDW_GTAP                                       75  46    0 n
+      77   1 cs MAPGTAP_ENDW                                    77  51    0 n
+      78   1 rd MAPGTAP_ENDW         a                          78  65    0 n
+      80   1 st ENDWC_GTAP                                      81  71    0 n
+      82   1 ss                                                 82  41    0 n
+      84   1 st ENDWL_GTAP                                      86  67    0 n
+      87   1 ss                                                 87  41    0 n
+      89   1 cs CINDICG                                         90  52    0 n
+      91   1 fm                                                 92  58    0 n
+      93   1 cs CINDICB                                         94  52    0 n
+      95   1 fm                                                 96  68    0 n
+      97   1 cs CINDICF                                         98  52    0 n
+      99   1 fm                                                100  28    0 n
+     101   1 fm                                                102  28    0 n
+     103   1 cs CINDIC                                         104  51    0 n
+     105   1 fm                                                106  56    0 n
+     108   1 cs LINDICG                                        109  52    0 n
+     110   1 fm                                                111  58    0 n
+     112   1 cs LINDICB                                        113  52    0 n
+     114   1 fm                                                115  68    0 n
+     116   1 cs LINDICF                                        117  52    0 n
+     118   1 fm                                                119  28    0 n
+     120   1 fm                                                121  28    0 n
+     122   1 cs LINDIC                                         123  51    0 n
+     124   1 fm                                                125  56    0 n
+     127   1 st ENDWC_COMM                                     129  49    0 n
+     127   1 fm                                                129  49    0 n
+     127   1 ss                                                129  49    0 n
+     130   1 st ENDWL_COMM                                     132  49    0 n
+     130   1 fm                                                132  49    0 n
+     130   1 ss                                                132  49    0 n
+     135   1 wr (REG)                a                         136  43    0 n
+     137   1 wr (TRAD_COMM)          a                         137  49    0 n
+     138   1 wr (MARG_COMM)          a                         138  53    0 n
+     139   1 wr (CGDS_COMM)          a                         139  44    0 n
+     140   1 wr (ALLFAC)             a                         140  42    0 n
+     141   1 wr (ALLHH)              a                         141  42    0 n
+     142   1 wr (ENDWC_COMM)         a                         142  46    0 n
+     143   1 wr (ENDWL_COMM)         a                         143  46    0 n
+     144   1 wr (BASICFAC)           a                         144  45    0 n
+     145   1 wr (FAC0)               a                         145  45    0 n
+     146   1 wr (ENDW_COMM0)         a                         146  46    0 n
+     147   1 wr MAPENDS_BFAC         a                         147  57    0 n
+     148   1 wr MAPENDW_BFAC         a                         148  57    0 n
+     149   1 wr MAPAFAC              a                         149  54    0 n
+     151   1 tr                                                151  51    0 n
+     152   1 tr                                                152  67    0 n
+     160   1 cs SLUG0                                          162  62    0 n
+     163   1 cs ETRAE0                                         164  65    0 n
+     166   1 rd ETRAE0               a                         167  39    0 n
+     168   2 rd SLUG0                a                         168  38    0 n
+     170   1 cs ETRAEB                                         171  73    0 n
+     172   1 cs ETRAE                                          172  70    0 n
+     173   1 cs SLUGB                                          173  80    0 n
+     174   1 cs SLUG                                           174  78    0 n
+     176   1 fm                                                178  42    0 n
+     179   1 fm                                                179  42    0 n
+     180   1 fm                                                180  49    0 n
+     182   1 fm                                                182  77    0 n
+     183   1 fm                                                183  39    0 n
+     184   1 fm                                                184  47    0 n
+     186   1 wr SLUG                 a                         188  76    0 n
+     189   2 wr ETRAE                a                         190  67    0 n
+     192   1 tr                                                192  50    0 n
+     193   1 tr                                                193  66    0 n
+     193   1 en                                                193  66    0 n
+#GPVER
+  113001
+#PRVER
+    6400
+#FINAL_LEVEL
+#CSPSIM
+nnnnnnnnnnnnnnnnnn

@@ -1,0 +1,630 @@
+
+    TTTTTTTTTT  AAAAAAAAAA   BBBBBBB      LLLL        OOOOOOOOOO
+    TTTTTTTTTT  AAA    AAA   BBBBBBBBB    LLLL        OOOOOOOOOO
+       TTT      AAA    AAA   BBB    BBB   LLLL        OOO    OOO
+       TTT      AAA    AAA   BBB  BBB     LLLL        OOO    OOO
+       TTT      AAAAAAAAAA   BBBBBBB      LLLL        OOO    OOO
+       TTT      AAAAAAAAAA   BBB  BBB     LLLL        OOO    OOO
+       TTT      AAA    AAA   BBB    BBB   LLLL        OOO    OOO
+       TTT      AAA    AAA   BBBBBBBBB    LLLLLLLLL   OOOOOOOOOO
+       TTT      AAA    AAA   BBBBBBB      LLLLLLLLL   OOOOOOOOOO
+
+ <TABLO  Version 6.4   April 2012>                                     
+
+
+
+
+
+                     GEMPACK SOFTWARE
+     << COPYRIGHT 1987-2010:  The Impact Project and KPSOFT >>
+   
+   
+
+    +++  INFORMATION ABOUT THIS PRINT FILE  +++
+   
+ 
+ ! This file was created at 17:38:51 on 23-FEB-2020 by the program
+ !  <TABLO  Version 6.4   April 2012>
+ ! which accesses some of the routines in the GEMPACK software release
+ !  <GEMPACK Release 11.3.001   May 2014>
+ 
+ !     -------------------------------------------------------                
+ !    !            GEMPACK Software System Licence            !               
+ !    !  Source Code Licence for the GEMPACK Software System  !               
+ !    !                 Licence No.  GFM-1140                 !               
+ !    !          Licence for Release 11.0 of GEMPACK          !               
+ !    !                     Peter J Minor                     !               
+ !    !                      Boulder CO                       !               
+ !    !                          USA                          !               
+ !     -------------------------------------------------------                
+    
+
+    +++  END OF INFORMATION ABOUT THIS PRINT FILE  +++
+
+ ======================================================
+           TABLO PORTABLE   
+ ++> TABLO OPTIONS   ( --> indicates those in effect )
+ ======================================================
+
+
+
+      -----------                   ----------
+  --> F1 CHECK                      L1 CHECK
+      F2 CONDENSATION               L2 CONDENSATION
+      F3 CODE GENERATION        --> L3 CODE GENERATION
+      Mode
+      ----
+      INTERACTIVE
+      BATCH
+  --> UNSPECIFIED
+ 
+
+ ==================================================
+ ++> TABLO Input file is 'mygtapsets.tab'
+ ++> This Information file is 'mygtapsets'
+ ==================================================
+
+
+
+ ******************************************************************************
+ -1-
+ -->                     Starting CHECK stage
+
+ ******************************************************************************
+
+
+      1   ![[!
+      2       ==========================================
+      3       ImpactECON MyGTAP Model auxillary programs
+      4       May 2016
+      5    
+      6       This version incorporates additional sets for MyGTAP model
+      7    
+      8       ImpactECON LLC, Boulder, Colorado
+      9       https://impactecon.com/
+     10    
+     11       ==========================================
+     12    
+     13   Purpose of program:
+     14   1. Sets for MyGTAP
+     15    
+     16   Author: Peter Minor and Terrie L walmsley
+     17   Date: June 2 2015
+     18    
+     19   !]]!
+     20    
+     21   File
+     22          GTAPSETS # Original GTAP sets file #;      !input\sets.har!
+     23          BASEDATA # Base Data #;                    !input\basedata.har!
+     24          INPAR    # Parameters file #;          !input\default.prm  !
+     25          EXTDAT # File with other extra datasets #;
+     26    (new) NEWSETS # updated sets writtent to ouput directory #; !output\sets.har!
+     27    (new) OUTPAR   # New parameters file #;          !output\default.prm !
+     28    
+     29    
+     30   ![[!
+     31        ----
+     32        Sets
+     33        ----
+     34   !]]!
+     35    
+     36   Set ! standard GTAP sets !
+     37    REG        # Regions #         read elements from file GTAPSETS header  "H1";
+     38    TRAD_COMM # Traded comms #    read elements from file GTAPSETS header  "H2";
+     39    MARG_COMM  # Margin comms #    read elements from file GTAPSETS header  "MARG";
+     40    CGDS_COMM  # Investment good # read elements from file GTAPSETS header  "H9";
+     41    ENDW_COMM0  # Primary factors # read elements from file GTAPSETS header "H6";
+     42    
+     43   Subset MARG_COMM is subset of TRAD_COMM ;
+     44    
+     45   Set  ! consequential GTAP sets !
+     46    PROD_COMM # Produced commodities  # = TRAD_COMM + CGDS_COMM;
+     47    
+     48   Set !Special Sets for deviding up the GTAP data - Households!
+     49    HHLD # Main household # (MainHH);
+     50    ALLHH #All Households New splits and old # = HHLD;
+     51    
+     52   Set !Special Sets for deviding up the GTAP data - factors!
+     53   ! This is not done in this version, but sets kept for model to run !
+     54    BASICFAC # Basic factors for splitting #
+     55   read elements from file GTAPSETS header "H6";
+     56    FAC0   #Original factors in GTAP database# = ENDW_COMM0 union BASICFAC;
+     57    ENDS   # New Factors for split region #
+     58           read elements from file GTAPSETS header "H6";
+     59    ALLFAC #Final factors# = ENDW_COMM0 union ENDS;
+     60    
+     61   !Mapping new factors for REGS to original factors!
+     62   Mapping MAPENDS_BFAC from ENDS to BASICFAC ;
+     63   Read (by_elements) MAPENDS_BFAC from file GTAPSETS header "H6";
+     64    
+     65   Mapping MAPENDW_BFAC from ENDW_COMM0 to BASICFAC ;
+     66   Read (by_elements) MAPENDW_BFAC from file GTAPSETS header
+     67   "H6";
+     68    
+     69   Mapping MAPAFAC from ALLFAC to FAC0 ;
+     70   Formula (all, f, ENDS) MAPAFAC(f) = $pos(MAPENDS_BFAC(f),FAC0);
+     71   Formula (all, f, ENDW_COMM0) MAPAFAC(f) = $pos(f);
+     72    
+     73   Set
+     74   ENDW_GTAP # Original GTAP endowments # (Land, tech_aspros, clerks, service_shop,
+     75    off_mgr_pros, ag_othlowsk, Capital, NatlRes);
+     76    
+     77   Mapping MAPGTAP_ENDW from ENDW_GTAP to ENDW_COMM0 ;
+     78   Read (by_elements) MAPGTAP_ENDW from file GTAPSETS header "MEND";
+     79    
+     80   Set
+     81       ENDWC_GTAP # Original GTAP capital endowment commodity # (Capital);
+     82   Subset ENDWC_GTAP is subset of ENDW_GTAP;
+     83    
+     84   Set
+     85       ENDWL_GTAP # Original GTAP Labor endowment commodity #
+     86       (tech_aspros, clerks, service_shop, off_mgr_pros, ag_othlowsk);
+     87   Subset ENDWL_GTAP is subset of ENDW_GTAP;
+     88    
+     89   Coefficient (all,i, ENDW_COMM0)
+     90       CINDICG(i) # Indicator for Capital endowments #;
+     91   Formula (all,i, ENDW_COMM0)
+     92       CINDICG(i) = sum(j, ENDWC_GTAP: MAPGTAP_ENDW(j)=i,1) ;
+     93   Coefficient (all,i,BASICFAC)
+     94       CINDICB(i) # Indicator for Capital endowments #;
+     95   Formula (all,i,BASICFAC)
+     96       CINDICB(i) = sum(j, ENDW_COMM0: MAPENDW_BFAC(j)=i, CINDICG(j)) ;
+     97   Coefficient (all,i, FAC0)
+     98       CINDICF(i) # Indicator for Capital endowments #;
+     99   Formula (all,i, ENDW_COMM0)
+    100       CINDICF(i) = CINDICG(i);
+    101   Formula (all,i, BASICFAC)
+    102       CINDICF(i) = CINDICB(i);
+    103   Coefficient (all,i, ALLFAC)
+    104       CINDIC(i) # Indicator for Capital endowments #;
+    105   Formula (all,i, ALLFAC)
+    106       CINDIC(i) = sum(j, FAC0: MAPAFAC(i)=j, CINDICF(j)) ;
+    107    
+    108   Coefficient (all,i, ENDW_COMM0)
+    109       LINDICG(i) # Indicator for Capital endowments #;
+    110   Formula (all,i, ENDW_COMM0)
+    111       LINDICG(i) = sum(j, ENDWL_GTAP: MAPGTAP_ENDW(j)=i,1) ;
+    112   Coefficient (all,i,BASICFAC)
+    113       LINDICB(i) # Indicator for Capital endowments #;
+    114   Formula (all,i,BASICFAC)
+    115       LINDICB(i) = sum(j, ENDW_COMM0: MAPENDW_BFAC(j)=i, LINDICG(j)) ;
+    116   Coefficient (all,i, FAC0)
+    117       LINDICF(i) # Indicator for Capital endowments #;
+    118   Formula (all,i, ENDW_COMM0)
+    119       LINDICF(i) = LINDICG(i);
+    120   Formula (all,i, BASICFAC)
+    121       LINDICF(i) = LINDICB(i);
+    122   Coefficient (all,i, ALLFAC)
+    123       LINDIC(i) # Indicator for Capital endowments #;
+    124   Formula (all,i, ALLFAC)
+    125       LINDIC(i) = sum(j, FAC0: MAPAFAC(i)=j, LINDICF(j)) ;
+    126    
+    127   Set
+    128       ENDWC_COMM # capital endowment commodities # =
+    129                        (all,i,ALLFAC: CINDIC(i)>0);
+    130   Set
+    131       ENDWL_COMM # capital endowment commodities # =
+    132                        (all,i,ALLFAC: LINDIC(i)>0);
+    133    
+    134   !Write some sets to final sets file !
+    135   write
+    136   (Set) REG      to file NEWSETS header "H1";
+    137   (Set) TRAD_COMM      to file NEWSETS header "H2";
+    138   (Set) MARG_COMM      to file NEWSETS header   "MARG";
+    139   (Set) CGDS_COMM to file NEWSETS header "H9";
+    140   (set) ALLFAC to file NEWSETS header  "H6";
+    141   (Set) ALLHH  to file NEWSETS header "HOU";
+    142   (Set) ENDWC_COMM to file NEWSETS header"ENDC";
+    143   (Set) ENDWL_COMM to file NEWSETS header"ENDL";
+    144   (set) BASICFAC to file NEWSETS header "BFAC";
+    145   (Set) FAC0     to file NEWSETS header "FAC0";
+    146   (Set) ENDW_COMM0 to file NEWSETS header"ENDW";
+    147   (by_elements) MAPENDS_BFAC to file NEWSETS header "MS2B";
+    148   (by_elements) MAPENDW_BFAC to file NEWSETS header "ME2B";
+    149   (by_elements) MAPAFAC   to file NEWSETS header "MFAC";
+    150    
+    151   Transfer unread from file GTAPSETS to file NEWSETS; !copy unchanged sets !
+    152   Transfer (ifheaderexists) "MREL" from file EXTDAT to file NEWSETS ;
+    153    
+    154   ![[!
+    155       -------------------------
+    156       Write new parameters file
+    157       -------------------------
+    158   !]]!
+    159    
+    160   Coefficient ! original parameters !
+    161   (integer)(all,p,ENDW_COMM0)
+    162           SLUG0(p)# CES between composite intermediate inputs #;
+    163   (all,p,ENDW_COMM0)
+    164           ETRAE0(p)  # CES between composite intermediate inputs #;
+    165    
+    166   Read
+    167    ETRAE0  from file INPAR header "ETRE";
+    168    SLUG0  from file INPAR header "SLUG";
+    169    
+    170   Coefficient ! expanded parameters !
+    171   (all,f,BASICFAC) ETRAEB(f) # CES between composite intermediate inputs #;
+    172   (all,f,ALLFAC) ETRAE(f) # CES between composite intermediate inputs #;
+    173   (integer)(all,f,BASICFAC) SLUGB(f) # CES between composite intermediate inputs#;
+    174   (integer)(all,f,ALLFAC) SLUG(f) # CES between composite intermediate inputs #;
+    175    
+    176   Formula
+    177   (all,p,BASICFAC) ETRAEB(p)  = sum{f, ENDW_COMM0: MAPENDW_BFAC(f)=p, ETRAE0(f)}/
+    178   sum{f, ENDW_COMM0: MAPENDW_BFAC(f)=p, 1} ;
+    179   (all,p,ENDW_COMM0) ETRAE(p)  = ETRAE0(p) ;
+    180   (all,p,ENDS) ETRAE(p)  = ETRAEB(MAPENDS_BFAC(p));
+    181    
+    182   (all,p,BASICFAC) SLUGB(p) = maxs{f,ENDW_COMM0: MAPENDW_BFAC(f)=p, SLUG0(f)} ;
+    183   (all,p,ENDW_COMM0) SLUG(p) = SLUG0(p) ;
+    184   (all,p,ENDS) SLUG(p)  = SLUGB(MAPENDS_BFAC(p));
+    185    
+    186   Write
+    187    SLUG  to file OUTPAR header "SLUG"
+    188          longname "Binary parameter for factor mobility: 1=sluggish 0=mobile";
+    189    ETRAE  to file OUTPAR header "ETRE"
+    190          longname "CET between sectors for sluggish primary factors";
+    191    
+    192   Transfer unwritten from file INPAR to file OUTPAR; !copy unchanged params !
+    193   Transfer (ifheaderexists) "MREL" from file EXTDAT to file OUTPAR ;
+    194    
+    195   ![[!
+    196       -----------
+    197       End of File
+    198       -----------
+    199   !]]!
+
+
+
+
+ ========================
+ ++ INPUT STATEMENT TABLE
+ ========================
+
+          Starts   Syntax  Semantic
+  Number  at line  Error?   Error?            Description
+  ------------------------------------------------------------
+     1        21     no       no      FILE 'GTAPSETS            '             
+     2        23     no       no      FILE 'BASEDATA            '             
+     3        24     no       no      FILE 'INPAR               '             
+     4        25     no       no      FILE 'EXTDAT              '             
+     5        26     no       no      FILE 'NEWSETS             '             
+     6        27     no       no      FILE 'OUTPAR              '             
+     7        36     no       no      SET 'REG         '                      
+     8        38     no       no      SET 'TRAD_COMM   '                      
+     9        39     no       no      SET 'MARG_COMM   '                      
+    10        40     no       no      SET 'CGDS_COMM   '                      
+    11        41     no       no      SET 'ENDW_COMM0  '                      
+    12        43     no       no      SUBSET 'MARG_COMM   ' of 'TRAD_COMM   ' 
+    13        45     no       no      SET 'PROD_COMM   '                      
+    14        45     no       no      SUBSET 'TRAD_COMM   ' of 'PROD_COMM   ' 
+    15        45     no       no      SUBSET 'CGDS_COMM   ' of 'PROD_COMM   ' 
+    16        48     no       no      SET 'HHLD        '                      
+    17        50     no       no      SET 'ALLHH       '                      
+    18        50     no       no      SUBSET 'HHLD        ' of 'ALLHH       ' 
+    19        50     no       no      SUBSET 'ALLHH       ' of 'HHLD        ' 
+    20        52     no       no      SET 'BASICFAC    '                      
+    21        56     no       no      SET 'FAC0        '                      
+    22        56     no       no      SUBSET 'ENDW_COMM0  ' of 'FAC0        ' 
+    23        56     no       no      SUBSET 'BASICFAC    ' of 'FAC0        ' 
+    24        57     no       no      SET 'ENDS        '                      
+    25        59     no       no      SET 'ALLFAC      '                      
+    26        59     no       no      SUBSET 'ENDW_COMM0  ' of 'ALLFAC      ' 
+    27        59     no       no      SUBSET 'ENDS        ' of 'ALLFAC      ' 
+    28        62     no       no      MAPPING 'MAPENDS_BFAC'                  
+    29        63     no       no      READ into 'MAPENDS_BFAC'                
+    30        65     no       no      MAPPING 'MAPENDW_BFAC'                  
+    31        66     no       no      READ into 'MAPENDW_BFAC'                
+    32        69     no       no      MAPPING 'MAPAFAC     '                  
+    33        70     no       no      Formula for "MAPAFAC"                   
+    34        71     no       no      Formula for "MAPAFAC"                   
+    35        73     no       no      SET 'ENDW_GTAP   '                      
+    36        77     no       no      MAPPING 'MAPGTAP_ENDW'                  
+    37        78     no       no      READ into 'MAPGTAP_ENDW'                
+    38        80     no       no      SET 'ENDWC_GTAP  '                      
+    39        82     no       no      SUBSET 'ENDWC_GTAP  ' of 'ENDW_GTAP   ' 
+    40        84     no       no      SET 'ENDWL_GTAP  '                      
+    41        87     no       no      SUBSET 'ENDWL_GTAP  ' of 'ENDW_GTAP   ' 
+    42        89     no       no      COEFFICIENT 'CINDICG     '              
+    43        91     no       no      Formula for "CINDICG"                   
+    44        93     no       no      COEFFICIENT 'CINDICB     '              
+    45        95     no       no      Formula for "CINDICB"                   
+    46        97     no       no      COEFFICIENT 'CINDICF     '              
+    47        99     no       no      Formula for "CINDICF"                   
+    48       101     no       no      Formula for "CINDICF"                   
+    49       103     no       no      COEFFICIENT 'CINDIC      '              
+    50       105     no       no      Formula for "CINDIC"                    
+    51       108     no       no      COEFFICIENT 'LINDICG     '              
+    52       110     no       no      Formula for "LINDICG"                   
+    53       112     no       no      COEFFICIENT 'LINDICB     '              
+    54       114     no       no      Formula for "LINDICB"                   
+    55       116     no       no      COEFFICIENT 'LINDICF     '              
+    56       118     no       no      Formula for "LINDICF"                   
+    57       120     no       no      Formula for "LINDICF"                   
+    58       122     no       no      COEFFICIENT 'LINDIC      '              
+    59       124     no       no      Formula for "LINDIC"                    
+    60       127     no       no      SET 'ENDWC_COMM  '                      
+    61       127     no       no      Formula for Set "ENDWC_COMM"            
+    62       127     no       no      SUBSET 'ENDWC_COMM  ' of 'ALLFAC      ' 
+    63       130     no       no      SET 'ENDWL_COMM  '                      
+    64       130     no       no      Formula for Set "ENDWL_COMM"            
+    65       130     no       no      SUBSET 'ENDWL_COMM  ' of 'ALLFAC      ' 
+    66       135     no       no      WRITE of set 'REG         '             
+    67       137     no       no      WRITE of set 'TRAD_COMM   '             
+    68       138     no       no      WRITE of set 'MARG_COMM   '             
+    69       139     no       no      WRITE of set 'CGDS_COMM   '             
+    70       140     no       no      WRITE of set 'ALLFAC      '             
+    71       141     no       no      WRITE of set 'ALLHH       '             
+    72       142     no       no      WRITE of set 'ENDWC_COMM  '             
+    73       143     no       no      WRITE of set 'ENDWL_COMM  '             
+    74       144     no       no      WRITE of set 'BASICFAC    '             
+    75       145     no       no      WRITE of set 'FAC0        '             
+    76       146     no       no      WRITE of set 'ENDW_COMM0  '             
+    77       147     no       no      WRITE from 'MAPENDS_BFAC'               
+    78       148     no       no      WRITE from 'MAPENDW_BFAC'               
+    79       149     no       no      WRITE from 'MAPAFAC     '               
+    80       151     no       no                                              
+    81       152     no       no                                              
+    82       160     no       no      COEFFICIENT 'SLUG0       '              
+    83       163     no       no      COEFFICIENT 'ETRAE0      '              
+    84       166     no       no      READ into 'ETRAE0      '                
+    85       168     no       no      READ into 'SLUG0       '                
+    86       170     no       no      COEFFICIENT 'ETRAEB      '              
+    87       172     no       no      COEFFICIENT 'ETRAE       '              
+    88       173     no       no      COEFFICIENT 'SLUGB       '              
+    89       174     no       no      COEFFICIENT 'SLUG        '              
+    90       176     no       no      Formula for "ETRAEB"                    
+    91       179     no       no      Formula for "ETRAE"                     
+    92       180     no       no      Formula for "ETRAE"                     
+    93       182     no       no      Formula for "SLUGB"                     
+    94       183     no       no      Formula for "SLUG"                      
+    95       184     no       no      Formula for "SLUG"                      
+    96       186     no       no      WRITE from 'SLUG        '               
+    97       189     no       no      WRITE from 'ETRAE       '               
+    98       192     no       no                                              
+    99       193     no       no                                              
+
+
+
+
+ ============
+ ++ SET TABLE
+ ============
+
+                    Defined   [Max] Inter             Set numbers this
+  Number    Name    at line    Size temp? Elements    is subset of
+  ---------------------------------------------------------------------
+     1  REG            36 [       0]  no   read 
+     2  TRAD_COMM      38 [       0]  no   read      6
+     3  MARG_COMM      39 [       0]  no   read      2
+     4  CGDS_COMM      40 [       0]  no   read      6
+     5  ENDW_COMM0     41 [       0]  no   read     10    12
+     6  PROD_COMM      45 [       0]  no   other
+     7  HHLD           48         1   no   fixed     8
+     8  ALLHH          50         1   no   fixed     7
+     9  BASICFAC       52 [       0]  no   read     10
+    10  FAC0           56 [       0]  no   other
+    11  ENDS           57 [       0]  no   read     12
+    12  ALLFAC         59 [       0]  no   other
+    13  ENDW_GTAP      73         8   no   fixed
+    14  ENDWC_GTAP     80         1   no   fixed    13
+    15  ENDWL_GTAP     84         5   no   fixed    13
+    16  ENDWC_COMM    127 [       0]  no   other    12
+    17  ENDWL_COMM    130 [       0]  no   other    12
+
+
+
+
+ ===============
+ ++ SUBSET TABLE
+ ===============
+ 
+SSNO=1. Set 3 "MARG_COMM" is subset of set 2 "TRAD_COMM"
+SSNO=2. Set 2 "TRAD_COMM" is subset of set 6 "PROD_COMM"
+SSNO=3. Set 4 "CGDS_COMM" is subset of set 6 "PROD_COMM"
+SSNO=4. Set 7 "HHLD" is subset of set 8 "ALLHH"
+SSNO=5. Set 8 "ALLHH" is subset of set 7 "HHLD"
+SSNO=6. Set 5 "ENDW_COMM0" is subset of set 10 "FAC0"
+SSNO=7. Set 9 "BASICFAC" is subset of set 10 "FAC0"
+SSNO=8. Set 5 "ENDW_COMM0" is subset of set 12 "ALLFAC"
+SSNO=9. Set 11 "ENDS" is subset of set 12 "ALLFAC"
+SSNO=10. Set 14 "ENDWC_GTAP" is subset of set 13 "ENDW_GTAP"
+SSNO=11. Set 15 "ENDWL_GTAP" is subset of set 13 "ENDW_GTAP"
+SSNO=12. Set 16 "ENDWC_COMM" is subset of set 12 "ALLFAC"
+SSNO=13. Set 17 "ENDWL_COMM" is subset of set 12 "ALLFAC"
+
+
+
+
+ =============
+ ++ FILE TABLE
+ =============
+
+         Logical            Defined  File  File
+  Number  Name              at line  Type  Form  Actual name (if given)
+  --------------------------------------------------------------------
+     1  GTAPSETS                21    old  head
+     2  BASEDATA                23    old  head
+     3  INPAR                   24    old  head
+     4  EXTDAT                  25    old  head
+     5  NEWSETS                 26    new  head
+     6  OUTPAR                  27    new  head
+
+
+
+
+ ====================
+ ++ COEFFICIENT TABLE
+ ====================
+
+                        Defined  No            Arguments range
+  Number    Name        at line  Args Type     over sets numbered
+  ------------------------------------------------------------
+     1    MAPENDS_BFAC      62     1  int       11
+     2    MAPENDW_BFAC      65     1  int        5
+     3    MAPAFAC           69     1  int       12
+     4    MAPGTAP_ENDW      77     1  int       13
+     5    CINDICG           89     1  real       5
+     6    CINDICB           93     1  real       9
+     7    CINDICF           97     1  real      10
+     8    CINDIC           103     1  real      12
+     9    LINDICG          108     1  real       5
+    10    LINDICB          112     1  real       9
+    11    LINDICF          116     1  real      10
+    12    LINDIC           122     1  real      12
+    13    SLUG0            160     1  int        5
+    14    ETRAE0           163     1  real       5
+    15    ETRAEB           170     1  real       9
+    16    ETRAE            172     1  real      12
+    17    SLUGB            173     1  int        9
+    18    SLUG             174     1  int       12
+
+
+
+
+ ================
+ ++ FORMULA TABLE
+ ================
+
+           Defined   Semantic      LHS                RHS
+  Number   at line    Error?    coefficient       coefficient numbers
+  -------------------------------------------------------------------
+     1          70     no      MAPAFAC            1
+     2          71     no      MAPAFAC     
+     3          91     no      CINDICG            4
+     4          95     no      CINDICB            2     5
+     5          99     no      CINDICF            5
+     6         101     no      CINDICF            6
+     7         105     no      CINDIC             3     7
+     8         110     no      LINDICG            4
+     9         114     no      LINDICB            2     9
+    10         118     no      LINDICF            9
+    11         120     no      LINDICF           10
+    12         124     no      LINDIC             3    11
+    13         127     no      Fm for Set         8
+    14         130     no      Fm for Set        12
+    15         176     no      ETRAEB             2    14
+    16         179     no      ETRAE             14
+    17         180     no      ETRAE             15     1
+    18         182     no      SLUGB              2    13
+    19         183     no      SLUG              13
+    20         184     no      SLUG              17     1
+
+
+
+
+ =============
+ ++ READ TABLE
+ =============
+
+           Defined    Semantic  Coefficient   File number
+  Number   at line     Error?    read into     read from   Header
+  ---------------------------------------------------------------
+     1         63       no      MAPENDS_BFAC        1       H6  
+     2         66       no      MAPENDW_BFAC        1       H6  
+     3         78       no      MAPGTAP_ENDW        1       MEND
+     4        166       no      ETRAE0              3       ETRE
+     5        168       no      SLUG0               3       SLUG
+
+
+
+
+ ==============
+ ++ WRITE TABLE
+ ==============
+
+        Defined   Sem      Coeff        Write
+ Number at line  Error?   written       file   Header     Long Name
+ --------------------------------------------------------------------------------
+     1      135   no      REG               5  H1      Not defined by the user
+     2      137   no      TRAD_COMM         5  H2      Not defined by the user
+     3      138   no      MARG_COMM         5  MARG    Not defined by the user
+     4      139   no      CGDS_COMM         5  H9      Not defined by the user
+     5      140   no      ALLFAC            5  H6      Not defined by the user
+     6      141   no      ALLHH             5  HOU     Not defined by the user
+     7      142   no      ENDWC_COMM        5  ENDC    Not defined by the user
+     8      143   no      ENDWL_COMM        5  ENDL    Not defined by the user
+     9      144   no      BASICFAC          5  BFAC    Not defined by the user
+    10      145   no      FAC0              5  FAC0    Not defined by the user
+    11      146   no      ENDW_COMM0        5  ENDW    Not defined by the user
+    12      147   no      MAPENDS_BFAC      5  MS2B    Not defined by the user
+    13      148   no      MAPENDW_BFAC      5  ME2B    Not defined by the user
+    14      149   no      MAPAFAC           5  MFAC    Not defined by the user
+    15      186   no      SLUG              6  SLUG   "Binary parameter for fac
+                                                       tor mobility: 1=sluggish
+                                                        0=mobile"
+    16      189   no      ETRAE             6  ETRE   "CET between sectors for 
+                                                       sluggish primary factors"
+
+
+   
+ ======================
+ ++ INPUT CHECK SUMMARY
+ ======================
+ 
+ Total number of statements is 99.
+ There are NO syntax errors or semantic problems.
+
+
+ ******************************************************************************
+ -3-
+ -->                     Starting CODE GENERATION
+
+ ******************************************************************************
+
+
+
+  CODE OPTIONS CHOSEN
+  -------------------
+ 
+ 
+                         TABLO PORTABLE
+               CODE OPTIONS   ( --> indicates those in effect )
+ 
+      NEQ Do no equations           PGS Prepare output for GEMSIM
+      NDS Do no displays        --> WFP Write a Fortran Program
+      NWR Do no writes                    (i.e. a TABLO-generated program)
+                                --> FC5 Fast Compile TG-prog under LF95
+      ACC All comment lines in      DMS Allow simulations even
+             code                         though are no UPDATEs
+                                --> CIN Code file name same as
+                                          Information file name
+                                    CDM Old option. Has no effect.
+                                    NRZ No run-time reports re use of
+                                           ZERODIVIDE default values
+                                    NXS No "extra" statements allowed
+ 
+  Select an option   :  <opt>      Deselect an option      : -<opt>
+  Help for an option : ?<opt>      Help on all options     : ??
+  Redisplay options  : /           Finish option selection : Carriage return
+
+  END OF CODE OPTIONS CHOSEN
+  --------------------------
+  
+ ! ( Program is
+ ! 'D:\Projects\v10Tools\MyGTAP\to public\single\rungtapsh32\mygtapsets.for'.)
+ (Total number of lines of code is 2720.)
+ 
+ This program
+     o can carry out 16 WRITEs
+     o can carry out 4 TRANSFERs
+ 
+ MXGSRS = 0, MXGSIS = 0.
+ MXGSLG = 0, MXGSIC = 0.
+ 
+ MXGSOP = 0, MXGSIN = 0.
+ MXGSRC = 0, MXGSNS=0.
+ ! (Model Information file is
+ ! 'D:\Projects\v10Tools\MyGTAP\to public\single\rungtapsh32\mygtapsets.min'.)
+ 
+ (Total number of programs written is 1.)
+ 
+ *******************************************************************
+ Successful completion of TABLO.
+ The program is
+   'mygtapsets.for'.
+ 
+ This program
+     o can carry out 16 WRITEs
+     o can carry out 4 TRANSFERs
+ 
+ *******************************************************************

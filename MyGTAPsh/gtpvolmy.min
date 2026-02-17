@@ -1,0 +1,298 @@
+#FILES
+Logical Name         In/Out Ud  Type Actual Name
+GTAPSETS              In     n  HAR
+ File with set specification
+GTAPDATA              In     n  HAR
+ The file containing all base data.
+GSLTOHAR              In     n  HAR
+ The file containing results.
+OUTFILE               Out    n  HAR
+ HAR file of volume changes
+(Display)             Out    n  DIS
+(Solution)            Out    n  SL4
+(Equations)           Out    n  EQ4
+#TABFILE
+gtpvolmy.tab
+#TMDATE
+at 17:38:07 on 23-FEB-2020
+#STIFILE
+%none
+#SETS
+   11
+    1 HOU             -1  uPrivate Households
+    2 REG             -1  u Regions in the model
+    3 TRAD_COMM       -1  u TRADED COMMODITIES
+    4 CGDS_COMM       -1  u CAPITAL GOODS Commodities
+    5 ENDW_COMM       -1  u ENDOWMENT COMMODITIES
+    6 ENDWC_COMM       1  k Capital Endowment Commodity
+capital     
+    7 PROD_COMM       -1  u PRODUCED COMMODITIES
+    8 DEMD_COMM       -1  u DEMANDED COMMODITIES
+    9 NSAV_COMM       -1  u NON-SAVINGS COMMODITIES
+   10 MARG_COMM       -1  u margin commodities
+   11 NMRG_COMM       -1  u non-margin commodities
+#VARIABLES
+         0
+#SUBSETS
+    10
+     1     3     7
+     2     4     7
+     3     5     8
+     4     3     8
+     5     8     9
+     6     4     9
+     7     7     9
+     8     6     9
+     9    10     3
+    10    11     3
+#COEFFICIENTS
+   35
+    1 VXMD            3 r y n
+    3    2    2
+    2 VST             2 r y n
+   10    2
+    3 VFM             3 r y n
+    5    7    2
+    4 VDFM            3 r y n
+    3    7    2
+    5 VDPM            3 r y n
+    3    1    2
+    6 VDGM            2 r y n
+    3    2
+    7 VIFM            3 r y n
+    3    7    2
+    8 VIPM            3 r y n
+    3    1    2
+    9 VIGM            2 r y n
+    3    2
+   10 VIWS            3 r y n
+    3    2    2
+   11 VDM             2 r n n
+    3    2
+   12 VXM             2 r n n
+    3    2
+   13 VOM             2 r n n
+    9    2
+   14 qxs             3 r y n
+    3    2    2
+   15 qfe             3 r y n
+    5    7    2
+   16 qfd             3 r y n
+    3    7    2
+   17 qpdh            3 r y n
+    3    1    2
+   18 qgd             2 r y n
+    3    2
+   19 qds             2 r y n  total domestic sales of commodity i in r
+    3    2
+   20 qfm             3 r y n
+    3    7    2
+   21 qpmh            3 r y n
+    3    1    2
+   22 qgm             2 r y n
+    3    2
+   23 qo              2 r y n
+    9    2
+   24 DQXS            3 r n n
+    3    2    2
+   25 DQWS            3 r n n
+    3    2    2
+   26 DQDS            2 r n n
+    3    2
+   27 DQFE            3 r n n
+    5    7    2
+   28 DQFM            3 r n n
+    3    7    2
+   29 DQFD            3 r n n
+    3    7    2
+   30 DQPM            3 r n n
+    3    1    2
+   31 DQPD            3 r n n
+    3    1    2
+   32 DQGM            2 r n n
+    3    2
+   33 DQGD            2 r n n
+    3    2
+   34 DQO             2 r n n
+    3    2
+   35 DTOT            2 r n n
+    2    2
+#EQUATIONS
+    0
+#READS
+   20
+    1     1 VXMD              2 GTAPDATA             VXMD a h     3
+     3     2     2
+    2     2 VST               2 GTAPDATA             VST  a h     2
+    10     2
+    3     3 VFM               2 GTAPDATA             VFM  a h     3
+     5     7     2
+    4     7 VIFM              2 GTAPDATA             VIFM a h     3
+     3     7     2
+    5     4 VDFM              2 GTAPDATA             VDFM a h     3
+     3     7     2
+    6     8 VIPM              2 GTAPDATA             VIPM a h     3
+     3     1     2
+    7     5 VDPM              2 GTAPDATA             VDPM a h     3
+     3     1     2
+    8    10 VIWS              2 GTAPDATA             VIWS a h     3
+     3     2     2
+    9     9 VIGM              2 GTAPDATA             VIGM a h     2
+     3     2
+   10     6 VDGM              2 GTAPDATA             VDGM a h     2
+     3     2
+   11    23 qo                3 GSLTOHAR             qo   a h     2
+     9     2
+   12    14 qxs               3 GSLTOHAR             qxs  a h     3
+     3     2     2
+   13    19 qds               3 GSLTOHAR             qds  a h     2
+     3     2
+   14    15 qfe               3 GSLTOHAR             qfe  a h     3
+     5     7     2
+   15    20 qfm               3 GSLTOHAR             qfm  a h     3
+     3     7     2
+   16    16 qfd               3 GSLTOHAR             qfd  a h     3
+     3     7     2
+   17    21 qpmh              3 GSLTOHAR             qpmh a h     3
+     3     1     2
+   18    17 qpdh              3 GSLTOHAR             qpdh a h     3
+     3     1     2
+   19    22 qgm               3 GSLTOHAR             qgm  a h     2
+     3     2
+   20    18 qgd               3 GSLTOHAR             qgd  a h     2
+     3     2
+#READ(EXTRA)
+    6
+    1 el
+ HOU          GTAPSETS             HOU 
+    2 el
+ REG          GTAPSETS             H1  
+    3 el
+ TRAD_COMM    GTAPSETS             H2  
+    4 el
+ CGDS_COMM    GTAPSETS             H9  
+    5 el
+ ENDW_COMM    GTAPSETS             H6  
+    6 el
+ MARG_COMM    GTAPSETS             MARG
+#NCVARIABLES
+    0
+#STATEMENTS
+      36   1 fl                                                 36  46    0 n
+      38   1 st HOU                                             39  52    0 n
+      41   1 st REG                                             42  51    0 n
+      44   1 st TRAD_COMM                                       45  51    0 n
+      47   1 st CGDS_COMM                                       48  67    0 n
+      50   1 st ENDW_COMM                                       51  51    0 n
+      53   1 st ENDWC_COMM                                      53  58    0 n
+      55   1 st PROD_COMM                                       55  69    0 n
+      55   1 ss                                                 55  69    0 n
+      55   1 ss                                                 55  69    0 n
+      57   1 st DEMD_COMM                                       57  69    0 n
+      57   1 ss                                                 57  69    0 n
+      57   1 ss                                                 57  69    0 n
+      59   1 st NSAV_COMM                                       59  71    0 n
+      59   1 ss                                                 59  71    0 n
+      59   1 ss                                                 59  71    0 n
+      61   1 ss                                                 61  41    0 n
+      63   1 ss                                                 63  41    0 n
+      64   1 st MARG_COMM                                       66  67    0 n
+      67   1 ss                                                 68  37    0 n
+      69   1 st NMRG_COMM                                       70  65    0 n
+      69   1 ss                                                 70  65    0 n
+      77   1 fl                                                 77  61    0 n
+      78   1 fl                                                 78  61    0 n
+      88   1 cs VXMD                                            91  34    0 n
+      93   1 cs VST                                             96  34    0 n
+      98   1 cs VFM                                            100  54    0 n
+     102   1 cs VDFM                                           103  68    0 n
+     105   1 cs VDPM                                           106  66    0 n
+     108   1 cs VDGM                                           109  69    0 n
+     111   1 cs VIFM                                           112  65    0 n
+     114   1 cs VIPM                                           115  57    0 n
+     117   1 cs VIGM                                           118  55    0 n
+     119   1 cs VIWS                                           120  41    0 n
+     124   1 rd VXMD                 a                         125  51    0 n
+     127   1 rd VST                  a                         128  45    0 n
+     130   1 rd VFM                  a                         131  45    0 n
+     133   1 rd VIFM                 a                         134  46    0 n
+     136   1 rd VDFM                 a                         137  46    0 n
+     139   1 rd VIPM                 a                         140  46    0 n
+     142   1 rd VDPM                 a                         143  46    0 n
+     144   1 rd VIWS                 a                         145  45    0 n
+     147   1 rd VIGM                 a                         148  46    0 n
+     150   1 rd VDGM                 a                         151  46    0 n
+     157   1 cs VDM                                            159  60    0 n
+     161   1 fm                                                163  50    0 n
+     165   1 cs VXM                                            167  43    0 n
+     169   1 fm                                                170  45    0 n
+     172   1 cs VOM                                            173  58    0 n
+     175   1 fm                                                176  49    0 n
+     178   1 fm                                                179  51    0 n
+     181   1 fm                                                182  39    0 n
+     186   1 fm                                                187  22    0 n
+     194   1 cs qxs                                            196  29    0 n
+     198   1 cs qfe                                            200  29    0 n
+     202   1 cs qfd                                            203  63    0 n
+     205   1 cs qpdh                                           206  72    0 n
+     209   1 cs qgd                                            210  70    0 n
+     213   1 cs qds                                            214  55    0 n
+     216   1 cs qfm                                            217  63    0 n
+     219   1 cs qpmh                                           220  72    0 n
+     223   1 cs qgm                                            224  70    0 n
+     226   1 cs qo                                             227  65    0 n
+     232   1 rd qo                   a                         233  44    0 n
+     235  10 rd qxs                  a                         236  44    0 n
+     238  10 rd qds                  a                         239  44    0 n
+     241  10 rd qfe                  a                         242  44    0 n
+     244  10 rd qfm                  a                         245  44    0 n
+     247  10 rd qfd                  a                         248  44    0 n
+     250  10 rd qpmh                 a                         251  44    0 n
+     253  10 rd qpdh                 a                         254  44    0 n
+     256  10 rd qgm                  a                         257  44    0 n
+     259  10 rd qgd                  a                         260  44    0 n
+     265   1 cs DQXS                                           267  65    0 n
+     268   1 fm                                                269  58    0 n
+     271   1 cs DQWS                                           273  54    0 n
+     274   1 fm                                                275  58    0 n
+     277   1 cs DQDS                                           279  63    0 n
+     280   1 fm                                                281  48    0 n
+     283   1 cs DQFE                                           285  50    0 n
+     286   1 fm                                                287  54    0 n
+     289   1 cs DQFM                                           291  68    0 n
+     292   1 fm                                                293  55    0 n
+     295   1 cs DQFD                                           297  68    0 n
+     298   1 fm                                                299  55    0 n
+     301   1 cs DQPM                                           303  63    0 n
+     304   1 fm                                                305  56    0 n
+     307   1 cs DQPD                                           309  63    0 n
+     310   1 fm                                                311  56    0 n
+     313   1 cs DQGM                                           315  63    0 n
+     316   1 fm                                                317  49    0 n
+     319   1 cs DQGD                                           321  63    0 n
+     322   1 fm                                                323  49    0 n
+     325   1 cs DQO                                            327  63    0 n
+     328   1 fm                                                329  46    0 n
+     331   1 cs DTOT                                           333  65    0 n
+     334   1 fm                                                335  52    0 n
+     348   1 fl                                                348  51    0 n
+     350   1 wr DQXS                 a                         352  51    0 n
+     353   1 wr DQWS                 a                         354  57    0 n
+     355   1 wr DQDS                 a                         356  51    0 n
+     357   1 wr DQFE                 a                         358  62    0 n
+     359   1 wr DQFM                 a                         360  75    0 n
+     361   1 wr DQFD                 a                         362  75    0 n
+     363   1 wr DQPM                 a                         364  65    0 n
+     365   1 wr DQPD                 a                         366  65    0 n
+     367   1 wr DTOT                 a                         368  52    0 n
+     369   1 wr DQO                  a                         370  53    0 n
+     371   1 wr DQGD                 a                         372  68    0 n
+     373   1 wr DQGM                 a                         374  68    0 n
+     373   1 en DQGM                 a                         374  68    0 n
+#GPVER
+  113001
+#PRVER
+    6400
+#FINAL_LEVEL
+#CSPSIM
+nnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnn

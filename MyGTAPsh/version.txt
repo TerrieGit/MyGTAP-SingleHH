@@ -1,0 +1,27 @@
+MyGTAP Model
+
+This version includes the ImpactECON MyGTAP model written by Peter Minor and Terrie Walmsley, ImpactECON, LLC.
+
+The version comes with a batch file (MyGTAPshaux.bat) that converts a standard RunGTAP application and aggregation into a
+MyGTAP application and database with a single private household.  Simply copy the contents of the MyGTAP Application zip 
+file into a RunGTAP directory, copy your GTAP data aggregation into the same directory and then run the batch file from 
+a DOS prompt. The use of a DOS prompt is recommended since it will indicate if the batch job has run successfully.  
+
+This zip file also contains Walmsley T. L., and P. Minor, (2013). “The Single Household MyGTAP Program: Readme: Instructions 
+and documentation”, ImpactECON Program and Data Documentation No. 05, ImpactECON: Boulder, CO, USA.  This document will provide 
+you with further details on how to construct your RunGTAP application.
+ 
+Once run open the version in RunGTAP using Version | change and selecting the name of the directory containing your 
+application.  Check Version | modules to ensure that the application is using the version specific settings for the 
+main model, shocks, GTAPView, GTAPVol and Welfare decomp. The standard Altertax version will work with this model.
+
+For documentation of the model see:
+
+a) Walmsley T. L., and P. Minor, (2013). “MyGTAP Model”, ImpactECON Working Paper No. 02, ImpactECON: Boulder, CO, USA
+ 
+b) Minor, P. and T. L. Walmsley, (2013). “MyGTAP Data Program”, ImpactECON Working Paper No. 01, ImpactECON: Boulder, CO, USA
+
+c) Walmsley T. L., and P. Minor, (2013). “The Single Household MyGTAP Program: Readme: Instructions and documentation”, 
+ImpactECON Program and Data Documentation No. 05, ImpactECON: Boulder, CO, USA
+
+Version: 0373a6c

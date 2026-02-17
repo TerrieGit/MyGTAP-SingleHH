@@ -1,0 +1,13 @@
+auxiliary files = gtpvewmy;
+check-on-read elements = no;
+   !CVL file for analyze GE!
+cpu = yes ; 
+log only = yes;   
+! Input files:
+File GTAPDATA = basedata.har; ! File containing all base data
+File GTAPSETS = sets.har;     ! File with set specification
+File GTAPPARM = default.prm;  ! File containing behavioral prameters
+! Output files:
+File GTAPVIEW = baseview.har; ! File with headers for viewing
+File TAXRATES = taxrates.har; ! File with headers for viewing initial tax rates
+

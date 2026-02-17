@@ -1,0 +1,108 @@
+!   gtapmy.sti
+!   ========
+!
+!   TABLO sti file for GTAP 6.1
+!
+bat         ! Run in batch.
+
+gtapmy        ! name of TABLO input file
+gtapmy        ! name of information file
+c           ! Perform condensation.
+o           ! Omit one or more variables.
+!afall
+!afeall
+!aoall
+atall
+avaall
+tf
+tfd
+tfm
+tgd
+tgm
+tpd
+tpm
+
+b           ! Substitute a variable and backsolve for it.
+pgov
+GPRICEINDEX
+b
+qg
+GOVDMNDS
+b
+pgd
+GHHDPRICE
+b
+pgm
+GHHIPRICES
+b
+pg
+GCOMPRICE
+b
+qgm
+GHHLDAGRIMP
+b
+ao
+AOWORLD
+b
+ava
+AVAWORLD
+b
+qva
+VADEMAND
+b
+af
+AFWORLD
+b
+qf
+INTDEMAND
+b
+pfd
+DMNDDPRICE
+b
+pfm
+DMNDIPRICES
+b
+pf
+ICOMPRICE
+b
+qfm
+INDIMP
+b
+afe
+AFEWORLD
+b
+pva
+VAPRICE
+b
+qfe
+ENDWDEMAND
+b
+pfob
+EXPRICES
+b
+pms
+MKTPRICES
+b
+qtmfsd
+QTRANS_MFSD
+b
+ptrans
+TRANSCOSTINDEX
+b
+atmfsd
+TRANSTECHANGE
+b
+pcif
+FOBCIF
+b
+compvalad
+COMPVALADEQ
+e           ! Exit condensation.
+a           ! Proceed to automatic code generation.
+wfp         ! Write a Fortran program.
+
+gtapmy        ! name of Fortran program file
+!
+!
+!   end of stored input
+!   -------------------

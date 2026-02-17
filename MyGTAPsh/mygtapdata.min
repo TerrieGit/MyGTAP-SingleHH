@@ -1,0 +1,442 @@
+#FILES
+Logical Name         In/Out Ud  Type Actual Name
+GTAPDATA              In     n  HAR
+ GTAP Data Base
+GTAPSETS              In     n  HAR
+ New GTAP sets
+EXTDATA               In     n  HAR
+ File with other extra datasets
+NEWDATA               Out    n  HAR
+ File with new base data
+(Display)             Out    n  DIS
+(Solution)            Out    n  SL4
+(Equations)           Out    n  EQ4
+#TABFILE
+mygtapdata.tab
+#TMDATE
+at 17:38:40 on 23-FEB-2020
+#STIFILE
+%none
+#SETS
+   10
+    1 REG             -1  u
+    2 TRAD_COMM       -1  u
+    3 MARG_COMM       -1  u
+    4 CGDS_COMM       -1  u
+    5 ENDW_COMM       -1  u
+    6 PROD_COMM       -1  u Produced commodities
+    7 DEMD_COMM       -1  u Demanded commodities
+    8 NSAV_COMM       -1  u Non-savings commodities
+    9 NMRG_COMM       -1  u Non-margin commodities
+   10 HHLD             1  k Main household
+MainHH      
+#VARIABLES
+         0
+#SUBSETS
+     9
+     1     3     2
+     2     2     6
+     3     4     6
+     4     5     7
+     5     2     7
+     6     7     8
+     7     4     8
+     8     9     2
+     9     6     8
+#COEFFICIENTS
+   62
+    1 VKB0            1 r y n  Value of output at agents prices
+    1
+    2 EVOA0           2 r y n  Value of output at agents prices
+    5    1
+    3 EVFA            3 r y n  Producer expenditure on i by industry j
+    5    6    1
+    4 VIFA            3 r y n  Purchases of imported i for use in j in region r
+    2    6    1
+    5 VDFA            3 r y n  Purchases of domestic i for use in j in region r
+    2    6    1
+    6 VIPA0           2 r y n  Private household h expenditure on imported i in r
+    2    1
+    7 VDPA0           2 r y n  Private household expenditure on domestic i in r
+    2    1
+    8 VIGA            2 r y n  Government household expenditure on imported i
+    2    1
+    9 VDGA            2 r y n  Government household expenditure on domestic i in r
+    2    1
+   10 VDEP0           1 r y n  Value of capital depreciation in r (exogenous)
+    1
+   11 VXMD            3 r y n  Exports of i from r to s at market prices (tradeables only)
+    2    1    1
+   12 VST             2 r y n  Exports of m from r for intl transport at mkt prices (tradeables only)
+    3    1
+   13 VFM             3 r y n  Producer expenditure on i by j in r at market prices
+    5    6    1
+   14 VIFM            3 r y n  Purchases of imports i for use in j in region r
+    2    6    1
+   15 VDFM            3 r y n  Purchases of domestic i r for use in j in region r
+    2    6    1
+   16 VIPM0           2 r y n  Private household expenditure on i in r
+    2    1
+   17 VDPM0           2 r y n  Private household expenditure on domestic i in r
+    2    1
+   18 VIGM            2 r y n  Govt household expenditure on i in r
+    2    1
+   19 VDGM            2 r y n  Government household expenditure on domestic i in r
+    2    1
+   20 VIMS            3 r y n  Imports of i from r to s valued at domestic mkt prices
+    2    1    1
+   21 VXWD            3 r y n  Exports of i from r to s valued fob (tradeables only)
+    2    1    1
+   22 VIWS            3 r y n  Imports of i from r to s valued cif (tradeables only)
+    2    1    1
+   23 VFA             3 r n n  Firms expenditure on i by industry j
+    7    6    1
+   24 VOA             2 r n n  Value of commodity i output in region r
+    8    1
+   25 VGA             2 r n n  Gov. household expenditure on i in r at agents prices
+    2    1
+   26 GOVEXP          1 r n n  Government expenditure in region r
+    1
+   27 VDM             2 r n n  Domestic sales of i in r at market prices (tradeables)
+    2    1
+   28 VOM             2 r n n  Value of commodity i output in region r at market prices
+    8    1
+   29 NETAXES         1 r n n  Net tax revenues in r
+    1
+   30 EVOAH           3 r n n  Value of output at agents prices
+    5   10    1
+   31 EVOMH           3 r n n  Value of commodity i output in region r at market prices
+    5   10    1
+   32 VKBH            2 r n n  Value of output at agents prices
+   10    1
+   33 VDEPH           2 r n n  Value of capital depreciation in r (exogenous)
+   10    1
+   34 VIPAH           3 r n n  Private household h expenditure on imported i in r
+    2   10    1
+   35 VDPAH           3 r n n  Private household expenditure on domestic i in r
+    2   10    1
+   36 VIPMH           3 r n n  Private household expenditure on i in r
+    2   10    1
+   37 VDPMH           3 r n n  Private household expenditure on domestic i in r
+    2   10    1
+   38 TRNH            3 r n n  Value of transfers between households
+   10   10    1
+   39 FYI0            1 r y n  Foreign capital income for r
+    1
+   40 FYO0            1 r y n  Foreign capital outflow from r
+    1
+   41 AIDI0           1 r y n  Foreign aid income  for r
+    1
+   42 AIDO0           1 r y n  Foreign aid outflow for r
+    1
+   43 REMI0           1 r y n  Foreign Remittance income for r
+    1
+   44 REMO0           1 r y n  Foreign Remittance outflows  for r
+    1
+   45 TRNG            1 r y n  Government transfers for r
+    1
+   46 AVGFY           0 r n n
+   47 FYI             2 r n n Foreign capital income for r
+   10    1
+   48 FYO             2 r n n Foreign capital outflow from r
+   10    1
+   49 AVGAID          0 r n n
+   50 AIDI            1 r n n Foreign capital income for r
+    1
+   51 AIDO            1 r n n Foreign capital outflow from r
+    1
+   52 AVGREM          0 r n n
+   53 REMI            2 r n n Foreign capital income for r
+   10    1
+   54 REMO            2 r n n Foreign capital outflow from r
+   10    1
+   55 INCOME          1 r n n  income, net of depreciation, by Household
+    1
+   56 PRIVEXP         2 r n n  Private expenditure by Household
+   10    1
+   57 SAVE            1 r n n  income, net of depreciation, by Household
+    1
+   58 GINCOME         1 r n n  income, net of depreciation, by Household
+    1
+   59 SAV_GOV         1 r n n  Value of commodity i output in region r at market prices
+    1
+   60 HINCOME         2 r n n  income, net of depreciation, by Household
+   10    1
+   61 SAV_HHLD        2 r n n  Value of commodity i output in region r at market prices
+   10    1
+   62 SAVECHK         1 r n n  Value of commodity i output in region r at market prices
+    1
+#EQUATIONS
+    0
+#READS
+   29
+    1     1 VKB0              1 GTAPDATA             VKB  a h     1
+     1
+    2     2 EVOA0             1 GTAPDATA             EVOA a h     2
+     5     1
+    3     3 EVFA              1 GTAPDATA             EVFA a h     3
+     5     6     1
+    4     4 VIFA              1 GTAPDATA             VIFA a h     3
+     2     6     1
+    5     5 VDFA              1 GTAPDATA             VDFA a h     3
+     2     6     1
+    6     6 VIPA0             1 GTAPDATA             VIPA a h     2
+     2     1
+    7     7 VDPA0             1 GTAPDATA             VDPA a h     2
+     2     1
+    8     8 VIGA              1 GTAPDATA             VIGA a h     2
+     2     1
+    9     9 VDGA              1 GTAPDATA             VDGA a h     2
+     2     1
+   10    10 VDEP0             1 GTAPDATA             VDEP a h     1
+     1
+   11    11 VXMD              1 GTAPDATA             VXMD a h     3
+     2     1     1
+   12    12 VST               1 GTAPDATA             VST  a h     2
+     3     1
+   13    13 VFM               1 GTAPDATA             VFM  a h     3
+     5     6     1
+   14    14 VIFM              1 GTAPDATA             VIFM a h     3
+     2     6     1
+   15    15 VDFM              1 GTAPDATA             VDFM a h     3
+     2     6     1
+   16    16 VIPM0             1 GTAPDATA             VIPM a h     2
+     2     1
+   17    17 VDPM0             1 GTAPDATA             VDPM a h     2
+     2     1
+   18    18 VIGM              1 GTAPDATA             VIGM a h     2
+     2     1
+   19    19 VDGM              1 GTAPDATA             VDGM a h     2
+     2     1
+   20    20 VIMS              1 GTAPDATA             VIMS a h     3
+     2     1     1
+   21    21 VXWD              1 GTAPDATA             VXWD a h     3
+     2     1     1
+   22    22 VIWS              1 GTAPDATA             VIWS a h     3
+     2     1     1
+   23    39 FYI0              3 EXTDATA              FYI  a h     1
+     1
+   24    40 FYO0              3 EXTDATA              FYO  a h     1
+     1
+   25    41 AIDI0             3 EXTDATA              AIDI a h     1
+     1
+   26    42 AIDO0             3 EXTDATA              AIDO a h     1
+     1
+   27    43 REMI0             3 EXTDATA              REMI a h     1
+     1
+   28    44 REMO0             3 EXTDATA              REMO a h     1
+     1
+   29    45 TRNG              3 EXTDATA              TRNG a h     1
+     1
+#READ(EXTRA)
+    5
+    1 el
+ REG          GTAPSETS             H1  
+    2 el
+ TRAD_COMM    GTAPSETS             H2  
+    3 el
+ MARG_COMM    GTAPSETS             MARG
+    4 el
+ CGDS_COMM    GTAPSETS             H9  
+    5 el
+ ENDW_COMM    GTAPSETS             H6  
+#NCVARIABLES
+    0
+#STATEMENTS
+      28   1 fl                                                 28  36    0 n
+      29   9 fl                                                 29  35    0 n
+      30   9 fl                                                 30  51    0 n
+      31   2 fl                                                 31  44    0 n
+      39   1 st REG                                             40  50    0 n
+      41   2 st TRAD_COMM                                       41  56    0 n
+      42   2 st MARG_COMM                                       42  60    0 n
+      43   2 st CGDS_COMM                                       43  56    0 n
+      44   2 st ENDW_COMM                                       44  57    0 n
+      46   1 ss                                                 46  41    0 n
+      48   1 st PROD_COMM                                       49  60    0 n
+      48   1 ss                                                 49  60    0 n
+      48   1 ss                                                 49  60    0 n
+      50   2 st DEMD_COMM                                       50  60    0 n
+      50   2 ss                                                 50  60    0 n
+      50   2 ss                                                 50  60    0 n
+      51   2 st NSAV_COMM                                       51  63    0 n
+      51   2 ss                                                 51  63    0 n
+      51   2 ss                                                 51  63    0 n
+      52   2 st NMRG_COMM                                       52  63    0 n
+      52   2 ss                                                 52  63    0 n
+      54   1 ss                                                 54  41    0 n
+      56   1 st HHLD                                            57  38    0 n
+      65   1 cs VKB0                                            67  54    0 n
+      68   5 cs EVOA0                                           69  57    0 n
+      70   5 cs EVFA                                            71  64    0 n
+      72   5 cs VIFA                                            73  73    0 n
+      74   5 cs VDFA                                            75  73    0 n
+      76   5 cs VIPA0                                           77  74    0 n
+      78   5 cs VDPA0                                           79  72    0 n
+      80   5 cs VIGA                                            81  69    0 n
+      82   5 cs VDGA                                            83  74    0 n
+      84   5 cs VDEP0                                           85  68    0 n
+      86   5 cs VXMD                                            88  68    0 n
+      89   5 cs VST                                             91  80    0 n
+      92   5 cs VFM                                             93  76    0 n
+      94   5 cs VIFM                                            95  72    0 n
+      96   5 cs VDFM                                            97  75    0 n
+      98   5 cs VIPM0                                           99  63    0 n
+     100   5 cs VDPM0                                          101  72    0 n
+     102   5 cs VIGM                                           103  60    0 n
+     104   5 cs VDGM                                           105  74    0 n
+     106   5 cs VIMS                                           107  79    0 n
+     108   5 cs VXWD                                           109  78    0 n
+     110   5 cs VIWS                                           111  78    0 n
+     113   1 rd VKB0                 a                         114  41    0 n
+     115   5 rd EVOA0                a                         115  43    0 n
+     116   5 rd EVFA                 a                         116  42    0 n
+     117   5 rd VIFA                 a                         117  42    0 n
+     118   5 rd VDFA                 a                         118  42    0 n
+     119   5 rd VIPA0                a                         119  43    0 n
+     120   5 rd VDPA0                a                         120  43    0 n
+     121   5 rd VIGA                 a                         121  42    0 n
+     122   5 rd VDGA                 a                         122  42    0 n
+     123   5 rd VDEP0                a                         123  43    0 n
+     124   5 rd VXMD                 a                         124  42    0 n
+     125   5 rd VST                  a                         125  40    0 n
+     126   5 rd VFM                  a                         126  40    0 n
+     127   5 rd VIFM                 a                         127  42    0 n
+     128   5 rd VDFM                 a                         128  42    0 n
+     129   5 rd VIPM0                a                         129  43    0 n
+     130   5 rd VDPM0                a                         130  43    0 n
+     131   5 rd VIGM                 a                         131  42    0 n
+     132   5 rd VDGM                 a                         132  42    0 n
+     133   5 rd VIMS                 a                         133  42    0 n
+     134   5 rd VXWD                 a                         134  42    0 n
+     135   5 rd VIWS                 a                         135  42    0 n
+     143   1 cs VFA                                            145  61    0 n
+     146   5 cs VOA                                            147  61    0 n
+     148   5 cs VGA                                            149  76    0 n
+     150   5 cs GOVEXP                                         151  57    0 n
+     152   5 cs VDM                                            153  76    0 n
+     154   5 cs VOM                                            155  78    0 n
+     156   5 cs NETAXES                                        157  45    0 n
+     159   1 fm                                                161  33    0 n
+     162   5 fm                                                163  47    0 n
+     164   5 fm                                                165  30    0 n
+     166   5 fm                                                167  48    0 n
+     168   5 fm                                                169  41    0 n
+     170   5 fm                                                171  47    0 n
+     172   5 fm                                                173  70    0 n
+     174   5 fm                                                175  48    0 n
+     176   5 fm                                                177  65    0 n
+     178   5 fm                                                179  54    0 n
+     180   5 fm                                                181  28    0 n
+     182   5 fm                                                193  66    0 n
+     201   1 cs EVOAH                                          202  59    0 n
+     203   1 fm                                                204  35    0 n
+     206   1 cs EVOMH                                          207  82    0 n
+     208   1 fm                                                209  32    0 n
+     211   1 cs VKBH                                           212  56    0 n
+     213   1 fm                                                214  29    0 n
+     216   1 cs VDEPH                                          217  70    0 n
+     218   1 fm                                                219  30    0 n
+     221   1 cs VIPAH                                          222  76    0 n
+     223   1 fm                                                224  34    0 n
+     226   1 cs VDPAH                                          227  74    0 n
+     228   1 fm                                                229  34    0 n
+     231   1 cs VIPMH                                          232  65    0 n
+     233   1 fm                                                234  34    0 n
+     236   1 cs VDPMH                                          237  74    0 n
+     238   1 fm                                                239  34    0 n
+     241   1 cs TRNH                                           242  62    0 n
+     243   1 fm                                                244  25    0 n
+     252   1 cs FYI0                                           253  59    0 n
+     254   5 cs FYO0                                           254  59    0 n
+     255   5 cs AIDI0                                          255  56    0 n
+     256   5 cs AIDO0                                          256  56    0 n
+     257   5 cs REMI0                                          257  62    0 n
+     258   5 cs REMO0                                          258  65    0 n
+     259   5 cs TRNG                                           259  56    0 n
+     261   1 rd FYI0                 a                         261  43    0 n
+     262   6 rd FYO0                 a                         262  43    0 n
+     263   6 rd AIDI0                a                         263  44    0 n
+     264   6 rd AIDO0                a                         264  44    0 n
+     265   6 rd REMI0                a                         265  44    0 n
+     266   6 rd REMO0                a                         266  44    0 n
+     267   6 rd TRNG                 a                         267  43    0 n
+     274   1 cs AVGFY                                          274  19    0 n
+     275   1 fm                                                275  45    0 n
+     276   1 cs FYI                                            277  74    0 n
+     278   5 cs FYO                                            278  74    0 n
+     279   1 fm                                                280  52    0 n
+     281   1 fm                                                282  51    0 n
+     284   1 cs AVGAID                                         284  20    0 n
+     285   1 fm                                                285  48    0 n
+     286   1 cs AIDI                                           287  61    0 n
+     288   5 cs AIDO                                           288  61    0 n
+     289   1 fm                                                290  54    0 n
+     291   1 fm                                                292  53    0 n
+     294   1 cs AVGREM                                         294  20    0 n
+     295   1 fm                                                295  48    0 n
+     296   1 cs REMI                                           297  76    0 n
+     298   6 cs REMO                                           298  76    0 n
+     299   1 fm                                                300  56    0 n
+     301   1 fm                                                302  55    0 n
+     311   1 cs INCOME                                         312  60    0 n
+     313   1 fm                                                318  34    0 n
+     320   1 cs PRIVEXP                                        321  54    0 n
+     322   1 fm                                                323  67    0 n
+     325   1 cs SAVE                                           326  58    0 n
+     327   1 fm                                                328  66    0 n
+     331   1 cs GINCOME                                        332  61    0 n
+     333   1 fm                                                335  34    0 n
+     337   1 cs SAV_GOV                                        338  80    0 n
+     339   1 fm                                                340  45    0 n
+     343   1 cs HINCOME                                        344  63    0 n
+     345   1 fm                                                348  48    0 n
+     350   1 cs SAV_HHLD                                       352  83    0 n
+     353   1 fm                                                354  52    0 n
+     356   1 cs SAVECHK                                        357  80    0 n
+     358   1 fm                                                359  72    0 n
+     367   1 wr AIDI                 a                         368  39    0 n
+     369   5 wr AIDO                 a                         369  39    0 n
+     370   5 wr FYI                  a                         370  37    0 n
+     371   5 wr FYO                  a                         371  37    0 n
+     372   5 wr REMI                 a                         372  39    0 n
+     373   5 wr REMO                 a                         373  39    0 n
+     374   5 wr TRNG                 a                         374  39    0 n
+     375   5 wr VKBH                 a                         375  38    0 n
+     376   5 wr EVOAH                a                         376  40    0 n
+     377   5 wr EVOMH                a                         377  40    0 n
+     378   5 wr EVFA                 a                         378  39    0 n
+     379   5 wr VIFA                 a                         379  39    0 n
+     380   5 wr VDFA                 a                         380  39    0 n
+     381   5 wr VIPAH                a                         381  40    0 n
+     382   5 wr VDPAH                a                         382  40    0 n
+     383   5 wr VIGA                 a                         383  39    0 n
+     384   5 wr VDGA                 a                         384  39    0 n
+     385   5 wr VDEPH                a                         385  40    0 n
+     386   5 wr VXMD                 a                         386  39    0 n
+     387   5 wr VST                  a                         387  37    0 n
+     388   5 wr VFM                  a                         388  37    0 n
+     389   5 wr VIFM                 a                         389  39    0 n
+     390   5 wr VDFM                 a                         390  39    0 n
+     391   5 wr VIPMH                a                         391  40    0 n
+     392   5 wr VDPMH                a                         392  40    0 n
+     393   5 wr VIGM                 a                         393  39    0 n
+     394   5 wr VDGM                 a                         394  39    0 n
+     395   5 wr VIMS                 a                         395  39    0 n
+     396   5 wr SAV_GOV              a                         397  25    0 n
+     398   5 wr SAV_HHLD             a                         399  23    0 n
+     400   5 wr SAVE                 a                         401  25    0 n
+     402   5 wr INCOME               a                         403  13    0 n
+     404   5 wr SAVECHK              a                         405  34    0 n
+     406   5 wr TRNH                 a                         407  35    0 n
+     409   1 tr                                                409  55    0 n
+     410   1 tr                                                410  51    0 n
+     410   1 en                                                410  51    0 n
+#GPVER
+  113001
+#PRVER
+    6400
+#FINAL_LEVEL
+#CSPSIM
+nnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnn
+nnnnnnnnnnnnnnnnnnnnnn

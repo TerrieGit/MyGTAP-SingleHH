@@ -1,0 +1,1188 @@
+#FILES
+Logical Name         In/Out Ud  Type Actual Name
+GTAPDATA              In     n  HAR
+ File containing all base data
+GTAPSETS              In     n  HAR
+ File with set specification
+GTAPPARM              In     n  HAR
+ File containing behavioral prameters
+GTAPSAM               Out    n  HAR
+ File with headers for viewing
+(Display)             Out    n  DIS
+(Solution)            Out    n  SL4
+(Equations)           Out    n  EQ4
+#TABFILE
+samview.tab
+#TMDATE
+at 15:39:49 on 10-DEC-2015
+#STIFILE
+TABmate.sif
+#SETS
+   93
+    1 REG             -1  u regions in the model
+    2 HHLD            -1  u Households
+    3 TRAD_COMM       -1  u traded commodities
+    4 MARG_COMM       -1  u margin commodities
+    5 ENDW_COMM       -1  uFactors
+    6 CGDS_COMM       -1  u capial goods
+    7 PROD_COMM       -1  uproduction commodities
+    8 ENDWC_COMM      -1  u
+    9 ENDWL_COMM      -1  u
+   10 FACTDEP          1  kFactors subject to depreciation
+Capital     
+   11 PRIV            -1  uPrivate Expenditure
+   12 PRODTAX          1  kProduction Taxes
+PRODTAX     
+   13 DIRTAX           1  kDirect Taxes
+DIRTAX      
+   14 GOVT             1  kGovernment
+GOVT        
+   15 ROW              1  kAggregated region
+world       
+   16 MLABL            1  kImported commodities labels
+m           
+   17 DLABL            1  kDomestic commodities labels
+d           
+   18 ALABL            1  kActivity labels
+a           
+   19 LTMM             1  kImport duties
+tmm         
+   20 LTEE             1  kExport taxes
+tee         
+   21 LTSSM            1  kImport Sales Taxes
+tssm        
+   22 LTSSD            1  kDomestic Sales Taxes
+tssd        
+   23 LTFF             1  kFactor Taxes
+tf          
+   24 LTRXM            1  kExport of Margins
+pvst        
+   25 LWW              1  kRest of World
+ww          
+   26 LABELS1          2  kSpecial labels for SAM
+m           
+d           
+   27 LABELS2          2  kSpecial labels for SAM
+a           
+tmm         
+   28 LABELS3          2  kSpecial labels for SAM
+tee         
+tssm        
+   29 LABELS4          2  kSpecial labels for SAM
+tssd        
+tf          
+   30 LABELS5          2  kSpecial labels for SAM
+pvst        
+ww          
+   31 LABELS6          1  kSpecial labels for SAM
+Capital     
+   32 LABELS7         -1  uSpecial labels for SAM
+   33 LABELS8          2  kSpecial labels for SAM
+DIRTAX      
+PRODTAX     
+   34 LABELS9          1  kSpecial labels for SAM
+world       
+   35 LABELS10         4  kSpecial labels for SAM
+m           
+d           
+a           
+tmm         
+   36 LABELS11         6  kSpecial labels for SAM
+m           
+d           
+a           
+tmm         
+tee         
+tssm        
+   37 LABELS12         8  kSpecial labels for SAM
+m           
+d           
+a           
+tmm         
+tee         
+tssm        
+tssd        
+tf          
+   38 LABELS13        10  kSpecial labels for SAM
+m           
+d           
+a           
+tmm         
+tee         
+tssm        
+tssd        
+tf          
+pvst        
+ww          
+   39 LABELS14        11  kSpecial labels for SAM
+m           
+d           
+a           
+tmm         
+tee         
+tssm        
+tssd        
+tf          
+pvst        
+ww          
+Capital     
+   40 LABELS15        -1  uSpecial labels for SAM
+   41 LABELS16        -1  uSpecial labels for SAM
+   42 LABELS          -1  uSpecial labels for SAM
+   43 LONGLABEL       17  kLong names of special labels for SAM
+ImportCommod
+DomCommod   
+Activities  
+ImportDuties
+ExportTaxes 
+ImportSalTax
+DomSalTax   
+FactorTaxes 
+ExportMargin
+RestOfWorld 
+Depreciation
+RegionHhold 
+PrivExpend  
+ProductTaxes
+DirectTaxes 
+Government  
+AggregRegion
+   44 MCOM            -1  uImported commodities
+   45 DCOM            -1  uDomestic commodities
+   46 MARG_DCOM       -1  uDomestic margins commodities
+   47 ACT             -1  uActivities
+   48 TMM             -1  uImport duties
+   49 TEE             -1  uExport taxes
+   50 TSSM            -1  uImport Sales Taxes
+   51 TSSD            -1  uDomestic Sales Taxes
+   52 TFF             -1  uFactor Taxes
+   53 TRMM            -1  uImport of Margins
+   54 TRXM            -1  uExport of Margins
+   55 WW              -1  uRest of World
+   56 ATMM            -1  uAggregate Import duties
+   57 ATEE            -1  uAggregate Export taxes
+   58 AWW             -1  uAggregate Rest of World
+   59 AMARG           -1  uAggregate Import Margins
+   60 SAMAC1          -1  uSpecial labels for SAM
+   61 SAMAC2          -1  uSpecial labels for SAM
+   62 SAMAC3          -1  uSpecial labels for SAM
+   63 SAMAC4          -1  uSpecial labels for SAM
+   64 SAMAC5          -1  uSpecial labels for SAM
+   65 SAMAC6          -1  uSpecial labels for SAM
+   66 SAMAC7          -1  uSpecial labels for SAM
+   67 SAMAC8           2  kSpecial labels for SAM
+PRODTAX     
+DIRTAX      
+   68 SAMAC9          -1  uSpecial labels for SAM
+   69 SAMAC10         -1  uSpecial labels for SAM
+   70 SAMAC11         -1  uSpecial labels for SAM
+   71 SAMAC12         -1  uSpecial labels for SAM
+   72 SAMAC13         -1  uSpecial labels for SAM
+   73 SAMAC14         -1  uSpecial labels for SAM
+   74 SAMAC15         -1  uSpecial labels for SAM
+   75 SAMAC16         -1  uSpecial labels for SAM
+   76 SAMAC           -1  uSpecial labels for SAM
+   77 ASAMAC1         -1  uSpecial labels for SAM
+   78 ASAMAC2         -1  uSpecial labels for SAM
+   79 ASAMAC3          2  kSpecial labels for SAM
+tmm_world   
+tee_world   
+   80 ASAMAC4         -1  uSpecial labels for SAM
+   81 ASAMAC5         -1  uSpecial labels for SAM
+   82 ASAMAC6         -1  uSpecial labels for SAM
+   83 ASAMAC7         -1  uSpecial labels for SAM
+   84 ASAMAC8          2  kSpecial labels for SAM
+PRODTAX     
+DIRTAX      
+   85 ASAMAC9         -1  uSpecial labels for SAM
+   86 ASAMAC10        -1  uSpecial labels for SAM
+   87 ASAMAC11        -1  uSpecial labels for SAM
+   88 ASAMAC12        -1  uSpecial labels for SAM
+   89 ASAMAC13        -1  uSpecial labels for SAM
+   90 ASAMAC14        -1  uSpecial labels for SAM
+   91 ASAMAC15        -1  uSpecial labels for SAM
+   92 ASAMAC16        -1  uSpecial labels for SAM
+   93 ASAMAC          -1  uSpecial labels for SAM
+#VARIABLES
+         0
+#SUBSETS
+   111
+     1     4     3
+     2     3     7
+     3     6     7
+     4     8     5
+     5     9     5
+     6    10     5
+     7     2    11
+     8    11     2
+     9    16    26
+    10    17    26
+    11    18    27
+    12    19    27
+    13    20    28
+    14    21    28
+    15    22    29
+    16    23    29
+    17    24    30
+    18    25    30
+    19    10    31
+    20    31    10
+    21    11    32
+    22    14    32
+    23    13    33
+    24    12    33
+    25    15    34
+    26    34    15
+    27    26    35
+    28    27    35
+    29    35    36
+    30    28    36
+    31    36    37
+    32    29    37
+    33    37    38
+    34    30    38
+    35    38    39
+    36    31    39
+    37    39    40
+    38    32    40
+    39    40    41
+    40    33    41
+    41    41    42
+    42    34    42
+    43    46    45
+    44    44    60
+    45    45    60
+    46    47    61
+    47     5    61
+    48    48    62
+    49    49    62
+    50    50    63
+    51    51    63
+    52    52    64
+    53    53    64
+    54    54    65
+    55    55    65
+    56    58    66
+    57    11    66
+    58    12    67
+    59    13    67
+    60    14    68
+    61     6    68
+    62    60    69
+    63    61    69
+    64    69    70
+    65    62    70
+    66    70    71
+    67    63    71
+    68    71    72
+    69    64    72
+    70    72    73
+    71    65    73
+    72    73    74
+    73    66    74
+    74    74    75
+    75    67    75
+    76    75    76
+    77    68    76
+    78    44    77
+    79    45    77
+    80    47    78
+    81     5    78
+    82    56    79
+    83    57    79
+    84    50    80
+    85    51    80
+    86    52    81
+    87    59    81
+    88    54    82
+    89    58    82
+    90    11    83
+    91    83    11
+    92    12    84
+    93    13    84
+    94    14    85
+    95     6    85
+    96    77    86
+    97    78    86
+    98    86    87
+    99    79    87
+   100    87    88
+   101    80    88
+   102    88    89
+   103    81    89
+   104    89    90
+   105    82    90
+   106    90    91
+   107    83    91
+   108    91    92
+   109    84    92
+   110    92    93
+   111    85    93
+#COEFFICIENTS
+  112
+    1 ISMAR           1 r n n  1 iff margin
+    3
+    2 COMDCOM         1 i n n
+   45 m   45    3
+    3 MARGCOM         1 i n n
+   46 m   46    4
+    4 REGTMM          1 i n n
+   48 m   48    1
+    5 REGTEE          1 i n n
+   49 m   49    1
+    6 REGWW           1 i n n
+   55 m   55    1
+    7 ACTCOM          1 i n n
+   47 m   47    3
+    8 COMMCOM         1 i n n
+   44 m   44    3
+    9 MARGTRXM        1 i n n
+   54 m   54    4
+   10 COMTSSM         1 i n n
+   50 m   50    3
+   11 COMTSSD         1 i n n
+   51 m   51    3
+   12 FACTTFF         1 i n n
+   52 m   52    5
+   13 MARGTRMM        1 i n n
+   53 m   53    4
+   14 REGTRMM         1 i n n
+   53 m   53    1
+   15 MARGAMARG       1 i n n
+   59 m   59    4
+   16 VIFM_GT         3 r y n Firms' Imports at Market Prices
+    3    7    1
+   17 VIPM_GT         3 r y n Private Consumption of Imported Commodities Market Prices
+    3    2    1
+   18 VIGM_GT         2 r y n Government Consumption of Imported Commodities Market Prices
+    3    1
+   19 VIFA_GT         3 r y n Firms' Imports at Agent Prices
+    3    7    1
+   20 VIPA_GT         3 r y n Private Consumption of Imported Commodities Agent Prices
+    3    2    1
+   21 VIGA_GT         2 r y n Private Consumption of Imported Commodities Agent Prices
+    3    1
+   22 VDFM_GT         3 r y n Firms' Usage of Domestics at Market Prices
+    3    7    1
+   23 VDPM_GT         3 r y n Private Consumption of Domestic Commodities Market Prices
+    3    2    1
+   24 VDGM_GT         2 r y n Government Consumption of Imported Commodities Market Prices
+    3    1
+   25 VST_GT          2 r y n Marginal Domestic Commodities Market Prices
+    4    1
+   26 VXWD_GT         3 r y n
+    3    1    1
+   27 VXMD_GT         3 r y n
+    3    1    1
+   28 VDFA_GT         3 r y n Firms' Domestic Purchases at Agent Prices
+    3    7    1
+   29 VDPA_GT         3 r y n Private Consumption of Domestic Commodities Agent Prices
+    3    2    1
+   30 VDGA_GT         2 r y n Private Consumption of Domestic Commodities Agent Prices
+    3    1
+   31 VFM_GT          3 r y n Factor Usage at Market Price
+    5    7    1
+   32 EVFA_GT         3 r y n Endowments: Firms Purchase at Agent Price
+    5    7    1
+   33 EVOA_GT         3 r y n Endowments: Outputs at Agent Price
+    5    2    1
+   34 VDEP_GT         3 r y n Capital Depreciation
+   10    2    1
+   35 VIMS_GT         3 r y n Import at Market Price
+    3    1    1
+   36 VIWS_GT         3 r y n Import at World Price
+    3    1    1
+   37 VTWR_GT         4 r y n
+    4    3    1    1
+   38 SAVEH_GT        3 r y n
+    6    2    1
+   39 SAVEG_GT        3 r y n
+    6   14    1
+   40 REMI_GT         2 r y n
+    2    1
+   41 REMO_GT         2 r y n
+    2    1
+   42 FYI_GT          2 r y n
+    2    1
+   43 FYO_GT          2 r y n
+    2    1
+   44 AIDI_GT         1 r y n
+    1
+   45 AIDO_GT         1 r y n
+    1
+   46 TRANG_GT        2 r y n
+    2    1
+   47 TRANH_GT        3 r y n
+    2    2    1
+   48 VIAM            3 r n n
+   44   47    1
+   49 VIPM            3 r n n
+   44   11    1
+   50 VIGM            3 r n n
+   44   14    1
+   51 VIIM            3 r n n
+   44    6    1
+   52 VDAM            3 r n n
+   45   47    1
+   53 VDPM            3 r n n
+   45   11    1
+   54 VDGM            3 r n n
+   45   14    1
+   55 VDIM            3 r n n
+   45    6    1
+   56 VST_GT1         3 r n n
+    4    4    1
+   57 VST             3 r n n
+   45   54    1
+   58 VXWD            3 r n n
+   45   55    1
+   59 AVXWD           3 r n n
+   45   58    1
+   60 VOM_GT          2 r n n
+    3    1
+   61 VOM_GT1         3 r n n
+    3    3    1
+   62 VOM             3 r n n Value of Output (3:2 in SAM)
+   47   45    1
+   63 VFM             3 r n n
+    5   47    1
+   64 IMD             3 r n n
+   48   44    1
+   65 AIMD            3 r n n
+   56   44    1
+   66 EXTAX           3 r n n
+   49   45    1
+   67 AEXTAX          3 r n n
+   57   45    1
+   68 TSSMA           3 r n n
+   50   47    1
+   69 TSSMK           3 r n n
+   50    6    1
+   70 TSSMH           3 r n n
+   50   11    1
+   71 TSSMG           3 r n n
+   50   14    1
+   72 TSSDA           3 r n n
+   51   47    1
+   73 TSSDK           3 r n n
+   51    6    1
+   74 TSSDH           3 r n n
+   51   11    1
+   75 TSSDG           3 r n n Import Sale Taxes on Governmnet Consumption (7:16 in SAM)
+   51   14    1
+   76 TFFA            3 r n n Factor Taxes
+   52   47    1
+   77 VTWR_GT1        4 r n n
+    4   44    1    1
+   78 VTWR            3 r n n
+   53   44    1
+   79 AVTWR           3 r n n
+   59   44    1
+   80 VTWR_X          3 r n n
+   54    1    1
+   81 VTWR_EX         3 r n n
+   54   53    1
+   82 AVTWR_EX        3 r n n
+   54   59    1
+   83 WWM             3 r n n
+   55   44    1
+   84 AWWM            3 r n n
+   58   44    1
+   85 VDEP            3 r n n
+    6    5    1
+   86 SAVEH           3 r n n
+    6   11    1
+   87 SAVEG           3 r n n
+    6   14    1
+   88 CAPTR           3 r n n
+    6   54    1
+   89 CAPWW           3 r n n
+    6   55    1
+   90 FINCI           3 r n n Regional Household: Factors
+   11   58    1
+   91 FINCO           3 r n n Regional Household: Factors
+   58   11    1
+   92 AIDI            3 r n n Regional Household: Factors
+   14   58    1
+   93 AIDO            3 r n n Regional Household: Factors
+   58   14    1
+   94 ACAPWW1         3 r n n
+    6   58    1
+   95 ACAPWW          3 r n n
+    6   58    1
+   96 PTAXACT         3 r n n
+   12   47    1
+   97 PTAXINV         3 r n n
+   12    6    1
+   98 HF              3 r n n Regional Household: Factors
+   11    5    1
+   99 HTRANS          3 r n n Regional Household: Factors
+   11   11    1
+  100 GTRANS          3 r n n Regional Household: Factors
+   11   14    1
+  101 DTAX            3 r n n
+   13    5    1
+  102 RHTMM           3 r n n Regional Household: Import Taxes
+   14   48    1
+  103 RHTEE           3 r n n Regional Household: Import Taxes
+   14   49    1
+  104 ARHTMM          3 r n n Regional Household: Aggregate Import Taxes
+   14   56    1
+  105 ARHTEE          3 r n n Regional Household: Aggregate Export Taxes
+   14   57    1
+  106 RHTSSM          3 r n n Regional Household: Import Sales Taxes
+   14   50    1
+  107 RHTSSD          3 r n n Regional Household: Domestic Sales Taxes
+   14   51    1
+  108 RHTFF           3 r n n Regional Household: Factor Taxes
+   14   52    1
+  109 RHTPT           3 r n n Regional Household: Production Taxes
+   14   12    1
+  110 RHTDT           3 r n n Regional Household: Direct Taxes
+   14   13    1
+  111 ASAM            3 r n n  Aggregated Social Accounting Matrix
+   93   93    1
+  112 SAM             3 r n n  Social Accounting Matrix
+   76   76    1
+#EQUATIONS
+    0
+#READS
+   32
+    1    16 VIFM_GT           1 GTAPDATA             VIFM a h     3
+     3     7     1
+    2    17 VIPM_GT           1 GTAPDATA             VIPM a h     3
+     3     2     1
+    3    18 VIGM_GT           1 GTAPDATA             VIGM a h     2
+     3     1
+    4    19 VIFA_GT           1 GTAPDATA             VIFA a h     3
+     3     7     1
+    5    20 VIPA_GT           1 GTAPDATA             VIPA a h     3
+     3     2     1
+    6    21 VIGA_GT           1 GTAPDATA             VIGA a h     2
+     3     1
+    7    22 VDFM_GT           1 GTAPDATA             VDFM a h     3
+     3     7     1
+    8    23 VDPM_GT           1 GTAPDATA             VDPM a h     3
+     3     2     1
+    9    24 VDGM_GT           1 GTAPDATA             VDGM a h     2
+     3     1
+   10    25 VST_GT            1 GTAPDATA             VST  a h     2
+     4     1
+   11    26 VXWD_GT           1 GTAPDATA             VXWD a h     3
+     3     1     1
+   12    27 VXMD_GT           1 GTAPDATA             VXMD a h     3
+     3     1     1
+   13    28 VDFA_GT           1 GTAPDATA             VDFA a h     3
+     3     7     1
+   14    29 VDPA_GT           1 GTAPDATA             VDPA a h     3
+     3     2     1
+   15    30 VDGA_GT           1 GTAPDATA             VDGA a h     2
+     3     1
+   16    31 VFM_GT            1 GTAPDATA             VFM  a h     3
+     5     7     1
+   17    32 EVFA_GT           1 GTAPDATA             EVFA a h     3
+     5     7     1
+   18    33 EVOA_GT           1 GTAPDATA             EVOA a h     3
+     5     2     1
+   19    34 VDEP_GT           1 GTAPDATA             VDEP a h     3
+    10     2     1
+   20    35 VIMS_GT           1 GTAPDATA             VIMS a h     3
+     3     1     1
+   21    36 VIWS_GT           1 GTAPDATA             VIWS a h     3
+     3     1     1
+   22    37 VTWR_GT           1 GTAPDATA             VTWR a h     4
+     4     3     1     1
+   23    38 SAVEH_GT          1 GTAPDATA             SHLD a h     3
+     6     2     1
+   24    39 SAVEG_GT          1 GTAPDATA             SGOV a h     3
+     6    14     1
+   25    40 REMI_GT           1 GTAPDATA             REMI a h     2
+     2     1
+   26    41 REMO_GT           1 GTAPDATA             REMO a h     2
+     2     1
+   27    42 FYI_GT            1 GTAPDATA             FYI  a h     2
+     2     1
+   28    43 FYO_GT            1 GTAPDATA             FYO  a h     2
+     2     1
+   29    44 AIDI_GT           1 GTAPDATA             AIDI a h     1
+     1
+   30    45 AIDO_GT           1 GTAPDATA             AIDO a h     1
+     1
+   31    46 TRANG_GT          1 GTAPDATA             TRNG a h     2
+     2     1
+   32    47 TRANH_GT          1 GTAPDATA             TRNH a h     3
+     2     2     1
+#READ(EXTRA)
+    8
+    1 el
+ REG          GTAPSETS             H1  
+    2 el
+ HHLD         GTAPSETS             HOU 
+    3 el
+ TRAD_COMM    GTAPSETS             H2  
+    4 el
+ MARG_COMM    GTAPSETS             MARG
+    5 el
+ ENDW_COMM    GTAPSETS             H6  
+    6 el
+ CGDS_COMM    GTAPSETS             H9  
+    7 el
+ ENDWC_COMM   GTAPSETS             ENDC
+    8 el
+ ENDWL_COMM   GTAPSETS             ENDL
+#NCVARIABLES
+    0
+#STATEMENTS
+      20   1 fl                                                 21  49    0 n
+      22   7 fl                                                 22  47    0 n
+      23   7 fl                                                 23  56    0 n
+      24   1 fl                                                 24  48    0 n
+      32   1 st REG                                             34  49    0 n
+      35   5 st HHLD                                            36  50    0 n
+      37   5 st TRAD_COMM                                       38  49    0 n
+      39   5 st MARG_COMM                                       40  51    0 n
+      41   1 ss                                                 42  37    0 n
+      43   1 st ENDW_COMM                                       44  69    0 n
+      45   5 st CGDS_COMM                                       45  76    0 n
+      46   5 st PROD_COMM                                       46  68    0 n
+      46   5 ss                                                 46  68    0 n
+      46   5 ss                                                 46  68    0 n
+      47   5 st ENDWC_COMM                                      47  61    0 n
+      48   5 st ENDWL_COMM                                      48  61    0 n
+      50   1 ss                                                 50  42    0 n
+      51   1 ss                                                 51  42    0 n
+      55   1 st FACTDEP                                         56  56    0 n
+      57   1 ss                                                 58  35    0 n
+      60   1 st PRIV                                            61  38    0 n
+      60   1 ss                                                 61  38    0 n
+      60   1 ss                                                 61  38    0 n
+      62   5 st PRODTAX                                         62  41    0 n
+      63   5 st DIRTAX                                          63  35    0 n
+      64   5 st GOVT                                            64  29    0 n
+      65   5 st ROW                                             65  36    0 n
+      69   1 st MLABL                                           70  45    0 n
+      71   1 st DLABL                                           72  45    0 n
+      73   1 st ALABL                                           74  33    0 n
+      75   1 st LTMM                                            76  31    0 n
+      77   1 st LTEE                                            78  30    0 n
+      79   1 st LTSSM                                           80  38    0 n
+      81   1 st LTSSD                                           82  40    0 n
+      83   1 st LTFF                                            84  29    0 n
+      85   1 st LTRXM                                           86  37    0 n
+      87   1 st LWW                                             88  29    0 n
+      96   1 st LABELS1                                         96  53    0 n
+      96   1 ss                                                 96  53    0 n
+      96   1 ss                                                 96  53    0 n
+      97   1 st LABELS2                                         97  52    0 n
+      97   1 ss                                                 97  52    0 n
+      97   1 ss                                                 97  52    0 n
+      98   1 st LABELS3                                         98  52    0 n
+      98   1 ss                                                 98  52    0 n
+      98   1 ss                                                 98  52    0 n
+      99   1 st LABELS4                                         99  52    0 n
+      99   1 ss                                                 99  52    0 n
+      99   1 ss                                                 99  52    0 n
+     100   1 st LABELS5                                        100  51    0 n
+     100   1 ss                                                100  51    0 n
+     100   1 ss                                                100  51    0 n
+     101   1 st LABELS6                                        101  48    0 n
+     101   1 ss                                                101  48    0 n
+     101   1 ss                                                101  48    0 n
+     102   1 st LABELS7                                        102  51    0 n
+     102   1 ss                                                102  51    0 n
+     102   1 ss                                                102  51    0 n
+     103   1 st LABELS8                                        103  56    0 n
+     103   1 ss                                                103  56    0 n
+     103   1 ss                                                103  56    0 n
+     104   1 st LABELS9                                        104  43    0 n
+     104   1 ss                                                104  43    0 n
+     104   1 ss                                                104  43    0 n
+     106   1 st LABELS10                                       106  58    0 n
+     106   1 ss                                                106  58    0 n
+     106   1 ss                                                106  58    0 n
+     107   1 st LABELS11                                       107  59    0 n
+     107   1 ss                                                107  59    0 n
+     107   1 ss                                                107  59    0 n
+     108   1 st LABELS12                                       108  59    0 n
+     108   1 ss                                                108  59    0 n
+     108   1 ss                                                108  59    0 n
+     109   1 st LABELS13                                       109  59    0 n
+     109   1 ss                                                109  59    0 n
+     109   1 ss                                                109  59    0 n
+     110   1 st LABELS14                                       110  59    0 n
+     110   1 ss                                                110  59    0 n
+     110   1 ss                                                110  59    0 n
+     111   1 st LABELS15                                       111  59    0 n
+     111   1 ss                                                111  59    0 n
+     111   1 ss                                                111  59    0 n
+     112   1 st LABELS16                                       112  59    0 n
+     112   1 ss                                                112  59    0 n
+     112   1 ss                                                112  59    0 n
+     113   1 st LABELS                                         113  57    0 n
+     113   1 ss                                                113  57    0 n
+     113   1 ss                                                113  57    0 n
+     116   1 st LONGLABEL                                      120  52    0 n
+     124   1 st MCOM                                           125  54    0 n
+     126   1 st DCOM                                           127  54    0 n
+     130   1 cs ISMAR                                          130  56    0 n
+     131   1 fm                                                131  42    0 n
+     132  13 fm                                                132  42    0 n
+     134   1 cs COMDCOM                                        134  50    0 n
+     136   1 st MARG_DCOM                                      138  80    0 n
+     136   1 fm                                                138  80    0 n
+     136   1 ss                                                138  80    0 n
+     140   1 cs MARGCOM                                        140  46    0 n
+     141   1 fm                                                141  45    0 n
+     143   1 st ACT                                            144  42    0 n
+     145   1 st TMM                                            146  38    0 n
+     147   1 st TEE                                            148  37    0 n
+     149   1 st TSSM                                           150  51    0 n
+     151   1 st TSSD                                           152  53    0 n
+     153   1 st TFF                                            154  43    0 n
+     155   1 st TRMM                                           156  48    0 n
+     157   1 st TRXM                                           158  50    0 n
+     159   1 st WW                                             160  36    0 n
+     168   1 st ATMM                                           169  49    0 n
+     170   1 st ATEE                                           171  48    0 n
+     172   1 st AWW                                            173  47    0 n
+     174   1 st AMARG                                          175  56    0 n
+     178   1 st SAMAC1                                         178  51    0 n
+     178   1 ss                                                178  51    0 n
+     178   1 ss                                                178  51    0 n
+     179   1 st SAMAC2                                         179  54    0 n
+     179   1 ss                                                179  54    0 n
+     179   1 ss                                                179  54    0 n
+     180   1 st SAMAC3                                         180  48    0 n
+     180   1 ss                                                180  48    0 n
+     180   1 ss                                                180  48    0 n
+     181   1 st SAMAC4                                         181  50    0 n
+     181   1 ss                                                181  50    0 n
+     181   1 ss                                                181  50    0 n
+     182   1 st SAMAC5                                         182  49    0 n
+     182   1 ss                                                182  49    0 n
+     182   1 ss                                                182  49    0 n
+     183   1 st SAMAC6                                         183  48    0 n
+     183   1 ss                                                183  48    0 n
+     183   1 ss                                                183  48    0 n
+     184   1 st SAMAC7                                         184  49    0 n
+     184   1 ss                                                184  49    0 n
+     184   1 ss                                                184  49    0 n
+     185   1 st SAMAC8                                         185  55    0 n
+     185   1 ss                                                185  55    0 n
+     185   1 ss                                                185  55    0 n
+     186   1 st SAMAC9                                         186  54    0 n
+     186   1 ss                                                186  54    0 n
+     186   1 ss                                                186  54    0 n
+     188   1 st SAMAC10                                        188  55    0 n
+     188   1 ss                                                188  55    0 n
+     188   1 ss                                                188  55    0 n
+     189   1 st SAMAC11                                        189  56    0 n
+     189   1 ss                                                189  56    0 n
+     189   1 ss                                                189  56    0 n
+     190   1 st SAMAC12                                        190  56    0 n
+     190   1 ss                                                190  56    0 n
+     190   1 ss                                                190  56    0 n
+     191   1 st SAMAC13                                        191  56    0 n
+     191   1 ss                                                191  56    0 n
+     191   1 ss                                                191  56    0 n
+     192   1 st SAMAC14                                        192  56    0 n
+     192   1 ss                                                192  56    0 n
+     192   1 ss                                                192  56    0 n
+     193   1 st SAMAC15                                        193  56    0 n
+     193   1 ss                                                193  56    0 n
+     193   1 ss                                                193  56    0 n
+     194   1 st SAMAC16                                        194  56    0 n
+     194   1 ss                                                194  56    0 n
+     194   1 ss                                                194  56    0 n
+     195   1 st SAMAC                                          195  54    0 n
+     195   1 ss                                                195  54    0 n
+     195   1 ss                                                195  54    0 n
+     205   1 st ASAMAC1                                        205  52    0 n
+     205   1 ss                                                205  52    0 n
+     205   1 ss                                                205  52    0 n
+     206   1 st ASAMAC2                                        206  55    0 n
+     206   1 ss                                                206  55    0 n
+     206   1 ss                                                206  55    0 n
+     207   1 st ASAMAC3                                        207  51    0 n
+     207   1 ss                                                207  51    0 n
+     207   1 ss                                                207  51    0 n
+     208   1 st ASAMAC4                                        208  51    0 n
+     208   1 ss                                                208  51    0 n
+     208   1 ss                                                208  51    0 n
+     209   1 st ASAMAC5                                        209  51    0 n
+     209   1 ss                                                209  51    0 n
+     209   1 ss                                                209  51    0 n
+     210   1 st ASAMAC6                                        210  50    0 n
+     210   1 ss                                                210  50    0 n
+     210   1 ss                                                210  50    0 n
+     211   1 st ASAMAC7                                        211  44    0 n
+     211   1 ss                                                211  44    0 n
+     211   1 ss                                                211  44    0 n
+     212   1 st ASAMAC8                                        212  56    0 n
+     212   1 ss                                                212  56    0 n
+     212   1 ss                                                212  56    0 n
+     213   1 st ASAMAC9                                        213  55    0 n
+     213   1 ss                                                213  55    0 n
+     213   1 ss                                                213  55    0 n
+     215   1 st ASAMAC10                                       215  58    0 n
+     215   1 ss                                                215  58    0 n
+     215   1 ss                                                215  58    0 n
+     216   1 st ASAMAC11                                       216  59    0 n
+     216   1 ss                                                216  59    0 n
+     216   1 ss                                                216  59    0 n
+     217   1 st ASAMAC12                                       217  59    0 n
+     217   1 ss                                                217  59    0 n
+     217   1 ss                                                217  59    0 n
+     218   1 st ASAMAC13                                       218  59    0 n
+     218   1 ss                                                218  59    0 n
+     218   1 ss                                                218  59    0 n
+     219   1 st ASAMAC14                                       219  59    0 n
+     219   1 ss                                                219  59    0 n
+     219   1 ss                                                219  59    0 n
+     220   1 st ASAMAC15                                       220  59    0 n
+     220   1 ss                                                220  59    0 n
+     220   1 ss                                                220  59    0 n
+     221   1 st ASAMAC16                                       221  59    0 n
+     221   1 ss                                                221  59    0 n
+     221   1 ss                                                221  59    0 n
+     222   1 st ASAMAC                                         222  57    0 n
+     222   1 ss                                                222  57    0 n
+     222   1 ss                                                222  57    0 n
+     230   1 cs REGTMM                                         230  42    0 n
+     231   1 cs REGTEE                                         231  42    0 n
+     232   1 cs REGWW                                          232  40    0 n
+     233   1 cs ACTCOM                                         233  48    0 n
+     234   1 cs COMMCOM                                        234  50    0 n
+     235   1 cs MARGTRXM                                       235  51    0 n
+     236   1 cs COMTSSM                                        236  50    0 n
+     237   1 cs COMTSSD                                        237  50    0 n
+     238   1 cs FACTTFF                                        238  49    0 n
+     239   1 cs MARGTRMM                                       239  51    0 n
+     240   1 cs REGTRMM                                        240  44    0 n
+     241   1 cs MARGAMARG                                      241  53    0 n
+     249   1 cs VIFM_GT                                        250  53    0 n
+     251   1 rd VIFM_GT              a                         252  45    0 n
+     254   1 cs VIPM_GT                                        255  79    0 n
+     256   1 rd VIPM_GT              a                         257  45    0 n
+     259   1 cs VIGM_GT                                        260  80    0 n
+     261   1 rd VIGM_GT              a                         262  45    0 n
+     263   1 cs VIFA_GT                                        264  52    0 n
+     265   1 rd VIFA_GT              a                         266  45    0 n
+     268   1 cs VIPA_GT                                        269  78    0 n
+     270   1 rd VIPA_GT              a                         271  45    0 n
+     273   1 cs VIGA_GT                                        274  76    0 n
+     275   1 rd VIGA_GT              a                         276  45    0 n
+     279   1 cs VDFM_GT                                        280  64    0 n
+     281   1 rd VDFM_GT              a                         282  45    0 n
+     284   1 cs VDPM_GT                                        285  79    0 n
+     286   1 rd VDPM_GT              a                         287  45    0 n
+     289   1 cs VDGM_GT                                        290  80    0 n
+     291   1 rd VDGM_GT              a                         292  45    0 n
+     294   1 cs VST_GT                                         295  62    0 n
+     296   1 rd VST_GT               a                         297  43    0 n
+     298   1 cs VXWD_GT                                        299  19    0 n
+     300   1 rd VXWD_GT              a                         301  45    0 n
+     302   1 cs VXMD_GT                                        303  19    0 n
+     304   1 rd VXMD_GT              a                         305  45    0 n
+     307   1 cs VDFA_GT                                        308  63    0 n
+     309   1 rd VDFA_GT              a                         310  45    0 n
+     312   1 cs VDPA_GT                                        313  78    0 n
+     314   1 rd VDPA_GT              a                         315  45    0 n
+     317   1 cs VDGA_GT                                        318  76    0 n
+     319   1 rd VDGA_GT              a                         320  45    0 n
+     323   1 cs VFM_GT                                         324  49    0 n
+     325   1 rd VFM_GT               a                         326  43    0 n
+     327   1 cs EVFA_GT                                        328  62    0 n
+     329   1 rd EVFA_GT              a                         330  45    0 n
+     331   1 cs EVOA_GT                                        332  55    0 n
+     333   1 rd EVOA_GT              a                         334  45    0 n
+     335   1 cs VDEP_GT                                        336  41    0 n
+     337   1 rd VDEP_GT              a                         338  45    0 n
+     341   1 cs VIMS_GT                                        342  44    0 n
+     343   1 rd VIMS_GT              a                         344  45    0 n
+     346   1 cs VIWS_GT                                        347  43    0 n
+     348   1 rd VIWS_GT              a                         349  45    0 n
+     351   1 cs VTWR_GT                                        352  21    0 n
+     353   1 rd VTWR_GT              a                         354  45    0 n
+     355   1 cs SAVEH_GT                                       356  20    0 n
+     357   1 rd SAVEH_GT             a                         358  46    0 n
+     359   1 cs SAVEG_GT                                       360  20    0 n
+     361   1 rd SAVEG_GT             a                         362  46    0 n
+     365   1 cs REMI_GT                                        366  17    0 n
+     367   1 rd REMI_GT              a                         368  45    0 n
+     369   1 cs REMO_GT                                        370  17    0 n
+     371   1 rd REMO_GT              a                         372  45    0 n
+     373   1 cs FYI_GT                                         374  16    0 n
+     375   1 rd FYI_GT               a                         376  43    0 n
+     377   1 cs FYO_GT                                         378  16    0 n
+     379   1 rd FYO_GT               a                         380  43    0 n
+     381   1 cs AIDI_GT                                        382  15    0 n
+     383   1 rd AIDI_GT              a                         384  45    0 n
+     385   1 cs AIDO_GT                                        386  15    0 n
+     387   1 rd AIDO_GT              a                         388  45    0 n
+     389   1 cs TRANG_GT                                       390  18    0 n
+     391   1 rd TRANG_GT             a                         392  46    0 n
+     393   1 cs TRANH_GT                                       394  20    0 n
+     395   1 rd TRANH_GT             a                         396  46    0 n
+     406   1 cs VIAM                                           407  16    0 n
+     408   1 fm                                                409  50    0 n
+     411   1 cs VIPM                                           412  16    0 n
+     413   1 fm                                                414  41    0 n
+     416   1 cs VIGM                                           417  16    0 n
+     418   1 fm                                                419  39    0 n
+     421   1 cs VIIM                                           422  16    0 n
+     423   1 fm                                                424  41    0 n
+     430   1 cs VDAM                                           431  16    0 n
+     432   1 fm                                                434  43    0 n
+     437   1 cs VDPM                                           438  16    0 n
+     439   1 fm                                                440  42    0 n
+     443   1 cs VDGM                                           444  16    0 n
+     445   1 fm                                                446  39    0 n
+     448   1 cs VDIM                                           449  16    0 n
+     450   1 fm                                                451  41    0 n
+     453   1 cs VST_GT1                                        454  19    0 n
+     455   1 fm                                                456  32    0 n
+     457   1 cs VST                                            458  15    0 n
+     459   1 fm                                                460  17    0 n
+     461   1 fm                                                462  50    0 n
+     464   1 cs VXWD                                           465  16    0 n
+     466   1 fm                                                467  49    0 n
+     469   1 cs AVXWD                                          470  17    0 n
+     471   1 fm                                                472  41    0 n
+     479   1 cs VOM_GT                                         480  16    0 n
+     481   1 fm                                                484  42    0 n
+     485   1 fm                                                488  54    0 n
+     489   1 cs VOM_GT1                                        490  19    0 n
+     491   1 fm                                                492  32    0 n
+     493   1 cs VOM                                            494  45    0 n
+     495   1 fm                                                497  42    0 n
+     503   1 cs VFM                                            504  15    0 n
+     505   1 fm                                                506  38    0 n
+     513   1 cs IMD                                            514  15    0 n
+     515   1 fm                                                518  42    0 n
+     521   1 cs AIMD                                           522  16    0 n
+     523   1 fm                                                524  38    0 n
+     531   1 cs EXTAX                                          532  17    0 n
+     533   1 fm                                                535  45    0 n
+     538   1 cs AEXTAX                                         539  18    0 n
+     540   1 fm                                                541  42    0 n
+     547   1 cs TSSMA                                          548  17    0 n
+     549   1 fm                                                551  44    0 n
+     553   1 cs TSSMK                                          554  17    0 n
+     555   1 fm                                                556  66    0 n
+     558   1 cs TSSMH                                          559  17    0 n
+     560   1 fm                                                561  66    0 n
+     563   1 cs TSSMG                                          564  17    0 n
+     565   1 fm                                                566  62    0 n
+     572   1 cs TSSDA                                          573  17    0 n
+     574   1 fm                                                576  51    0 n
+     578   1 cs TSSDK                                          579  17    0 n
+     580   1 fm                                                582  42    0 n
+     584   1 cs TSSDH                                          585  17    0 n
+     586   1 fm                                                587  66    0 n
+     589   1 cs TSSDG                                          590  76    0 n
+     591   1 fm                                                592  62    0 n
+     598   1 cs TFFA                                           599  30    0 n
+     600   1 fm                                                602  47    0 n
+     608   1 cs VTWR_GT1                                       609  22    0 n
+     610   1 fm                                                611  49    0 n
+     612   1 cs VTWR                                           613  16    0 n
+     614   1 fm                                                615  54    0 n
+     618   1 cs AVTWR                                          619  17    0 n
+     620   1 fm                                                621  62    0 n
+     628   1 cs VTWR_X                                         629  18    0 n
+     630   1 fm                                                631  62    0 n
+     632   1 cs VTWR_EX                                        633  19    0 n
+     634   1 fm                                                635  21    0 n
+     636   1 fm                                                637  44    0 n
+     640   1 cs AVTWR_EX                                       641  20    0 n
+     642   1 fm                                                643  75    0 n
+     649   1 cs WWM                                            650  15    0 n
+     651   1 fm                                                653  59    0 n
+     656   1 cs AWWM                                           657  16    0 n
+     658   1 fm                                                659  37    0 n
+     666   1 cs VDEP                                           667  16    0 n
+     668   1 fm                                                669  18    0 n
+     670   1 fm                                                671  45    0 n
+     673   1 cs SAVEH                                          674  17    0 n
+     675   1 fm                                                676  35    0 n
+     678   1 cs SAVEG                                          679  17    0 n
+     680   1 fm                                                681  33    0 n
+     683   1 cs CAPTR                                          684  17    0 n
+     685   1 fm                                                688  40    0 n
+     690   1 cs CAPWW                                          691  17    0 n
+     692   1 fm                                                696  38    0 n
+     698   1 cs FINCI                                          699  46    0 n
+     700   1 fm                                                701  45    0 n
+     703   1 cs FINCO                                          704  46    0 n
+     705   1 fm                                                706  45    0 n
+     708   1 cs AIDI                                           709  45    0 n
+     710   1 fm                                                711  28    0 n
+     713   1 cs AIDO                                           714  45    0 n
+     715   1 fm                                                716  28    0 n
+     718   1 cs ACAPWW1                                        719  19    0 n
+     720   1 fm                                                722  68    0 n
+     725   1 cs ACAPWW                                         726  18    0 n
+     727   1 fm                                                728  58    0 n
+     734   1 cs PTAXACT                                        735  19    0 n
+     736   1 fm                                                741  41    0 n
+     743   1 cs PTAXINV                                        744  19    0 n
+     745   1 fm                                                751  69    0 n
+     758   1 cs HF                                             759  43    0 n
+     760   1 fm                                                761  30    0 n
+     762   1 fm                                                763  44    0 n
+     765   1 cs HTRANS                                         766  47    0 n
+     767   1 fm                                                768  34    0 n
+     770   1 cs GTRANS                                         771  47    0 n
+     772   1 fm                                                773  32    0 n
+     781   1 cs DTAX                                           782  16    0 n
+     783   1 fm                                                785  34    0 n
+     792   1 cs RHTMM                                          793  51    0 n
+     794   1 fm                                                795  40    0 n
+     797   1 cs RHTEE                                          798  51    0 n
+     799   1 fm                                                800  42    0 n
+     803   1 cs ARHTMM                                         804  62    0 n
+     805   1 fm                                                806  42    0 n
+     808   1 cs ARHTEE                                         809  62    0 n
+     810   1 fm                                                811  44    0 n
+     813   1 cs RHTSSM                                         814  58    0 n
+     815   1 fm                                                817  71    0 n
+     819   1 cs RHTSSD                                         820  60    0 n
+     821   1 fm                                                823  71    0 n
+     825   1 cs RHTFF                                          826  51    0 n
+     827   1 fm                                                828  40    0 n
+     830   1 cs RHTPT                                          831  55    0 n
+     832   1 fm                                                833  75    0 n
+     835   1 cs RHTDT                                          836  51    0 n
+     837   1 fm                                                838  46    0 n
+     842   1 cs ASAM                                           843  56    0 n
+     844   1 fm                                                845  18    0 n
+     847   1 fm                                                848  28    0 n
+     849   1 fm                                                850  28    0 n
+     851   1 fm                                                852  28    0 n
+     853   1 fm                                                854  28    0 n
+     857   1 fm                                                858  28    0 n
+     859   1 fm                                                860  28    0 n
+     861   1 fm                                                862  28    0 n
+     863   1 fm                                                864  28    0 n
+     865   1 fm                                                866  27    0 n
+     867   1 fm                                                868  29    0 n
+     870   1 fm                                                871  27    0 n
+     873   1 fm                                                874  27    0 n
+     877   1 fm                                                878  28    0 n
+     881   1 fm                                                882  30    0 n
+     885   1 fm                                                886  29    0 n
+     887   1 fm                                                888  29    0 n
+     889   1 fm                                                890  29    0 n
+     891   1 fm                                                892  29    0 n
+     895   1 fm                                                896  29    0 n
+     897   1 fm                                                898  29    0 n
+     899   1 fm                                                900  29    0 n
+     901   1 fm                                                902  29    0 n
+     905   1 fm                                                906  28    0 n
+     909   1 fm                                                910  29    0 n
+     913   1 fm                                                914  32    0 n
+     917   1 fm                                                918  28    0 n
+     921   1 fm                                                922  26    0 n
+     923   1 fm                                                924  30    0 n
+     925   1 fm                                                926  30    0 n
+     927   1 fm                                                928  30    0 n
+     929   1 fm                                                930  30    0 n
+     931   1 fm                                                932  30    0 n
+     933   1 fm                                                934  30    0 n
+     935   1 fm                                                936  29    0 n
+     937   1 fm                                                938  29    0 n
+     939   1 fm                                                940  29    0 n
+     942   1 fm                                                943  29    0 n
+     944   1 fm                                                945  29    0 n
+     946   1 fm                                                947  28    0 n
+     948   1 fm                                                949  28    0 n
+     952   1 fm                                                953  31    0 n
+     954   1 fm                                                955  31    0 n
+     958   1 fm                                                959  28    0 n
+     962   1 fm                                                963  28    0 n
+     964   1 fm                                                965  29    0 n
+     966   1 fm                                                967  29    0 n
+     968   1 fm                                                969  29    0 n
+     970   1 fm                                                971  30    0 n
+     973   1 cs SAM                                            974  44    0 n
+     975   1 fm                                                976  17    0 n
+     978   1 fm                                                979  27    0 n
+     980   1 fm                                                981  27    0 n
+     982   1 fm                                                983  27    0 n
+     984   1 fm                                                985  27    0 n
+     988   1 fm                                                989  27    0 n
+     990   1 fm                                                991  27    0 n
+     992   1 fm                                                993  27    0 n
+     994   1 fm                                                995  27    0 n
+     996   1 fm                                                997  26    0 n
+     998   1 fm                                                999  27    0 n
+    1001   1 fm                                               1002  26    0 n
+    1004   1 fm                                               1005  26    0 n
+    1008   1 fm                                               1009  26    0 n
+    1012   1 fm                                               1013  28    0 n
+    1016   1 fm                                               1017  28    0 n
+    1018   1 fm                                               1019  28    0 n
+    1020   1 fm                                               1021  28    0 n
+    1022   1 fm                                               1023  28    0 n
+    1026   1 fm                                               1027  28    0 n
+    1028   1 fm                                               1029  28    0 n
+    1030   1 fm                                               1031  28    0 n
+    1032   1 fm                                               1033  28    0 n
+    1036   1 fm                                               1037  27    0 n
+    1040   1 fm                                               1041  27    0 n
+    1044   1 fm                                               1045  30    0 n
+    1048   1 fm                                               1049  26    0 n
+    1052   1 fm                                               1053  25    0 n
+    1054   1 fm                                               1055  29    0 n
+    1056   1 fm                                               1057  29    0 n
+    1058   1 fm                                               1059  28    0 n
+    1060   1 fm                                               1061  28    0 n
+    1062   1 fm                                               1063  29    0 n
+    1064   1 fm                                               1065  29    0 n
+    1066   1 fm                                               1067  28    0 n
+    1068   1 fm                                               1069  28    0 n
+    1070   1 fm                                               1071  28    0 n
+    1073   1 fm                                               1074  28    0 n
+    1075   1 fm                                               1076  28    0 n
+    1077   1 fm                                               1078  27    0 n
+    1079   1 fm                                               1080  27    0 n
+    1083   1 fm                                               1084  30    0 n
+    1085   1 fm                                               1086  30    0 n
+    1089   1 fm                                               1090  27    0 n
+    1093   1 fm                                               1094  27    0 n
+    1095   1 fm                                               1096  28    0 n
+    1097   1 fm                                               1098  28    0 n
+    1099   1 fm                                               1100  28    0 n
+    1101   1 fm                                               1102  28    0 n
+    1103   1 fm                                               1104  30    0 n
+    1107   1 wr ASAM                 a                        1108  36    0 n
+    1109   2 wr SAM                  a                        1109  34    0 n
+    1110   2 wr (SAMAC)              a                        1110  43    0 n
+    1111   2 wr (ASAMAC)             a                        1111  44    0 n
+    1112   2 wr (LABELS)             a                        1112  43    0 n
+    1113   2 wr (LONGLABEL)          a                        1113  47    0 n
+    1114   2 wr (ACT)                a                        1114  40    0 n
+    1115   2 wr (AMARG)              a                        1115  43    0 n
+    1116   2 wr (ATEE)               a                        1116  42    0 n
+    1117   2 wr (ATMM)               a                        1117  42    0 n
+    1118   2 wr (AWW)                a                        1118  40    0 n
+    1119   2 wr (TEE)                a                        1119  40    0 n
+    1120   2 wr (TFF)                a                        1120  40    0 n
+    1121   2 wr (TMM)                a                        1121  40    0 n
+    1122   2 wr (TRMM)               a                        1122  42    0 n
+    1123   2 wr (TRXM)               a                        1123  42    0 n
+    1124   2 wr (TSSD)               a                        1124  42    0 n
+    1125   2 wr (TSSM)               a                        1125  42    0 n
+    1126   2 wr (WW)                 a                        1126  38    0 n
+    1127   1 tr                                               1127  54    0 n
+    1127   1 en                                               1127  54    0 n
+#GPVER
+  112003
+#PRVER
+    6400
+#FINAL_LEVEL
+#CSPSIM
+nnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnn
+nnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnn
+nnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnn

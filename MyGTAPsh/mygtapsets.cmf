@@ -1,0 +1,14 @@
+auxiliary files = mygtapsets;
+check-on-read elements = no;
+cpu = yes;
+log only = yes;
+! Input files:
+File GTAPSETS = setsorig.har;      ! Original GTAP sets file
+File BASEDATA = baseorig.har;  ! Base data
+File INPAR    = defaultorig.prm;   ! Old parameters file
+File EXTDAT = extradata.har;  ! Base data
+
+! Output files:
+File NEWSETS = setsnew.har;     !Updated Sets!
+File OUTPAR   = defaultnew.prm; ! New parameters file
+

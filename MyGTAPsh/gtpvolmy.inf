@@ -1,0 +1,849 @@
+
+    TTTTTTTTTT  AAAAAAAAAA   BBBBBBB      LLLL        OOOOOOOOOO
+    TTTTTTTTTT  AAA    AAA   BBBBBBBBB    LLLL        OOOOOOOOOO
+       TTT      AAA    AAA   BBB    BBB   LLLL        OOO    OOO
+       TTT      AAA    AAA   BBB  BBB     LLLL        OOO    OOO
+       TTT      AAAAAAAAAA   BBBBBBB      LLLL        OOO    OOO
+       TTT      AAAAAAAAAA   BBB  BBB     LLLL        OOO    OOO
+       TTT      AAA    AAA   BBB    BBB   LLLL        OOO    OOO
+       TTT      AAA    AAA   BBBBBBBBB    LLLLLLLLL   OOOOOOOOOO
+       TTT      AAA    AAA   BBBBBBB      LLLLLLLLL   OOOOOOOOOO
+
+ <TABLO  Version 6.4   April 2012>                                     
+
+
+
+
+
+                     GEMPACK SOFTWARE
+     << COPYRIGHT 1987-2010:  The Impact Project and KPSOFT >>
+   
+   
+
+    +++  INFORMATION ABOUT THIS PRINT FILE  +++
+   
+ 
+ ! This file was created at 17:38:07 on 23-FEB-2020 by the program
+ !  <TABLO  Version 6.4   April 2012>
+ ! which accesses some of the routines in the GEMPACK software release
+ !  <GEMPACK Release 11.3.001   May 2014>
+ 
+ !     -------------------------------------------------------                
+ !    !            GEMPACK Software System Licence            !               
+ !    !  Source Code Licence for the GEMPACK Software System  !               
+ !    !                 Licence No.  GFM-1140                 !               
+ !    !          Licence for Release 11.0 of GEMPACK          !               
+ !    !                     Peter J Minor                     !               
+ !    !                      Boulder CO                       !               
+ !    !                          USA                          !               
+ !     -------------------------------------------------------                
+    
+
+    +++  END OF INFORMATION ABOUT THIS PRINT FILE  +++
+
+ ======================================================
+           TABLO PORTABLE   
+ ++> TABLO OPTIONS   ( --> indicates those in effect )
+ ======================================================
+
+
+
+      -----------                   ----------
+  --> F1 CHECK                      L1 CHECK
+      F2 CONDENSATION               L2 CONDENSATION
+      F3 CODE GENERATION        --> L3 CODE GENERATION
+      Mode
+      ----
+      INTERACTIVE
+      BATCH
+  --> UNSPECIFIED
+ 
+
+ ==================================================
+ ++> TABLO Input file is 'gtpvolmy.tab'
+ ++> This Information file is 'gtpvolmy'
+ ==================================================
+
+
+
+ ******************************************************************************
+ -1-
+ -->                     Starting CHECK stage
+
+ ******************************************************************************
+
+
+      1   !___________________________GTAPVOL.TAB FILE__________________________________!
+      2   !                                                                             !
+      3   !                        Global Trade Analysis Project                        !
+      4   !                         The GTAP Modeling Framework                         !
+      5   !                  Computing Volume Changes from Results                      !
+      6   !                                 1994 Model                                  !
+      7   !                           Version 3, November 1997                          !
+      8   ! To be used with results produced using Version 3, Nov. 1997 of GTAP.TAB     !
+      9   !_____________________________________________________________________________!
+     10    
+     11   !-----------------------------------------------------------------------------!
+     12   ! HISTORY of GTAPVOL.TAB                                                      !
+     13   !-----------------------------------------------------------------------------!
+     14   ! Version 1    July 1994   (Used in GTAP Short Course, July-August 1994)
+     15     Version 2    April 1995  (Drops variables for aggregated trade quantities:
+     16                               qex(i,r) and qim(i,r). These may be computed
+     17                               directly by summarizing volumes derived from
+     18                               qxs(i,r,s) )
+     19     Version 3    Nov 1997    (Allows for additional v.4 primary factors and
+     20   			    writes HAR file for viewing with VIEWHAR. Display
+     21   			    file is no longer used.
+     22     Version 4    Sept 1998    Reduces sets to minimum necessary with new Union
+     23                               operators.                                        !
+     24    
+     25   !-----------------------------------------------------------------------------!
+     26   !                                    SETS                                     !
+     27   !-----------------------------------------------------------------------------!
+     28    
+     29   !-----------------------------------------------------------------------------!
+     30   ! Sets define relevant groupings of entities over which we will be performing
+     31     operations in the model.  SUBSETS are defined in order to facilitate
+     32     summation over only a portion of a given group, e.g. tradeable commodities. !
+     33    
+     34   !-----------------------------------------------------------------------------!
+     35    
+     36   FILE GTAPSETS # File with set specification #;
+     37    
+     38   SET HOU #Private Households#
+     39         READ ELEMENTS FROM FILE gtapsets HEADER "HOU";  !mod pjm!
+     40    
+     41   SET REG # Regions in the model #
+     42         READ ELEMENTS FROM FILE gtapsets HEADER "H1";
+     43    
+     44   SET TRAD_COMM # TRADED COMMODITIES #
+     45         READ ELEMENTS FROM FILE gtapsets HEADER "H2";
+     46    
+     47   SET CGDS_COMM # CAPITAL GOODS Commodities #
+     48         MAXIMUM SIZE 1  READ ELEMENTS FROM FILE gtapsets HEADER "H9";
+     49    
+     50   SET ENDW_COMM # ENDOWMENT COMMODITIES #
+     51         READ ELEMENTS FROM FILE gtapsets HEADER "H6";
+     52    
+     53   SET ENDWC_COMM # Capital Endowment Commodity # (capital) ;
+     54    
+     55   SET PROD_COMM # PRODUCED COMMODITIES  # = TRAD_COMM UNION CGDS_COMM ;
+     56    
+     57   SET DEMD_COMM # DEMANDED COMMODITIES # = ENDW_COMM UNION TRAD_COMM  ;
+     58    
+     59   SET NSAV_COMM # NON-SAVINGS COMMODITIES # = DEMD_COMM UNION CGDS_COMM ;
+     60    
+     61   SUBSET PROD_COMM IS SUBSET OF NSAV_COMM ;
+     62    
+     63   SUBSET ENDWC_COMM IS SUBSET OF NSAV_COMM;
+     64   Set
+     65       MARG_COMM # margin commodities #
+     66       Maximum size 10 read elements from file GTAPSETS header "MARG"; !mod jmh!
+     67   Subset
+     68       MARG_COMM is subset of TRAD_COMM;
+     69   Set
+     70       NMRG_COMM # non-margin commodities # = TRAD_COMM - MARG_COMM;
+     71    
+     72    
+     73   !-----------------------------------------------------------------------------!
+     74   !                                   FILES                                     !
+     75   !-----------------------------------------------------------------------------!
+     76    
+     77   FILE        GTAPDATA # The file containing all base data. # ;
+     78   FILE        GSLTOHAR # The file containing results.       # ;
+     79    
+     80   !-----------------------------------------------------------------------------!
+     81   !                                 Data base                                   !
+     82   !-----------------------------------------------------------------------------!
+     83    
+     84   !-----------------------------------------------------------------------------!
+     85   !               base revenues and expenditures at market prices               !
+     86   !-----------------------------------------------------------------------------!
+     87    
+     88   COEFFICIENT (all,i,TRAD_COMM)(all,r,REG)(all,s,REG)            VXMD(i,r,s)
+     89               ! exports of commodity i from region r to
+     90               destination s valued at market prices
+     91               (tradeables only)  ! ;
+     92    
+     93   COEFFICIENT (all,i,MARG_COMM)(all,r,REG)                       VST(i,r)
+     94               ! exports of commodity i from region r for
+     95               international transportation valued at market prices
+     96               (tradeables only)  ! ;
+     97    
+     98   COEFFICIENT (all,i,ENDW_COMM)(all,j,PROD_COMM)(all,r,REG)      VFM(i,j,r)
+     99               ! producer expenditure on i by industry j,
+    100                 in region r, valued at market prices ! ;
+    101    
+    102   COEFFICIENT (all,i,TRAD_COMM)(all,j,PROD_COMM)(all,r,REG)      VDFM(i,j,r)
+    103               ! purchases of domestic i r for use in j in region r ! ;
+    104    
+    105   COEFFICIENT (all,i,TRAD_COMM)(all,h,HOU) (all,r,REG)            VDPM(i,h,r)
+    106               ! private household expenditure on domestic i in r ! ;  !mod pjm!
+    107    
+    108   COEFFICIENT (all,i,TRAD_COMM)(all,r,REG)                       VDGM(i,r)
+    109               ! government household expenditure on domestic i in r ! ;
+    110    
+    111   COEFFICIENT (all,i,TRAD_COMM)(all,j,PROD_COMM)(all,r,REG)      VIFM(i,j,r)
+    112               ! purchases of imports i for use in j in region r ! ;
+    113    
+    114   COEFFICIENT (all,i,TRAD_COMM)(all,h,HOU)(all,r,REG)            VIPM(i,h,r)
+    115               ! private household expenditure on i in r ! ;      !mod pjm!
+    116    
+    117   COEFFICIENT (all,i,TRAD_COMM)(all,r,REG)                       VIGM(i,r)
+    118               ! gov't household expenditure on i in r ! ;
+    119   COEFFICIENT (all,i,TRAD_COMM)(all,r,REG)(all,s,REG)            VIWS(i,r,s)
+    120               ! imports at world prices ! ;
+    121    
+    122   ! Now read in the base data.                                             !
+    123    
+    124   READ (all,i,TRAD_COMM)(all,r,REG)(all,s,REG)                  VXMD(i,r,s)
+    125                    FROM FILE GTAPDATA HEADER "VXMD" ;
+    126    
+    127   READ (all,i,MARG_COMM)(all,r,REG)                             VST(i,r)
+    128               FROM FILE GTAPDATA HEADER "VST" ;
+    129    
+    130   READ (all,i,ENDW_COMM)(all,j,PROD_COMM)(all,r,REG)            VFM(i,j,r)
+    131               FROM FILE GTAPDATA HEADER "VFM" ;
+    132    
+    133   READ (all,i,TRAD_COMM)(all,j,PROD_COMM)(all,r,REG)            VIFM(i,j,r)
+    134               FROM FILE GTAPDATA HEADER "VIFM" ;
+    135    
+    136   READ (all,i,TRAD_COMM)(all,j,PROD_COMM)(all,r,REG)            VDFM(i,j,r)
+    137               FROM FILE GTAPDATA HEADER "VDFM" ;
+    138    
+    139   READ (all,i,TRAD_COMM)(all,h,HOU)(all,r,REG)                   VIPM(i,h,r)
+    140               FROM FILE GTAPDATA HEADER "VIPM" ;                  !mod pjm!
+    141    
+    142   READ (all,i,TRAD_COMM)(all,h,HOU)(all,r,REG)                     VDPM(i,h,r)
+    143               FROM FILE GTAPDATA HEADER "VDPM" ;                  !mod pjm!
+    144   Read (all,i,TRAD_COMM)(all,r,REG)(all,s,REG)                     VIWS(i,r,s)
+    145               FROM FILE GTAPDATA HEADER "VIWS";
+    146    
+    147   READ (all,i,TRAD_COMM)(all,r,REG)                             VIGM(i,r)
+    148               FROM FILE GTAPDATA HEADER "VIGM" ;
+    149    
+    150   READ (all,i,TRAD_COMM)(all,r,REG)                             VDGM(i,r)
+    151               FROM FILE GTAPDATA HEADER "VDGM" ;
+    152    
+    153   !-----------------------------------------------------------------------------!
+    154   !                   DERIVATIVES OF THE BASE DATA                              !
+    155   !-----------------------------------------------------------------------------!
+    156    
+    157   COEFFICIENT (all,i,TRAD_COMM)(all,r,REG)                         VDM(i,r)
+    158               ! domestic sales of commodity i in region r
+    159                 valued at market prices (tradeables only)  ! ;
+    160    
+    161   FORMULA (all,i,TRAD_COMM)(all,r,REG)
+    162           VDM(i,r) = sum{h, HOU, VDPM(i,h,r)} + VDGM(i,r)
+    163                    + sum(j,PROD_COMM, VDFM(i,j,r)) ;      !mod pjm!
+    164    
+    165   COEFFICIENT (all,i,TRAD_COMM)(all,r,REG)                         VXM(i,r)
+    166               ! value of exports of commodity i in r
+    167                 at domestic market prices ! ;
+    168    
+    169   FORMULA (all,i,TRAD_COMM)(all,r,REG)
+    170            VXM(i,r) = sum(s,REG, VXMD(i,r,s)) ;
+    171    
+    172   COEFFICIENT (all,i,NSAV_COMM)(all,r,REG)                         VOM(i,r)
+    173               ! value of commodity i output in region r. ! ;
+    174    
+    175   FORMULA (all,i,ENDW_COMM)(all,r,REG)
+    176           VOM(i,r) = sum(j,PROD_COMM, VFM(i,j,r)) ;
+    177    
+    178   FORMULA (all,i,MARG_COMM)(all,r,REG)
+    179           VOM(i,r) = VDM(i,r) + VXM(i,r) + VST(i,r) ;
+    180    
+    181   FORMULA (all,i,NMRG_COMM)(all,r,REG)
+    182           VOM(i,r) = VDM(i,r) + VXM(i,r);
+    183    
+    184   ! but we don't worry about investment !
+    185    
+    186   FORMULA (all,h,CGDS_COMM)(all,r,REG)
+    187           VOM(h,r) = 0 ;
+    188    
+    189    
+    190   !-----------------------------------------------------------------------------!
+    191   !                             Solution Variables                              !
+    192   !-----------------------------------------------------------------------------!
+    193    
+    194   COEFFICIENT (all,i,TRAD_COMM)(all,r,REG)(all,s,REG)            qxs(i,r,s)
+    195               ! percentage change in exports of commodity i from region r to
+    196               destination s ! ;
+    197    
+    198   COEFFICIENT (all,i,ENDW_COMM)(all,j,PROD_COMM)(all,r,REG)      qfe(i,j,r)
+    199               ! percentage change in endowment demand i by industry j,
+    200                 in region r ! ;
+    201    
+    202   COEFFICIENT (all,i,TRAD_COMM)(all,j,PROD_COMM)(all,r,REG)      qfd(i,j,r)
+    203               ! p.c. in imports of i for use in j in region r ! ;
+    204    
+    205   COEFFICIENT (all,i,TRAD_COMM)(all,h,HOU)(all,r,REG)             qpdh(i,h,r)
+    206               ! p.c. in private household demand for imports of i in r ! ;
+    207                                                                   !mod pjm!
+    208    
+    209   COEFFICIENT (all,i,TRAD_COMM)(all,r,REG)                       qgd(i,r)
+    210               ! p.c. in gov't household demand for imports of i in r ! ;
+    211    
+    212    
+    213   COEFFICIENT (all,i,TRAD_COMM)(all,r,REG)                       qds(i,r)
+    214            # total domestic sales of commodity i in r # ;
+    215    
+    216   COEFFICIENT (all,i,TRAD_COMM)(all,j,PROD_COMM)(all,r,REG)      qfm(i,j,r)
+    217               ! p.c. in imports of i for use in j in region r ! ;
+    218    
+    219   COEFFICIENT (all,i,TRAD_COMM)(all,h,HOU)(all,r,REG)            qpmh(i,h,r)
+    220               ! p.c. in private household demand for imports of i in r ! ;
+    221                                                                  !mod pjm!
+    222    
+    223   COEFFICIENT (all,i,TRAD_COMM)(all,r,REG)                       qgm(i,r)
+    224               ! p.c. in gov't household demand for imports of i in r ! ;
+    225    
+    226   COEFFICIENT (all,i,NSAV_COMM)(all,r,REG)                       qo(i,r)
+    227               ! percentage change in output of i by in region r ! ;
+    228    
+    229    
+    230   ! Now read in the solution variables                                       !
+    231    
+    232   READ     (all,i,NSAV_COMM)(all,r,REG)                       qo(i,r)
+    233            from file gsltohar header "qo  "  ;
+    234    
+    235            (all,i,TRAD_COMM)(all,r,REG)(all,s,REG)            qxs(i,r,s)
+    236            from file gsltohar header "qxs "  ;
+    237    
+    238            (all,i,TRAD_COMM)(all,r,REG)                       qds(i,r)
+    239            from file gsltohar header "qds "  ;
+    240    
+    241            (all,i,ENDW_COMM)(all,j,PROD_COMM)(all,r,REG)      qfe(i,j,r)
+    242            from file gsltohar header "qfe "  ;
+    243    
+    244            (all,i,TRAD_COMM)(all,j,PROD_COMM)(all,r,REG)      qfm(i,j,r)
+    245            from file gsltohar header "qfm "  ;
+    246    
+    247            (all,i,TRAD_COMM)(all,j,PROD_COMM)(all,r,REG)      qfd(i,j,r)
+    248            from file gsltohar header "qfd "  ;
+    249    
+    250            (all,i,TRAD_COMM)(all,h,HOU)(all,r,REG)            qpmh(i,h,r)
+    251            from file gsltohar header "qpmh"  ;                !mod pjm!
+    252    
+    253            (all,i,TRAD_COMM)(all,h,HOU)(all,r,REG)            qpdh(i,h,r)
+    254            from file gsltohar header "qpdh"  ;                !mod pjm!
+    255    
+    256            (all,i,TRAD_COMM)(all,r,REG)                       qgm(i,r)
+    257            from file gsltohar header "qgm "  ;
+    258    
+    259            (all,i,TRAD_COMM)(all,r,REG)                       qgd(i,r)
+    260            from file gsltohar header "qgd "  ;
+    261    
+    262    
+    263   ! Next compute the relevant volume changes                                 !
+    264    
+    265   COEFFICIENT (all,i,TRAD_COMM)(all,r,REG)(all,s,REG)            DQXS(i,r,s)
+    266               ! change in volume of exports of commodity i from region r to
+    267               destination s, evaluated at initial market prices ! ;
+    268   FORMULA     (all,i,TRAD_COMM)(all,r,REG)(all,s,REG)
+    269               DQXS(i,r,s) = [qxs(i,r,s)/100] * VXMD(i,r,s) ;
+    270    
+    271   COEFFICIENT (all, i, TRAD_COMM)(all,r,REG)(all,s,REG)         DQWS(i,r,s)
+    272              !change in volume of exports of commodity i from r to
+    273               destination s, evaluated at world prices!;
+    274   FORMULA     (all,i,TRAD_COMM)(all,r,REG)(all,s,REG)
+    275               DQWS(i,r,s) = [qxs(i,r,s)/100] * VIWS(i,r,s) ;
+    276    
+    277   COEFFICIENT (all,i,TRAD_COMM)(all,r,REG)                       DQDS(i,r)
+    278               ! change in volume of domestic sales of commodity i
+    279                in region r evaluated at initial market prices ! ;
+    280   FORMULA     (all,i,TRAD_COMM)(all,r,REG)
+    281            DQDS(i,r) = [qds(i,r)/100] * VDM(i,r) ;
+    282    
+    283   COEFFICIENT (all,i,ENDW_COMM)(all,j,PROD_COMM)(all,r,REG)       DQFE(i,j,r)
+    284               ! change in volume of endowment commodity i in j of region r
+    285               evaluated at initial market prices ! ;
+    286   FORMULA     (all,i,ENDW_COMM)(all,j,PROD_COMM)(all,r,REG)
+    287            DQFE(i,j,r) = [qfe(i,j,r)/100] * VFM(i,j,r) ;
+    288    
+    289   COEFFICIENT (all,i,TRAD_COMM)(all,j,PROD_COMM)(all,r,REG)       DQFM(i,j,r)
+    290               ! change in volume of imported, intermediate commodity i
+    291                in j of region r evaluated at initial market prices ! ;
+    292   FORMULA     (all,i,TRAD_COMM)(all,j,PROD_COMM)(all,r,REG)
+    293            DQFM(i,j,r) = [qfm(i,j,r)/100] * VIFM(i,j,r) ;
+    294    
+    295   COEFFICIENT (all,i,TRAD_COMM)(all,j,PROD_COMM)(all,r,REG)       DQFD(i,j,r)
+    296               ! change in volume of domestic use of intermediate commodity i
+    297                in j of region r evaluated at initial market prices ! ;
+    298   FORMULA     (all,i,TRAD_COMM)(all,j,PROD_COMM)(all,r,REG)
+    299            DQFD(i,j,r) = [qfd(i,j,r)/100] * VDFM(i,j,r) ;
+    300    
+    301   COEFFICIENT (all,i,TRAD_COMM)(all,h,HOU)(all,r,REG)             DQPM(i,h,r)
+    302               ! change in volume of private hhld imported commodity i
+    303                of region r evaluated at initial market prices ! ;
+    304   FORMULA     (all,i,TRAD_COMM)(all,h,HOU)(all,r,REG)
+    305            DQPM(i,h,r) = [qpmh(i,h,r)/100] * VIPM(i,h,r) ;         !mod pjm!
+    306    
+    307   COEFFICIENT (all,i,TRAD_COMM)(all,h,HOU)(all,r,REG)              DQPD(i,h,r)
+    308               ! change in volume of private hhld domestic commodity i
+    309                of region r evaluated at initial market prices ! ;
+    310   FORMULA     (all,i,TRAD_COMM)(all,h,hou)(all,r,REG)
+    311            DQPD(i,h,r) = [qpdh(i,h,r)/100] * VDPM(i,h,r) ;         !mod pjm!
+    312    
+    313   COEFFICIENT (all,i,TRAD_COMM)(all,r,REG)       DQGM(i,r)
+    314               ! change in volume of government hhld imported commodity i
+    315                of region r evaluated at initial market prices ! ;
+    316   FORMULA     (all,i,TRAD_COMM)(all,r,REG)
+    317            DQGM(i,r) = [qgm(i,r)/100] * VIGM(i,r) ;
+    318    
+    319   COEFFICIENT (all,i,TRAD_COMM)(all,r,REG)       DQGD(i,r)
+    320               ! change in volume of government hhld imported commodity i
+    321                of region r evaluated at initial market prices ! ;
+    322   FORMULA     (all,i,TRAD_COMM)(all,r,REG)
+    323            DQGD(i,r) = [qgd(i,r)/100] * VDGM(i,r) ;
+    324    
+    325   COEFFICIENT (all,i,TRAD_COMM)(all,r,REG)       DQO(i,r)
+    326               ! change in volume of output of commodity i
+    327                of region r evaluated at initial market prices ! ;
+    328   FORMULA     (all,i,TRAD_COMM)(all,r,REG)
+    329            DQO(i,r) = [qo(i,r)/100] * VOM(i,r) ;
+    330    
+    331   COEFFICIENT (all,r,REG)(all,s,REG)            DTOT(r,s)
+    332               ! change in volume of total exports from region r to
+    333               destination s, evaluated at initial market prices ! ;
+    334   FORMULA     (all,r,REG)(all,s,REG)
+    335            DTOT(r,s) = sum(i,TRAD_COMM, DQXS(i,r,s)) ;
+    336    
+    337   ! Note that by creating alternative subsets of traded commodities, you
+    338     can also compute changes in the bilateral trade volume of, eg., food
+    339     products.
+    340    
+    341    It is also sometimes handy to create new variables, for example, the volume
+    342    of US exports of i to destination s, in order to obtain a 2 dimensional
+    343    display file which can be used directly as a table.  !
+    344    
+    345   ! Now write the output of this program to a HAR file for easy viewing and
+    346     summation. !
+    347    
+    348   FILE (New) OUTFILE # HAR file of volume changes # ;
+    349    
+    350   Write
+    351   DQXS to file OUTFILE header "DQXS"
+    352    longname "DVol, exports of i from r to s, I.M.P.";
+    353   DQWS to file OUTFILE header "DQWS"
+    354    longname "DVol, exports of i from r to s, World Prices";
+    355   DQDS to file OUTFILE header "DQDS"
+    356    longname "DVol, domestic sales of i in r, I.M.P.";
+    357   DQFE to file OUTFILE header "DQFE"
+    358    longname "DVol, endowment commodity i in ind j of r, I.M.P.";
+    359   DQFM to file OUTFILE header "DQFM"
+    360    longname "DVol, imported, intermediate commodity i in ind j of r, I.M.P.";
+    361   DQFD to file OUTFILE header "DQFD"
+    362    longname "DVol, domestic, intermediate commodity i in ind j of r, I.M.P.";
+    363   DQPM to file OUTFILE header "DQPM"
+    364    longname "DVol, private hhld imported commodity i of r, I.M.P.";
+    365   DQPD to file OUTFILE header "DQPD"
+    366    longname "DVol, private hhld domestic commodity i of r, I.M.P.";
+    367   DTOT to file OUTFILE header "DTOT"
+    368    longname "DVol, total exports from r to s, I.M.P.";
+    369   DQO  to file OUTFILE header "DQO "
+    370    longname "DVol, output of commodity i in r, I.M.P.";
+    371   DQGD to file OUTFILE header "DQGD"
+    372    longname "DVol, government hhld imported commodity i in r, I.M.P.";
+    373   DQGM to file OUTFILE header "DQGM"
+    374    longname "DVol, government hhld imported commodity i in r, I.M.P.";
+    375    
+    376    
+    377   !___________________End of TABLO File GTAPVOL.TAB_____________________________!
+    378    
+
+
+
+
+ ========================
+ ++ INPUT STATEMENT TABLE
+ ========================
+
+          Starts   Syntax  Semantic
+  Number  at line  Error?   Error?            Description
+  ------------------------------------------------------------
+     1        36     no       no      FILE 'GTAPSETS            '             
+     2        38     no       no      SET 'HOU         '                      
+     3        41     no       no      SET 'REG         '                      
+     4        44     no       no      SET 'TRAD_COMM   '                      
+     5        47     no       no      SET 'CGDS_COMM   '                      
+     6        50     no       no      SET 'ENDW_COMM   '                      
+     7        53     no       no      SET 'ENDWC_COMM  '                      
+     8        55     no       no      SET 'PROD_COMM   '                      
+     9        55     no       no      SUBSET 'TRAD_COMM   ' of 'PROD_COMM   ' 
+    10        55     no       no      SUBSET 'CGDS_COMM   ' of 'PROD_COMM   ' 
+    11        57     no       no      SET 'DEMD_COMM   '                      
+    12        57     no       no      SUBSET 'ENDW_COMM   ' of 'DEMD_COMM   ' 
+    13        57     no       no      SUBSET 'TRAD_COMM   ' of 'DEMD_COMM   ' 
+    14        59     no       no      SET 'NSAV_COMM   '                      
+    15        59     no       no      SUBSET 'DEMD_COMM   ' of 'NSAV_COMM   ' 
+    16        59     no       no      SUBSET 'CGDS_COMM   ' of 'NSAV_COMM   ' 
+    17        61     no       no      SUBSET 'PROD_COMM   ' of 'NSAV_COMM   ' 
+    18        63     no       no      SUBSET 'ENDWC_COMM  ' of 'NSAV_COMM   ' 
+    19        64     no       no      SET 'MARG_COMM   '                      
+    20        67     no       no      SUBSET 'MARG_COMM   ' of 'TRAD_COMM   ' 
+    21        69     no       no      SET 'NMRG_COMM   '                      
+    22        69     no       no      SUBSET 'NMRG_COMM   ' of 'TRAD_COMM   ' 
+    23        77     no       no      FILE 'GTAPDATA            '             
+    24        78     no       no      FILE 'GSLTOHAR            '             
+    25        88     no       no      COEFFICIENT 'VXMD        '              
+    26        93     no       no      COEFFICIENT 'VST         '              
+    27        98     no       no      COEFFICIENT 'VFM         '              
+    28       102     no       no      COEFFICIENT 'VDFM        '              
+    29       105     no       no      COEFFICIENT 'VDPM        '              
+    30       108     no       no      COEFFICIENT 'VDGM        '              
+    31       111     no       no      COEFFICIENT 'VIFM        '              
+    32       114     no       no      COEFFICIENT 'VIPM        '              
+    33       117     no       no      COEFFICIENT 'VIGM        '              
+    34       119     no       no      COEFFICIENT 'VIWS        '              
+    35       124     no       no      READ into 'VXMD        '                
+    36       127     no       no      READ into 'VST         '                
+    37       130     no       no      READ into 'VFM         '                
+    38       133     no       no      READ into 'VIFM        '                
+    39       136     no       no      READ into 'VDFM        '                
+    40       139     no       no      READ into 'VIPM        '                
+    41       142     no       no      READ into 'VDPM        '                
+    42       144     no       no      READ into 'VIWS        '                
+    43       147     no       no      READ into 'VIGM        '                
+    44       150     no       no      READ into 'VDGM        '                
+    45       157     no       no      COEFFICIENT 'VDM         '              
+    46       161     no       no      Formula for "VDM"                       
+    47       165     no       no      COEFFICIENT 'VXM         '              
+    48       169     no       no      Formula for "VXM"                       
+    49       172     no       no      COEFFICIENT 'VOM         '              
+    50       175     no       no      Formula for "VOM"                       
+    51       178     no       no      Formula for "VOM"                       
+    52       181     no       no      Formula for "VOM"                       
+    53       186     no       no      Formula for "VOM"                       
+    54       194     no       no      COEFFICIENT 'qxs         '              
+    55       198     no       no      COEFFICIENT 'qfe         '              
+    56       202     no       no      COEFFICIENT 'qfd         '              
+    57       205     no       no      COEFFICIENT 'qpdh        '              
+    58       209     no       no      COEFFICIENT 'qgd         '              
+    59       213     no       no      COEFFICIENT 'qds         '              
+    60       216     no       no      COEFFICIENT 'qfm         '              
+    61       219     no       no      COEFFICIENT 'qpmh        '              
+    62       223     no       no      COEFFICIENT 'qgm         '              
+    63       226     no       no      COEFFICIENT 'qo          '              
+    64       232     no       no      READ into 'qo          '                
+    65       235     no       no      READ into 'qxs         '                
+    66       238     no       no      READ into 'qds         '                
+    67       241     no       no      READ into 'qfe         '                
+    68       244     no       no      READ into 'qfm         '                
+    69       247     no       no      READ into 'qfd         '                
+    70       250     no       no      READ into 'qpmh        '                
+    71       253     no       no      READ into 'qpdh        '                
+    72       256     no       no      READ into 'qgm         '                
+    73       259     no       no      READ into 'qgd         '                
+    74       265     no       no      COEFFICIENT 'DQXS        '              
+    75       268     no       no      Formula for "DQXS"                      
+    76       271     no       no      COEFFICIENT 'DQWS        '              
+    77       274     no       no      Formula for "DQWS"                      
+    78       277     no       no      COEFFICIENT 'DQDS        '              
+    79       280     no       no      Formula for "DQDS"                      
+    80       283     no       no      COEFFICIENT 'DQFE        '              
+    81       286     no       no      Formula for "DQFE"                      
+    82       289     no       no      COEFFICIENT 'DQFM        '              
+    83       292     no       no      Formula for "DQFM"                      
+    84       295     no       no      COEFFICIENT 'DQFD        '              
+    85       298     no       no      Formula for "DQFD"                      
+    86       301     no       no      COEFFICIENT 'DQPM        '              
+    87       304     no       no      Formula for "DQPM"                      
+    88       307     no       no      COEFFICIENT 'DQPD        '              
+    89       310     no       no      Formula for "DQPD"                      
+    90       313     no       no      COEFFICIENT 'DQGM        '              
+    91       316     no       no      Formula for "DQGM"                      
+    92       319     no       no      COEFFICIENT 'DQGD        '              
+    93       322     no       no      Formula for "DQGD"                      
+    94       325     no       no      COEFFICIENT 'DQO         '              
+    95       328     no       no      Formula for "DQO"                       
+    96       331     no       no      COEFFICIENT 'DTOT        '              
+    97       334     no       no      Formula for "DTOT"                      
+    98       348     no       no      FILE 'OUTFILE             '             
+    99       350     no       no      WRITE from 'DQXS        '               
+   100       353     no       no      WRITE from 'DQWS        '               
+   101       355     no       no      WRITE from 'DQDS        '               
+   102       357     no       no      WRITE from 'DQFE        '               
+   103       359     no       no      WRITE from 'DQFM        '               
+   104       361     no       no      WRITE from 'DQFD        '               
+   105       363     no       no      WRITE from 'DQPM        '               
+   106       365     no       no      WRITE from 'DQPD        '               
+   107       367     no       no      WRITE from 'DTOT        '               
+   108       369     no       no      WRITE from 'DQO         '               
+   109       371     no       no      WRITE from 'DQGD        '               
+   110       373     no       no      WRITE from 'DQGM        '               
+
+
+
+
+ ============
+ ++ SET TABLE
+ ============
+
+                    Defined   [Max] Inter             Set numbers this
+  Number    Name    at line    Size temp? Elements    is subset of
+  ---------------------------------------------------------------------
+     1  HOU            38 [       0]  no   read 
+     2  REG            41 [       0]  no   read 
+     3  TRAD_COMM      44 [       0]  no   read      7     8
+     4  CGDS_COMM      47 [       1]  no   read      7     9
+     5  ENDW_COMM      50 [       0]  no   read      8
+     6  ENDWC_COMM     53         1   no   fixed     9
+     7  PROD_COMM      55 [       0]  no   other     9
+     8  DEMD_COMM      57 [       0]  no   other     9
+     9  NSAV_COMM      59 [       0]  no   other
+    10  MARG_COMM      64 [      10]  no   read      3
+    11  NMRG_COMM      69 [       0]  no   other     3
+
+
+
+
+ ===============
+ ++ SUBSET TABLE
+ ===============
+ 
+SSNO=1. Set 3 "TRAD_COMM" is subset of set 7 "PROD_COMM"
+SSNO=2. Set 4 "CGDS_COMM" is subset of set 7 "PROD_COMM"
+SSNO=3. Set 5 "ENDW_COMM" is subset of set 8 "DEMD_COMM"
+SSNO=4. Set 3 "TRAD_COMM" is subset of set 8 "DEMD_COMM"
+SSNO=5. Set 8 "DEMD_COMM" is subset of set 9 "NSAV_COMM"
+SSNO=6. Set 4 "CGDS_COMM" is subset of set 9 "NSAV_COMM"
+SSNO=7. Set 7 "PROD_COMM" is subset of set 9 "NSAV_COMM"
+SSNO=8. Set 6 "ENDWC_COMM" is subset of set 9 "NSAV_COMM"
+SSNO=9. Set 10 "MARG_COMM" is subset of set 3 "TRAD_COMM"
+SSNO=10. Set 11 "NMRG_COMM" is subset of set 3 "TRAD_COMM"
+
+
+
+
+ =============
+ ++ FILE TABLE
+ =============
+
+         Logical            Defined  File  File
+  Number  Name              at line  Type  Form  Actual name (if given)
+  --------------------------------------------------------------------
+     1  GTAPSETS                36    old  head
+     2  GTAPDATA                77    old  head
+     3  GSLTOHAR                78    old  head
+     4  OUTFILE                348    new  head
+
+
+
+
+ ====================
+ ++ COEFFICIENT TABLE
+ ====================
+
+                        Defined  No            Arguments range
+  Number    Name        at line  Args Type     over sets numbered
+  ------------------------------------------------------------
+     1    VXMD              88     3  real       3     2     2
+     2    VST               93     2  real      10     2
+     3    VFM               98     3  real       5     7     2
+     4    VDFM             102     3  real       3     7     2
+     5    VDPM             105     3  real       3     1     2
+     6    VDGM             108     2  real       3     2
+     7    VIFM             111     3  real       3     7     2
+     8    VIPM             114     3  real       3     1     2
+     9    VIGM             117     2  real       3     2
+    10    VIWS             119     3  real       3     2     2
+    11    VDM              157     2  real       3     2
+    12    VXM              165     2  real       3     2
+    13    VOM              172     2  real       9     2
+    14    qxs              194     3  real       3     2     2
+    15    qfe              198     3  real       5     7     2
+    16    qfd              202     3  real       3     7     2
+    17    qpdh             205     3  real       3     1     2
+    18    qgd              209     2  real       3     2
+    19    qds              213     2  real       3     2
+    20    qfm              216     3  real       3     7     2
+    21    qpmh             219     3  real       3     1     2
+    22    qgm              223     2  real       3     2
+    23    qo               226     2  real       9     2
+    24    DQXS             265     3  real       3     2     2
+    25    DQWS             271     3  real       3     2     2
+    26    DQDS             277     2  real       3     2
+    27    DQFE             283     3  real       5     7     2
+    28    DQFM             289     3  real       3     7     2
+    29    DQFD             295     3  real       3     7     2
+    30    DQPM             301     3  real       3     1     2
+    31    DQPD             307     3  real       3     1     2
+    32    DQGM             313     2  real       3     2
+    33    DQGD             319     2  real       3     2
+    34    DQO              325     2  real       3     2
+    35    DTOT             331     2  real       2     2
+
+
+
+
+ ================
+ ++ FORMULA TABLE
+ ================
+
+           Defined   Semantic      LHS                RHS
+  Number   at line    Error?    coefficient       coefficient numbers
+  -------------------------------------------------------------------
+     1         161     no      VDM                5     6     4
+     2         169     no      VXM                1
+     3         175     no      VOM                3
+     4         178     no      VOM               11    12     2
+     5         181     no      VOM               11    12
+     6         186     no      VOM         
+     7         268     no      DQXS              14     1
+     8         274     no      DQWS              14    10
+     9         280     no      DQDS              19    11
+    10         286     no      DQFE              15     3
+    11         292     no      DQFM              20     7
+    12         298     no      DQFD              16     4
+    13         304     no      DQPM              21     8
+    14         310     no      DQPD              17     5
+    15         316     no      DQGM              22     9
+    16         322     no      DQGD              18     6
+    17         328     no      DQO               23    13
+    18         334     no      DTOT              24
+
+
+
+
+ =============
+ ++ READ TABLE
+ =============
+
+           Defined    Semantic  Coefficient   File number
+  Number   at line     Error?    read into     read from   Header
+  ---------------------------------------------------------------
+     1        124       no      VXMD                2       VXMD
+     2        127       no      VST                 2       VST 
+     3        130       no      VFM                 2       VFM 
+     4        133       no      VIFM                2       VIFM
+     5        136       no      VDFM                2       VDFM
+     6        139       no      VIPM                2       VIPM
+     7        142       no      VDPM                2       VDPM
+     8        144       no      VIWS                2       VIWS
+     9        147       no      VIGM                2       VIGM
+    10        150       no      VDGM                2       VDGM
+    11        232       no      qo                  3       qo  
+    12        235       no      qxs                 3       qxs 
+    13        238       no      qds                 3       qds 
+    14        241       no      qfe                 3       qfe 
+    15        244       no      qfm                 3       qfm 
+    16        247       no      qfd                 3       qfd 
+    17        250       no      qpmh                3       qpmh
+    18        253       no      qpdh                3       qpdh
+    19        256       no      qgm                 3       qgm 
+    20        259       no      qgd                 3       qgd 
+
+
+
+
+ ==============
+ ++ WRITE TABLE
+ ==============
+
+        Defined   Sem      Coeff        Write
+ Number at line  Error?   written       file   Header     Long Name
+ --------------------------------------------------------------------------------
+     1      350   no      DQXS              4  DQXS   "DVol, exports of i from 
+                                                       r to s, I.M.P."
+     2      353   no      DQWS              4  DQWS   "DVol, exports of i from 
+                                                       r to s, World Prices"
+     3      355   no      DQDS              4  DQDS   "DVol, domestic sales of 
+                                                       i in r, I.M.P."
+     4      357   no      DQFE              4  DQFE   "DVol, endowment commodit
+                                                       y i in ind j of r, I.M.P
+                                                       ."
+     5      359   no      DQFM              4  DQFM   "DVol, imported, intermed
+                                                       iate commodity i in ind 
+                                                       j of r, I.M.P."
+     6      361   no      DQFD              4  DQFD   "DVol, domestic, intermed
+                                                       iate commodity i in ind 
+                                                       j of r, I.M.P."
+     7      363   no      DQPM              4  DQPM   "DVol, private hhld impor
+                                                       ted commodity i of r, I.
+                                                       M.P."
+     8      365   no      DQPD              4  DQPD   "DVol, private hhld domes
+                                                       tic commodity i of r, I.
+                                                       M.P."
+     9      367   no      DTOT              4  DTOT   "DVol, total exports from
+                                                        r to s, I.M.P."
+    10      369   no      DQO               4  DQO    "DVol, output of commodit
+                                                       y i in r, I.M.P."
+    11      371   no      DQGD              4  DQGD   "DVol, government hhld im
+                                                       ported commodity i in r,
+                                                        I.M.P."
+    12      373   no      DQGM              4  DQGM   "DVol, government hhld im
+                                                       ported commodity i in r,
+                                                        I.M.P."
+
+
+   
+ ======================
+ ++ INPUT CHECK SUMMARY
+ ======================
+ 
+ Total number of statements is 110.
+ There are NO syntax errors or semantic problems.
+
+
+ ******************************************************************************
+ -3-
+ -->                     Starting CODE GENERATION
+
+ ******************************************************************************
+
+
+
+  CODE OPTIONS CHOSEN
+  -------------------
+ 
+ 
+                         TABLO PORTABLE
+               CODE OPTIONS   ( --> indicates those in effect )
+ 
+      NEQ Do no equations           PGS Prepare output for GEMSIM
+      NDS Do no displays        --> WFP Write a Fortran Program
+      NWR Do no writes                    (i.e. a TABLO-generated program)
+                                --> FC5 Fast Compile TG-prog under LF95
+      ACC All comment lines in      DMS Allow simulations even
+             code                         though are no UPDATEs
+                                --> CIN Code file name same as
+                                          Information file name
+                                    CDM Old option. Has no effect.
+                                    NRZ No run-time reports re use of
+                                           ZERODIVIDE default values
+                                    NXS No "extra" statements allowed
+ 
+  Select an option   :  <opt>      Deselect an option      : -<opt>
+  Help for an option : ?<opt>      Help on all options     : ??
+  Redisplay options  : /           Finish option selection : Carriage return
+
+  END OF CODE OPTIONS CHOSEN
+  --------------------------
+  
+ ! ( Program is
+ ! 'D:\Projects\v10Tools\MyGTAP\to public\single\rungtapsh32\gtpvolmy.for'.)
+ (Total number of lines of code is 2567.)
+ 
+ This program
+     o can carry out 12 WRITEs
+ 
+ MXGSRS = 0, MXGSIS = 0.
+ MXGSLG = 0, MXGSIC = 0.
+ 
+ MXGSOP = 0, MXGSIN = 0.
+ MXGSRC = 0, MXGSNS=0.
+ ! (Model Information file is
+ ! 'D:\Projects\v10Tools\MyGTAP\to public\single\rungtapsh32\gtpvolmy.min'.)
+ 
+ (Total number of programs written is 1.)
+ 
+ *******************************************************************
+ Successful completion of TABLO.
+ The program is
+   'gtpvolmy.for'.
+ 
+ This program
+     o can carry out 12 WRITEs
+ 
+ *******************************************************************

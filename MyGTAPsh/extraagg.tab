@@ -1,0 +1,123 @@
+![[!
+    ==========================================
+    ImpactECON MyGTAP Model auxillary programs
+    May 2016
+
+    This program aggregates extra data countries to regions for MyGTAP model
+
+    ImpactECON LLC, Boulder, Colorado 
+    https://impactecon.com/ 
+
+    ==========================================
+
+Purpose of program:
+1. Produce MGTAP database for RunGTAP application with single household.
+
+Author: Peter Minor and Terrie L walmsley
+Date: June 2 2015
+
+!]]!
+
+file
+    SSFILE #standard sets#;
+
+set
+    REG #regions#
+    read elements from file SSFILE header "H1";
+set
+    CTRY #countries#
+    read elements from file SSFILE header "DH1";
+
+mapping
+    C2R from CTRY to REG;
+read (by_elements)
+    C2R from file SSFILE header "MREG";
+
+file
+    INFILE #foreign income data, by country#;
+
+file (new)
+    OUTFILE #foreign income#;
+
+coefficient (all,c,CTRY)
+    AIDIN(c) #foreign income receipts, by country#;
+read
+    AIDIN from file INFILE header "AIDI";
+
+coefficient (all,c,CTRY)
+    AIDOUT(c) #foreign income receipts, by country#;
+read
+    AIDOUT from file INFILE header "AIDO";
+
+coefficient (all,c,CTRY)
+    FYIN(c) #foreign income receipts, by country#;
+read
+    FYIN from file INFILE header "FYI";
+
+coefficient (all,c,CTRY)
+    FYOUT(c) #foreign income receipts, by country#;
+read
+    FYOUT from file INFILE header "FYO";
+
+coefficient (all,c,CTRY)
+    REMIN(c) #foreign income receipts, by country#;
+read
+    REMIN from file INFILE header "REMI";
+
+coefficient (all,c,CTRY)
+    REMOUT(c) #foreign income receipts, by country#;
+read
+    REMOUT from file INFILE header "REMO";
+
+coefficient (all,c,CTRY)
+    TRANG(c) #foreign income receipts, by country#;
+read
+    TRANG from file INFILE header "TRNG";
+
+coefficient (all,r,REG)
+    AIDIN_NEW(r) #foreign income receipts, by country#;
+formula (all,r,REG)
+    AIDIN_NEW(r) = sum{c, CTRY: C2R(c) = r, AIDIN(c)};
+
+coefficient (all,r,REG)
+    AIDOUT_NEW(r) #foreign income receipts, by country#;
+formula (all,r,REG)
+    AIDOUT_NEW(r) = sum{c, CTRY: C2R(c) = r, AIDOUT(c)};
+
+coefficient (all,r,REG)
+    FYIN_NEW(r) #foreign income receipts, by country#;
+formula (all,r,REG)
+    FYIN_NEW(r) = sum{c, CTRY: C2R(c) = r, FYIN(c)};
+
+coefficient (all,r,REG)
+    FYOUT_NEW(r) #foreign income receipts, by country#;
+formula (all,r,REG)
+    FYOUT_NEW(r) = sum{c, CTRY: C2R(c) = r, FYOUT(c)};
+
+coefficient (all,r,REG)
+    REMIN_NEW(r) #foreign income receipts, by country#;
+formula (all,r,REG)
+    REMIN_NEW(r) = sum{c, CTRY: C2R(c) = r, REMIN(c)};
+
+coefficient (all,r,REG)
+    REMOUT_NEW(r) #foreign income receipts, by country#;
+formula (all,r,REG)
+    REMOUT_NEW(r) = sum{c, CTRY: C2R(c) = r, REMOUT(c)};
+
+coefficient (all,r,REG)
+    TRANG_NEW(r) #foreign income receipts, by country#;
+formula (all,r,REG)
+    TRANG_NEW(r) = sum{c, CTRY: C2R(c) = r, TRANG(c)};
+
+write
+    AIDIN_NEW to file OUTFILE header "AIDI" ;
+    AIDOUT_NEW to file OUTFILE header "AIDO" ;
+    FYIN_NEW to file OUTFILE header "FYI" ;
+    FYOUT_NEW to file OUTFILE header "FYO" ;
+    REMIN_NEW to file OUTFILE header "REMI" ;
+    REMOUT_NEW to file OUTFILE header "REMO" ;
+    TRANG_NEW to file OUTFILE header "TRNG" ;
+
+transfer unread from file INFILE to file OUTFILE ;
+
+
