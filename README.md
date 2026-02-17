@@ -3,13 +3,12 @@
 MyGTAP Single household program is a set of files used to convert a RunGTAP GTAP 6 model application into 
 a MyGTAP application.  
 
-For user directions please see  "Single HHLD MyGTAP Documenation.pdf", contained in this directory. Reference:
+Documentation:
 Walmsley, T. L. and P. Minor, (2016). "The MyGTAP Single Household program", ImpactECON Program 
 and data Doctumentation, No.005, ImpactECON: Boulder, CO
 
-Documentation for the model structure can be found:
 Walmsley, T. L. and P. Minor, (2013). "MyGTAP Model", ImpactECON Working Paper No. 02, 
-ImpactECON: Boulder, CO, USA https://impactecon.com/resources/working-papers/
+ImpactECON: Boulder [file:///C:/Projects/TerrieGit.github.io/papers_files/Working-Paper-002-MyGTAP-Model.pdf](https://terriegit.github.io/papers_files/Working-Paper-002-MyGTAP-Model.pdf)
 
 Issues:
 - the application contains a file extradata0.har that contains 2014 data for GTAP version 10.  If you would like to 
