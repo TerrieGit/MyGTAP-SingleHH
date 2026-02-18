@@ -1,4 +1,5 @@
-# MyGTAP Single Household RunGTAP application
+# MyGTAP-SingleHH
+MyGTAP Single Household RunGTAP application
 
 MyGTAP Single household program is a set of files used to convert a RunGTAP GTAP 6 model application into 
 a MyGTAP application.  
