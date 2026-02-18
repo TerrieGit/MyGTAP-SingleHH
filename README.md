@@ -6,7 +6,7 @@ a MyGTAP application.
 
 Documentation:
 Walmsley, T. L. and P. Minor, (2016). "The MyGTAP Single Household program", ImpactECON Program 
-and data Doctumentation, No.005, ImpactECON: Boulder, CO (https://terriegit.github.io/papers_files/Single%20HHLD%20MyGTAP%20documenation.pdf)
+and data Doctumentation, No.005, ImpactECON: Boulder, CO (https://terriegit.github.io/papers_files/Single-HHLD-MyGTAP-documenation.pdf)
 
 Walmsley, T. L. and P. Minor, (2013). "MyGTAP Model", ImpactECON Working Paper No. 02, 
 ImpactECON: Boulder (https://terriegit.github.io/papers_files/Working-Paper-002-MyGTAP-Model.pdf)
