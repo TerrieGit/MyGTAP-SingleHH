@@ -1,7 +1,7 @@
 ![[!
     ==========================================
     ImpactECON MyGTAP Model auxillary programs
-    May 2016
+    March 2026
 
     This program aggregates extra data countries to regions for MyGTAP model
 
@@ -14,8 +14,15 @@ Purpose of program:
 1. Produce MGTAP database for RunGTAP application with single household.
 
 Author: Peter Minor and Terrie L walmsley
-Date: June 2 2015
 
+HISTORY
+1. Produced for a single household version of the MyGTAP that incorporates Balance 
+of payments data and splits government and private savings. This program initially 
+aggregated the extra data countries to regions for MyGTAP model. (June 2, 2015)
+
+2. Updated March 13, 2026 to use GTAP12 data which includes additional the extra 
+BOP data in header VBPF of the GTAP v7 dataset.
+ 
 !]]!
 
 file
@@ -24,14 +31,8 @@ file
 set
     REG #regions#
     read elements from file SSFILE header "H1";
-set
-    CTRY #countries#
-    read elements from file SSFILE header "DH1";
 
-mapping
-    C2R from CTRY to REG;
-read (by_elements)
-    C2R from file SSFILE header "MREG";
+set BOPSets #BOP data# (FYI, FYO, AIDI, AIDO, RMI, RMO) ;
 
 file
     INFILE #foreign income data, by country#;
@@ -39,85 +40,48 @@ file
 file (new)
     OUTFILE #foreign income#;
 
-coefficient (all,c,CTRY)
-    AIDIN(c) #foreign income receipts, by country#;
+coefficient (all,b,BOPSets)(all,c,REG)
+    BOP(c,b) #Balance of paymnents data#;
 read
-    AIDIN from file INFILE header "AIDI";
+    BOP from file INFILE header "VBPF";
 
-coefficient (all,c,CTRY)
+coefficient (all,c,REG)
+    AIDIN(c) #Aidin#;
+formula (all,c,REG)
+    AIDIN(c) = BOP(c,"AIDI");
+
+coefficient (all,c,REG)
     AIDOUT(c) #foreign income receipts, by country#;
-read
-    AIDOUT from file INFILE header "AIDO";
+Formula (all,c,REG)
+    AIDOUT(c) = BOP(c,"AIDO");
 
-coefficient (all,c,CTRY)
+coefficient (all,c,REG)
     FYIN(c) #foreign income receipts, by country#;
-read
-    FYIN from file INFILE header "FYI";
+formula (all,c,REG)
+    FYIN(c) = BOP(c,"FYI");
 
-coefficient (all,c,CTRY)
+coefficient (all,c,REG)
     FYOUT(c) #foreign income receipts, by country#;
-read
-    FYOUT from file INFILE header "FYO";
+formula (all,c,REG)
+    FYOUT(c) = BOP(c,"FYO");
 
-coefficient (all,c,CTRY)
+coefficient (all,c,REG)
     REMIN(c) #foreign income receipts, by country#;
-read
-    REMIN from file INFILE header "REMI";
+formula (all,c,REG)
+    REMIN(c) = BOP(c,"RMI");
 
-coefficient (all,c,CTRY)
+coefficient (all,c,REG)
     REMOUT(c) #foreign income receipts, by country#;
-read
-    REMOUT from file INFILE header "REMO";
-
-coefficient (all,c,CTRY)
-    TRANG(c) #foreign income receipts, by country#;
-read
-    TRANG from file INFILE header "TRNG";
-
-coefficient (all,r,REG)
-    AIDIN_NEW(r) #foreign income receipts, by country#;
-formula (all,r,REG)
-    AIDIN_NEW(r) = sum{c, CTRY: C2R(c) = r, AIDIN(c)};
-
-coefficient (all,r,REG)
-    AIDOUT_NEW(r) #foreign income receipts, by country#;
-formula (all,r,REG)
-    AIDOUT_NEW(r) = sum{c, CTRY: C2R(c) = r, AIDOUT(c)};
-
-coefficient (all,r,REG)
-    FYIN_NEW(r) #foreign income receipts, by country#;
-formula (all,r,REG)
-    FYIN_NEW(r) = sum{c, CTRY: C2R(c) = r, FYIN(c)};
-
-coefficient (all,r,REG)
-    FYOUT_NEW(r) #foreign income receipts, by country#;
-formula (all,r,REG)
-    FYOUT_NEW(r) = sum{c, CTRY: C2R(c) = r, FYOUT(c)};
-
-coefficient (all,r,REG)
-    REMIN_NEW(r) #foreign income receipts, by country#;
-formula (all,r,REG)
-    REMIN_NEW(r) = sum{c, CTRY: C2R(c) = r, REMIN(c)};
-
-coefficient (all,r,REG)
-    REMOUT_NEW(r) #foreign income receipts, by country#;
-formula (all,r,REG)
-    REMOUT_NEW(r) = sum{c, CTRY: C2R(c) = r, REMOUT(c)};
-
-coefficient (all,r,REG)
-    TRANG_NEW(r) #foreign income receipts, by country#;
-formula (all,r,REG)
-    TRANG_NEW(r) = sum{c, CTRY: C2R(c) = r, TRANG(c)};
+formula (all,c,REG)
+    REMOUT(c) = BOP(c,"RMO");
 
 write
-    AIDIN_NEW to file OUTFILE header "AIDI" ;
-    AIDOUT_NEW to file OUTFILE header "AIDO" ;
-    FYIN_NEW to file OUTFILE header "FYI" ;
-    FYOUT_NEW to file OUTFILE header "FYO" ;
-    REMIN_NEW to file OUTFILE header "REMI" ;
-    REMOUT_NEW to file OUTFILE header "REMO" ;
-    TRANG_NEW to file OUTFILE header "TRNG" ;
+    AIDIN to file OUTFILE header "AIDI" ;
+    AIDOUT to file OUTFILE header "AIDO" ;
+    FYIN to file OUTFILE header "FYI" ;
+    FYOUT to file OUTFILE header "FYO" ;
+    REMIN to file OUTFILE header "RMI" ;
+    REMOUT to file OUTFILE header "RMO" ;
 
-transfer unread from file INFILE to file OUTFILE ;
 
 

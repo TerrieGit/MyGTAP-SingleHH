@@ -1,11 +1,11 @@
 auxiliary files = extraagg ;
 check-on-read elements = no;
 cpu = yes;
-log only = yes;
+log file = yes;
 ! Input files:
-File SSFILE = setsorig.har;      ! Original GTAP sets file
-File INFILE    = extradata0.har;   ! Old parameters file
+File SSFILE = setsorig.har;      ! sets file
+File INFILE    = extradat0.har;   ! GTAP v7 data with header VBPF
 
 ! Output files:
-File OUTFILE   = extradata.har; ! New parameters file
+File OUTFILE   = extradat.har; ! New parameters file
 

@@ -1,42 +1,26 @@
 Rem  Last Update 4/21/2016
 
 rem --------------- STAGE 1
-rem ensures you are using the correct extra data to go with your version.
-
-echo off
-echo please input the GTAP version. Versions available include 9a (for v9a)
-echo off
-set /p version=
-
-echo please input the year of your data.  Years available include 2011 or 2007
-echo off
-set /p year=
-
-del extradata0.har
-
-copy extradatav%version%_%year%.har extradata0.har
-if errorlevel 1 goto error1
-
-rem --------------- STAGE 2
 del *.bak
 del *.log
 del *.flg
 
 rem ensures you do not run this twice and stuff up your data by accident
-if exist setsorig.har goto skip
+if exist setsorig.har goto stage2
 
 rem makes copies of original files to use
 copy sets.har setsorig.har
 copy default.prm defaultorig.prm
 copy basedata.har baseorig.har
 
-:skip
+rem --------------- STAGE 2
+:stage2
 rem creates the MyGTAP database
-extraagg.EXE -cmf extraagg.cmf >nul
+extraagg.EXE -cmf extraagg.cmf 
 if errorlevel 1 goto error
-mygtapdata.EXE -cmf mygtapdata.cmf >nul
+mygtapdata.EXE -cmf mygtapdata.cmf 
 if errorlevel 1 goto error
-mygtapsets.EXE -cmf mygtapsets.cmf >nul
+mygtapsets.EXE -cmf mygtapsets.cmf 
 if errorlevel 1 goto error
 
 rem copies new data to original files ready for RunGTAP
@@ -48,8 +32,7 @@ rem deletes working files
 del setsnew.har 
 del defaultnew.prm 
 del basedatanew.har 
-del extradata0.har 
-del extradata.har 
+del extradat.har 
 
 rem --------------- STAGE 2
 rem prepares RunGTAP application
@@ -66,10 +49,11 @@ rem BATCH JOB SUCCESSFUL
 echo off
 goto endbat
 
-:error1
+:error0
 echo off
 echo ###### ERROR: BATCH JOB FAILED #####
-echo Check version or year number
+echo You have not included the relevant file extradat0.har.  This is the 
+GTAP v7 database file that contains the header VBFP for BOP data
 goto endbat
 
 :error

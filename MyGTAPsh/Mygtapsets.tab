@@ -22,7 +22,6 @@ File
        GTAPSETS # Original GTAP sets file #;      !input\sets.har!
        BASEDATA # Base Data #;                    !input\basedata.har! 
        INPAR    # Parameters file #;          !input\default.prm  !
-       EXTDAT # File with other extra datasets #;
  (new) NEWSETS # updated sets writtent to ouput directory #; !output\sets.har!
  (new) OUTPAR   # New parameters file #;          !output\default.prm !
                   
@@ -50,7 +49,7 @@ Set !Special Sets for deviding up the GTAP data - Households!
  ALLHH #All Households New splits and old # = HHLD;
 
 Set !Special Sets for deviding up the GTAP data - factors!
-! This is not done in this version, but sets kept for model to run !
+! This is not done in this sinle household version, but sets kept for model to run !
  BASICFAC # Basic factors for splitting #
 read elements from file GTAPSETS header "H6"; 
  FAC0   #Original factors in GTAP database# = ENDW_COMM0 union BASICFAC;
@@ -149,7 +148,6 @@ write
 (by_elements) MAPAFAC   to file NEWSETS header "MFAC";
 
 Transfer unread from file GTAPSETS to file NEWSETS; !copy unchanged sets !
-Transfer (ifheaderexists) "MREL" from file EXTDAT to file NEWSETS ;
 
 ![[!
     -------------------------
@@ -190,7 +188,6 @@ Write
        longname "CET between sectors for sluggish primary factors";
 
 Transfer unwritten from file INPAR to file OUTPAR; !copy unchanged params !
-Transfer (ifheaderexists) "MREL" from file EXTDAT to file OUTPAR ;
 
 ![[!
     -----------

@@ -6,7 +6,6 @@ log only = yes;
 File GTAPSETS = setsorig.har;      ! Original GTAP sets file
 File BASEDATA = baseorig.har;  ! Base data
 File INPAR    = defaultorig.prm;   ! Old parameters file
-File EXTDAT = extradata.har;  ! Base data
 
 ! Output files:
 File NEWSETS = setsnew.har;     !Updated Sets!

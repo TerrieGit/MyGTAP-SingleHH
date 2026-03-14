@@ -1,7 +1,7 @@
 ![[!
     ==========================================
     ImpactECON MyGTAP Model auxillary programs
-    May 2016
+    March 2026
 
     This version incorporates additional data for MyGTAP model 
 
@@ -12,10 +12,14 @@
 
 Purpose of program:
 1. Includes remittances, foreign aid and government transfers into GTAP.
-2. Remove regional household
+2. Remove regional household, BUT only one household assumed. 
 
 Author: Terrie L walmsley
-Date: June 2 2015
+
+HISTORY
+-------
+Created: June 2 2015
+Updated for GTAP 12 database March 13, 2026
 
 !]]!
 
@@ -256,50 +260,42 @@ Coefficient
     (all,r,REG) AIDO0(r) # Foreign aid outflow for r # ;
     (all,r,REG) REMI0(r) # Foreign Remittance income for r # ;
     (all,r,REG) REMO0(r) # Foreign Remittance outflows  for r # ;
-    (all,r,REG) TRNG(r) # Government transfers for r # ;
 
 Read FYI0  from file EXTDATA header "FYI" ;
      FYO0  from file EXTDATA header "FYO" ;
      AIDI0 from file EXTDATA header "AIDI" ;
      AIDO0 from file EXTDATA header "AIDO" ;
-     REMI0 from file EXTDATA header "REMI" ;
-     REMO0 from file EXTDATA header "REMO" ;
-     TRNG from file EXTDATA header "TRNG" ;
+     REMI0 from file EXTDATA header "RMI" ;
+     REMO0 from file EXTDATA header "RMO" ;
 
-!Rescale to ensure the values IN and OUT are Equal!
+Coefficient (all,r,REG) 
+    TRNG(r) # Government transfers for r # ;
+formula (all,r,REG) 
+    TRNG(r)  = 0 ;
 
-!<formula (all,r,REG: TRANSG(r)<0) 
-    TRANSG(r)  = 0 ;>!
-
-Coefficient AVGFY ;
-Formula AVGFY = sum{r,REG,FYI0(r)+FYO0(r)}/2;
 Coefficient 
     (all,h,HHLD)(all,r,REG)   FYI(h,r)   #Foreign capital income for r # ;
     (all,h,HHLD)(all,r,REG)   FYO(h,r)  #Foreign capital outflow from r #;
 Formula  (all,h,HHLD)(all,r,REG) 
-    FYI(h,r)  =  FYI0(r)*AVGFY / sum{s,REG,FYI0(s)};
+    FYI(h,r)  =  FYI0(r);
 Formula  (all,h,HHLD)(all,r,REG) 
-    FYO(h,r) =  FYO0(r)*AVGFY / sum{s,REG,FYO0(s)};
+    FYO(h,r) =  FYO0(r);
  
-Coefficient AVGAID ;
-Formula AVGAID = sum{r,REG,AIDI0(r)+AIDO0(r)}/2;
 Coefficient
     (all,r,REG)   AIDI(r)   #Foreign capital income for r # ;
     (all,r,REG)   AIDO(r)  #Foreign capital outflow from r #;
 Formula  (all,r,REG) 
-    AIDI(r)  =  AIDI0(r)*AVGAID / sum{s,REG,AIDI0(s)};
+    AIDI(r)  =  AIDI0(r);
 Formula  (all,r,REG) 
-    AIDO(r) =  AIDO0(r)*AVGAID / sum{s,REG,AIDO0(s)};
+    AIDO(r) =  AIDO0(r);
  
-Coefficient AVGREM ;
-Formula AVGREM = sum{r,REG,REMI0(r)+REMO0(r)}/2;
 Coefficient
      (all,h,HHLD)(all,r,REG)   REMI(h,r)   #Foreign capital income for r # ;
      (all,h,HHLD)(all,r,REG)   REMO(h,r)  #Foreign capital outflow from r #;
 Formula (all,h,HHLD)(all,r,REG) 
-    REMI(h,r)  =  REMI0(r)*AVGREM / sum{s,REG,REMI0(s)};
+    REMI(h,r)  =  REMI0(r);
 Formula  (all,h,HHLD)(all,r,REG) 
-    REMO(h,r) =  REMO0(r)*AVGREM / sum{s,REG,REMO0(s)};
+    REMO(h,r) =  REMO0(r);
 
 ![[!  
     -----------------------
@@ -323,7 +319,7 @@ Formula (all,h,HHLD)(all,r,REG)
     PRIVEXP(h,r) = sum(t, TRAD_COMM, VIPAH(t,h,r) + VDPAH(t,h,r)) ;
 
 Coefficient (all,r,REG)
-    SAVE(r) # income, net of depreciation, by Household #;
+    SAVE(r) # aggregated savings - Government and Household #;
 Formula (all,r,REG)
     SAVE(r) = INCOME(r) - sum(h, HHLD, PRIVEXP(h,r)) - GOVEXP(r) ;
 
@@ -335,7 +331,7 @@ Formula (all,r,REG)
              + AIDI(r) - AIDO(r) ;
 
 Coefficient (all,r,REG)
-        SAV_GOV(r) # Value of commodity i output in region r at market prices #;
+        SAV_GOV(r) # Government Savings #;
 formula (all,r,REG)
         SAV_GOV(r) = GINCOME(r) - GOVEXP(r) ;
 
@@ -349,12 +345,12 @@ Formula (all,h,HHLD)(all,r,REG)
 
 Coefficient 
     (all,h,HHLD)(all,r,REG)
-        SAV_HHLD(h,r) # Value of commodity i output in region r at market prices #;
+        SAV_HHLD(h,r) # Houehold Savings #;
 formula    (all,h,HHLD)(all,r,REG)
         SAV_HHLD(h,r) = HINCOME(h,r) - PRIVEXP(h,r);
 
 Coefficient (all,r,REG)
-        SAVECHK(r) # Value of commodity i output in region r at market prices #;
+        SAVECHK(r) # Check on Aggregated Savings #;
 formula (all,r,REG)
         SAVECHK(r) = SAVE(r) - SAV_GOV(r) - sum(h, HHLD, SAV_HHLD(h,r));
 
@@ -365,14 +361,6 @@ formula (all,r,REG)
  !]]!
 
 write
-    AIDI to file NEWDATA header "AIDI";
-    AIDO to file NEWDATA header "AIDO";
-    FYI to file NEWDATA header "FYI";
-    FYO to file NEWDATA header "FYO";
-    REMI to file NEWDATA header "REMI";
-    REMO to file NEWDATA header "REMO";
-    TRNG to file NEWDATA header "TRNG";
-    VKBH to file NEWDATA header "VKB";
     EVOAH to file NEWDATA header "EVOA";
     EVOMH to file NEWDATA header "EVOM";
     EVFA to file NEWDATA header "EVFA";
@@ -393,18 +381,20 @@ write
     VIGM to file NEWDATA header "VIGM";
     VDGM to file NEWDATA header "VDGM";
     VIMS to file NEWDATA header "VIMS";
-    SAV_GOV to file NEWDATA header "SGOV" longname
-    "Government Savings";
-    SAV_HHLD to file NEWDATA header "SHLD" longname
-    "Houehold Savings";
-    SAVE to file NEWDATA header "SAVE" longname
-    "Aggregated Savings";
-    INCOME to file NEWDATA header "INC" longname
-    "Income";
-    SAVECHK to file NEWDATA header "SCHK" longname
-    "Check on Aggregated Savings";
-    TRNH to file NEWDATA header "TRNH" longname
-    "transfers between households";
+    SAV_GOV to file NEWDATA header "SGOV";
+    SAV_HHLD to file NEWDATA header "SHLD";
+    SAVE to file NEWDATA header "SAVE";
+    INCOME to file NEWDATA header "INC";
+    VKBH to file NEWDATA header "VKB";
+    TRNH to file NEWDATA header "TRNH";
+    AIDI to file NEWDATA header "AIDI";
+    AIDO to file NEWDATA header "AIDO";
+    FYI to file NEWDATA header "FYI";
+    FYO to file NEWDATA header "FYO";
+    REMI to file NEWDATA header "REMI";
+    REMO to file NEWDATA header "REMO";
+    TRNG to file NEWDATA header "TRNG";
+    SAVECHK to file NEWDATA header "SCHK";
    
 Transfer unwritten from FILE GTAPDATA TO FILE NEWDATA ;
 Transfer unread from FILE EXTDATA TO FILE NEWDATA ;
