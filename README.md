@@ -22,3 +22,7 @@ To run:
 - you will need to supply a GTAP database that is consistent with the GTAP 6 Model.  This can be obtained from GTAPAgg.
 - you will also need to ensure you havbe a correct version of extradat0.har.  This can be created using data obtained from
 The MyGTAP-Extra (https://github.com/TerrieGit/MyGTAP-Extradat) python program.
+
+The Branch (MyGTAPsh-GTAP-v6-Data-v12) contains changes that allows you to use the GTAP v12 database header VBFP (extra BoP data) 
+to populate extradat0.har. This fixes one of the issues noted above.  Note that this heade is in the GTAPv7 basedata.  This model uses GTAPv6 
+data, as well as that header VBFP from the GTAPv7 basedata.har file. 
